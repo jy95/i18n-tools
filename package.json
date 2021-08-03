@@ -1,0 +1,30 @@
+{
+  "name": "i18n_tools",
+  "version": "1.0.0",
+  "description": "CLI to make i18n files <=> xlsx conversions simpler",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "i18n",
+    "xlsx"
+  ],
+  "author": "jy95",
+  "license": "GPL-3.0-or-later",
+  "devDependencies": {
+    "@types/jest": "^26.0.24",
+    "@types/node": "^16.4.10",
+    "@typescript-eslint/eslint-plugin": "^4.29.0",
+    "@typescript-eslint/parser": "^4.29.0",
+    "eslint": "^7.32.0",
+    "jest": "^27.0.6",
+    "ts-jest": "^27.0.4",
+    "ts-node": "^10.1.0",
+    "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "exceljs": "^4.2.1",
+    "lodash": "^4.17.21"
+  }
+}
