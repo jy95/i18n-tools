@@ -11,6 +11,9 @@ import get from "lodash-es/get";
 import uniq from "lodash-es/uniq";
 import difference from "lodash-es/difference";
 
+// common fct
+import { merge_i18n_files, setUpCommonsOptions } from "./export_commons";
+
 // For typing
 import { CommonExportArguments, XLSXExportArguments, I18N_Merged_Data } from "../../types/exportTypes";
 
@@ -19,7 +22,7 @@ export const command = "to_xlsx";
 export const description = "Export i18n files into a xlsx file, created by exceljs";
 
 export const builder = function (y : CommonExportArguments) {
-    return y
+    return setUpCommonsOptions(y) // set up common options for export
         .option("exportColumns", {
             description: "JSON array of objects, to control the export columns. Example : [{ \"locale\": \"FR\", \"label\": \"French translation\" }]",
             demandOption: true
@@ -69,7 +72,7 @@ export const builder = function (y : CommonExportArguments) {
         // validation for both exportColumns & files options
         .check( (argv) => {
             let keys_exportColumns : string[] = argv.exportColumns.map( (x : object) => get(x, "locale"));
-            let keys_files : string[] = Object.keys(argv.files as object);
+            let keys_files : string[] = Object.keys(argv.files);
             if (difference(keys_exportColumns, keys_files).length !== 0) {
                 throw new Error('At least one key differs between files and exportColumns options');
             }
@@ -81,7 +84,7 @@ export const builder = function (y : CommonExportArguments) {
 
 export const handler = async function (argv : XLSXExportArguments) {
     try {
-        let data : I18N_Merged_Data = await require("./merge_i18n_files")(argv);
+        let data : I18N_Merged_Data = await merge_i18n_files(argv);
         await export_as_excel(argv, data);
     } catch(err) {
         console.error(err);
