@@ -1,8 +1,10 @@
 {
-  "name": "i18n_tools",
+  "name": "@jy95/i18n-tools",
   "version": "1.0.0",
-  "description": "CLI to make i18n files <=> xlsx conversions simpler",
-  "main": "index.js",
+  "description": "CLI to make conversions from / to i18n files simpler",
+  "bin": {
+    "i18n-tools": "dist/cli.ts"
+  },
   "scripts": {
     "cli": "npx ts-node src/cli.ts",
     "test": "npx jest",
@@ -13,13 +15,18 @@
   },
   "keywords": [
     "i18n",
-    "xlsx"
+    "xlsx",
+    "conversion",
+    "internalization",
+    "export",
+    "import"
   ],
   "author": "jy95",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
     "@types/jest": "^26.0.24",
     "@types/lodash": "^4.14.172",
+    "@types/lodash-es": "^4.17.4",
     "@types/node": "^16.4.10",
     "@types/yargs": "^17.0.2",
     "@typescript-eslint/eslint-plugin": "^4.29.0",
@@ -34,6 +41,7 @@
   "dependencies": {
     "exceljs": "^4.2.1",
     "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "yargs": "^17.0.1"
   }
 }

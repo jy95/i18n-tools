@@ -1,8 +1,8 @@
 import fs, { PathLike } from "fs";
 import _ from 'lodash';
-import { ExportArguments, I18N_Merged_Data } from "./exportTypes"
+import { CommonExportArguments, I18N_Merged_Data } from "../../types/exportTypes"
 
-exports = module.exports  = (argv : ExportArguments) => {
+exports = module.exports  = (argv : CommonExportArguments) => {
     return new Promise( (resolve, reject) => {
         Promise
             // Read files and convert them to useful obj
