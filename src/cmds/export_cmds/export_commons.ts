@@ -2,10 +2,10 @@ import fs, { PathLike } from "fs";
 import path from "path";
 
 // lodash methodes
-import isArray from "lodash-es/isArray";
-import isString from "lodash-es/isString";
-import groupBy from "lodash-es/groupBy";
-import uniq from "lodash-es/uniq";
+import isArray from "lodash/isArray";
+import isString from "lodash/isString";
+import groupBy from "lodash/groupBy";
+import uniq from "lodash/uniq";
 
 // For typings
 import {Argv} from "yargs";

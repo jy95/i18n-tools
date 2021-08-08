@@ -3,13 +3,13 @@ import path from "path";
 import Excel from 'exceljs';
 
 // lodash modules
-import isString from "lodash-es/isString";
-import isArray from "lodash-es/isArray";
-import some from "lodash-es/some";
-import has from "lodash-es/has";
-import get from "lodash-es/get";
-import uniq from "lodash-es/uniq";
-import difference from "lodash-es/difference";
+import isString from "lodash/isString";
+import isArray from "lodash/isArray";
+import some from "lodash/some";
+import has from "lodash/has";
+import get from "lodash/get";
+import uniq from "lodash/uniq";
+import difference from "lodash/difference";
 
 // common fct
 import { merge_i18n_files, setUpCommonsOptions } from "./export_commons";
