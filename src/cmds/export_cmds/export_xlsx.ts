@@ -15,13 +15,14 @@ import difference from "lodash-es/difference";
 import { merge_i18n_files, setUpCommonsOptions } from "./export_commons";
 
 // For typing
-import { CommonExportArguments, XLSXExportArguments, I18N_Merged_Data } from "../../types/exportTypes";
+import {Argv} from "yargs";
+import { XLSXExportArguments, I18N_Merged_Data } from "../../types/exportTypes";
 
 // named exports
 export const command = "to_xlsx";
 export const description = "Export i18n files into a xlsx file, created by exceljs";
 
-export const builder = function (y : CommonExportArguments) {
+export const builder = function (y : Argv) {
     return setUpCommonsOptions(y) // set up common options for export
         .option("exportColumns", {
             description: "JSON array of objects, to control the export columns. Example : [{ \"locale\": \"FR\", \"label\": \"French translation\" }]",
@@ -157,4 +158,12 @@ function export_as_excel(argv : XLSXExportArguments, data : I18N_Merged_Data) {
 
     // finally write this file
     return workbook.xlsx.writeFile(XLSX_FILE);
+}
+
+// default export
+export default {
+    command : command,
+    description : description,
+    builder : builder,
+    handler: handler
 }

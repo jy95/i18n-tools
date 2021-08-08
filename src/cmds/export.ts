@@ -1,3 +1,5 @@
+import { join } from "path";
+
 // For typing
 import {Argv} from "yargs";
 
@@ -7,10 +9,21 @@ export const description = "Export i18n files into something else";
 
 export const builder = function (y : Argv) {
     return y
-        .commandDir("export_cmds", {
-            extensions: process.env.NODE_ENV === 'development' ? ['js', 'ts'] : ['js'],
-            // exclude merge_i18n_files.ts
+        .commandDir(join(__dirname, "export_cmds"), {
+            extensions: ["js", "ts"],
+            visit(commandModule) {
+                return commandModule.default;
+            },
+            // exclude the common file
             exclude: (path) => /export_commons\.(?:t|j)s/.test(path)
         });
 }
 export const handler = function (_ : Argv) {};
+
+// default export
+export default {
+    command : command,
+    description : description,
+    builder : builder,
+    handler: handler
+}
