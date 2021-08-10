@@ -15,6 +15,7 @@ import difference from "lodash/difference";
 import { merge_i18n_files, setUpCommonsOptions } from "./export_commons";
 
 // For typing
+// eslint-disable-next-line
 import type { Argv } from "yargs";
 import { XLSXExportArguments, I18N_Merged_Data } from "../../types/exportTypes";
 
