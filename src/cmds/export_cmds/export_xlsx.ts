@@ -25,12 +25,12 @@ export const description = "Export i18n files into a xlsx file, created by excel
 export const builder = function (y : Argv) {
     return setUpCommonsOptions(y) // set up common options for export
         .option("exportColumns", {
-            description: "JSON array of objects, to control the export columns. Example : [{ \"locale\": \"FR\", \"label\": \"French translation\" }]",
+            description: "Path to a JSON array of objects, to control the export columns. Example : [{ \"locale\": \"FR\", \"label\": \"French translation\" }]",
             demandOption: true
         })
         .option("worksheetName", {
             type: "string",
-            description: "Name of the worksheet when format is equal to xlsx",
+            description: "Name of the worksheet",
             default: "Translations"
         })
         .option("worksheetCustomizer", {
