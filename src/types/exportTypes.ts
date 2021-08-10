@@ -1,4 +1,6 @@
-import {Argv} from "yargs";
+
+// reuse yargs Argv type
+import { Argv } from "yargs";
 
 // Yargs export arguments
 export interface CommonExportArguments extends Argv {

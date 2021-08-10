@@ -1,24 +1,16 @@
-import { join } from "path";
-
-// For typing
-import {Argv} from "yargs";
+// export command
+import export_xlsx from "./export_cmds/export_xlsx";
 
 // named exports
 export const command = "export <command>";
 export const description = "Export i18n files into something else";
 
-export const builder = function (y : Argv) {
+export const builder = function (y : any) {
     return y
-        .commandDir(join(__dirname, "export_cmds"), {
-            extensions: ["js", "ts"],
-            visit(commandModule) {
-                return commandModule.default;
-            },
-            // exclude the common file
-            exclude: (path) => /export_commons\.(?:t|j)s/.test(path)
-        });
+        // commandDir doesn't work very well in Typescript
+        .command(export_xlsx)
 }
-export const handler = function (_ : Argv) {};
+export const handler = function (_ : any) {};
 
 // default export
 export default {

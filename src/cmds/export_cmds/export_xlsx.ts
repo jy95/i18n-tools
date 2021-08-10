@@ -15,7 +15,7 @@ import difference from "lodash/difference";
 import { merge_i18n_files, setUpCommonsOptions } from "./export_commons";
 
 // For typing
-import {Argv} from "yargs";
+import type { Argv } from "yargs";
 import { XLSXExportArguments, I18N_Merged_Data } from "../../types/exportTypes";
 
 // named exports
@@ -78,9 +78,7 @@ export const builder = function (y : Argv) {
                 throw new Error('At least one key differs between files and exportColumns options');
             }
             return true;
-        })
-        .help()
-        .argv;
+        });
 }
 
 export const handler = async function (argv : XLSXExportArguments) {

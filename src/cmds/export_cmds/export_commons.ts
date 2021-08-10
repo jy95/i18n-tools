@@ -8,7 +8,7 @@ import groupBy from "lodash/groupBy";
 import uniq from "lodash/uniq";
 
 // For typings
-import {Argv} from "yargs";
+import type { Argv } from "yargs";
 import { CommonExportArguments, I18N_Merged_Data } from "../../types/exportTypes"
 type I18N_Object = { [x: string]: string | Array<any> | I18N_Object }
 type I18N_Result = {
