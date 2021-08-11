@@ -22,6 +22,8 @@ const [VALID_TEST_FOLDER, EMPTY_TEST_FOLDER] = [
 // initialise fsify
 const fsify : {
   [x: string] : any,
+  DIRECTORY: any,
+  FILE: any,
   (_ : { [x: string] : any }) : Promise<any>
 } = require('fsify')({
   cwd: TEMP_FOLDER,
@@ -81,7 +83,7 @@ const structure = [
           },
           // the files.json
           {
-            type: fsify,
+            type: fsify.FILE,
             name: 'files.json',
             contents: JSON.stringify(
               TRANSLATIONS_KEYS.reduce(
