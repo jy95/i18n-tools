@@ -20,7 +20,10 @@ const [VALID_TEST_FOLDER, EMPTY_TEST_FOLDER] = [
 ];
 
 // initialise fsify
-const fsify = require('fsify')({
+const fsify : {
+  [x: string] : any,
+  (_ : { [x: string] : any }) : Promise<any>
+} = require('fsify')({
   cwd: TEMP_FOLDER,
   persistent: false,
   force: true,
