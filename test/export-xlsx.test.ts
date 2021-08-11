@@ -25,7 +25,7 @@ const fsify = require('fsify')({
 
 // Translations keys for test
 const TRANSLATIONS_KEYS = ['FR', 'NL', 'DE'];
-const KEYS_LABEL = {
+const KEYS_LABEL : { [key : string]: string} = {
   FR: 'French',
   NL: 'Dutch',
   DE: 'German',
@@ -78,7 +78,7 @@ const structure = [
             type: fsify,
             name: 'files.json',
             contents: JSON.stringify(
-              TRANSLATIONS_KEYS.reduce((acc, locale) => {
+              TRANSLATIONS_KEYS.reduce((acc : { [x: string] : string } , locale : string) => {
                 acc[locale] = path.resolve(
                   TEMP_FOLDER,
                   ROOT_TEST_FOLDER,
@@ -100,6 +100,7 @@ beforeAll(() => {
   console.log(EMPTY_TEST_FOLDER);
   // write temporary files
   return fsify(structure);
+  //return Promise.resolve();
 });
 
 // Build the parser used for that command
@@ -109,7 +110,7 @@ describe('[export_xlsx command] - tests', () => {
   it('Should return help output', async () => {
     // Run the command module with --help as argument
     const output = await new Promise(resolve => {
-      parser.parse('--help', (_err, _argv, output) => {
+      parser.parse('--help', (_err : Error | undefined, _argv : any, output : string) => {
         resolve(output);
       });
     });
