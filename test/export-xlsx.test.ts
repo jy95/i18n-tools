@@ -1,11 +1,14 @@
 import os from 'os';
 import path from 'path';
 import yargs from 'yargs';
+// export command
 import {
   command,
   description as describeText,
   builder,
 } from '../src/cmds/export';
+// XLSX description
+import { description as xlsx_description } from '../src/cmds/export_cmds/export_xlsx';
 
 // temp folder
 const TEMP_FOLDER = os.tmpdir();
@@ -25,7 +28,7 @@ const fsify = require('fsify')({
 
 // Translations keys for test
 const TRANSLATIONS_KEYS = ['FR', 'NL', 'DE'];
-const KEYS_LABEL : { [key : string]: string} = {
+const KEYS_LABEL: { [key: string]: string } = {
   FR: 'French',
   NL: 'Dutch',
   DE: 'German',
@@ -78,15 +81,18 @@ const structure = [
             type: fsify,
             name: 'files.json',
             contents: JSON.stringify(
-              TRANSLATIONS_KEYS.reduce((acc : { [x: string] : string } , locale : string) => {
-                acc[locale] = path.resolve(
-                  TEMP_FOLDER,
-                  ROOT_TEST_FOLDER,
-                  VALID_TEST_FOLDER,
-                  `${locale.toLowerCase()}.json`
-                );
-                return acc;
-              }, {})
+              TRANSLATIONS_KEYS.reduce(
+                (acc: { [x: string]: string }, locale: string) => {
+                  acc[locale] = path.resolve(
+                    TEMP_FOLDER,
+                    ROOT_TEST_FOLDER,
+                    VALID_TEST_FOLDER,
+                    `${locale.toLowerCase()}.json`
+                  );
+                  return acc;
+                },
+                {}
+              )
             ),
           },
         ]),
@@ -106,17 +112,24 @@ beforeAll(() => {
 // Build the parser used for that command
 const parser = yargs.command(command, describeText, builder).help();
 
-describe('[export_xlsx command] - tests', () => {
-  it('Should return help output', async () => {
-    // Run the command module with --help as argument
-    const output = await new Promise(resolve => {
-      parser.parse('--help', (_err : Error | undefined, _argv : any, output : string) => {
-        resolve(output);
-      });
+// return the output of a given command to the parser
+function fetchOutput(cmd: string): Promise<string> {
+  return new Promise(resolve => {
+    parser.parse(cmd, (_err: Error | undefined, _argv: any, output: string) => {
+      resolve(output);
     });
+  });
+}
 
-    // Verify the output is correct
-    expect(output).toBe(expect.stringContaining('xlsx'));
+describe('[export_xlsx command] - tests', () => {
+  it('Should list to_xlsx in export command', async () => {
+    const output = await fetchOutput('export --help');
+    expect(output).toBe(expect.stringContaining('to_xlsx'));
+  });
+
+  it('Should display to_xlsx help output', async () => {
+    const output = await fetchOutput('export to_xlsx --help');
+    expect(output).toBe(expect.stringContaining(xlsx_description));
   });
 
   /*
