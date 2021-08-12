@@ -49,10 +49,10 @@ export function setUpCommonsOptions(y: Argv) {
         // convert JSON inline, if present
         .coerce(["files"], (arg) => {
             if (isString(arg)) {
-                // arg was passed as string, convert it into a JSON
-                return JSON.parse(arg);
+                // arg is a Path, convert it into a JSON
+                return JSON.parse(fs.readFileSync(arg, 'utf-8'));
             } else {
-                // arg was passed as an object thanks to settings
+                // arg is an object thanks to settings
                 return arg;
             }
         })
@@ -69,7 +69,7 @@ export function setUpCommonsOptions(y: Argv) {
             let files = argv.files as Object;
             let entries : [String, any][] = Object.entries(files);
             if (entries.length === 0) {
-                throw new Error("Option file should have at least one entry");
+                throw new Error("Option files should have at least one entry");
             }
             if (uniq(Object.values(files)).length !== entries.length) {
                 throw new Error(`At least a duplicated value in files JSON object was detected`);

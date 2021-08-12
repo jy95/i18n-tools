@@ -14,17 +14,17 @@ import { description as xlsx_description } from '../src/cmds/export_cmds/export_
 const TEMP_FOLDER = os.tmpdir();
 // test folders constants
 const ROOT_TEST_FOLDER = 'tests-for-export';
-const [VALID_TEST_FOLDER, EMPTY_TEST_FOLDER] = [
+const [VALID_TEST_FOLDER, USELESS_TEST_FOLDER] = [
   'correct', // folder where every file are correct
-  'empty', // folder where file has an useless content ([])
+  'useless', // folder where file has an useless content ([])
 ];
 
 // initialise fsify
-const fsify : {
-  [x: string] : any,
-  DIRECTORY: any,
-  FILE: any,
-  (_ : { [x: string] : any }) : Promise<any>
+const fsify: {
+  [x: string]: any;
+  DIRECTORY: any;
+  FILE: any;
+  (_: { [x: string]: any }): Promise<any>;
 } = require('fsify')({
   cwd: TEMP_FOLDER,
   persistent: false,
@@ -48,6 +48,16 @@ const generate_i18n = (locale: string) => ({
   array: ['1', '2', '3'].map(item => `${item} ${locale}`),
 });
 
+// Export files
+const generate_files = (
+  locales: string[],
+  fnMapper: (locale: string) => string
+) =>
+  locales.reduce((acc: { [x: string]: string }, locale: string) => {
+    acc[locale] = fnMapper(locale);
+    return acc;
+  }, {});
+
 // Export columns
 const EXPORT_COLUMNS = (locales: string[]) =>
   locales.map(locale => ({
@@ -64,7 +74,7 @@ const structure = [
     type: fsify.DIRECTORY,
     name: ROOT_TEST_FOLDER,
     contents: [
-      // In this folder, everything in order
+      // In this folder, everything in correct
       {
         type: fsify.DIRECTORY,
         name: VALID_TEST_FOLDER,
@@ -86,30 +96,59 @@ const structure = [
             type: fsify.FILE,
             name: 'files.json',
             contents: JSON.stringify(
-              TRANSLATIONS_KEYS.reduce(
-                (acc: { [x: string]: string }, locale: string) => {
-                  acc[locale] = path.resolve(
-                    TEMP_FOLDER,
-                    ROOT_TEST_FOLDER,
-                    VALID_TEST_FOLDER,
-                    `${locale.toLowerCase()}.json`
-                  );
-                  return acc;
-                },
-                {}
+              generate_files(TRANSLATIONS_KEYS, locale =>
+                path.resolve(
+                  TEMP_FOLDER,
+                  ROOT_TEST_FOLDER,
+                  VALID_TEST_FOLDER,
+                  `${locale.toLowerCase()}.json`
+                )
               )
             ),
           },
         ]),
+      },
+      // In this folder, files used for validations
+      {
+        type: fsify.DIRECTORY,
+        name: USELESS_TEST_FOLDER,
+        contents: [
+          // An empty object
+          {
+            type: fsify.FILE,
+            name: 'emptyObject.json',
+            contents: JSON.stringify({}),
+          },
+          // An empty array
+          {
+            type: fsify.FILE,
+            name: 'emptyArray.json',
+            contents: JSON.stringify([]),
+          },
+          // files.json with duplicated values
+          {
+            type: fsify.FILE,
+            name: 'files-duplicatedValues.json',
+            contents: JSON.stringify(
+              generate_files(TRANSLATIONS_KEYS, _ =>
+                path.resolve(
+                  TEMP_FOLDER,
+                  ROOT_TEST_FOLDER,
+                  VALID_TEST_FOLDER,
+                  `${TRANSLATIONS_KEYS[0].toLowerCase()}.json`
+                )
+              )
+            ),
+          },
+        ],
       },
     ],
   },
 ];
 
 beforeAll(() => {
-  // useless
-  console.log(EMPTY_TEST_FOLDER);
   // write temporary files
+  //console.log(structure);
   return fsify(structure);
   //return Promise.resolve();
 });
@@ -126,20 +165,18 @@ function fetchOutput(cmd: string): Promise<string> {
   });
 }
 
-describe('[export_xlsx command] - tests', () => {
-  it('Should list to_xlsx in export command', async () => {
-    const output = await fetchOutput('export --help');
-    expect(output).toMatch('to_xlsx');
-  });
-
-  it('Should display to_xlsx help output', async () => {
-    const output = await fetchOutput('export to_xlsx --help');
-    expect(output).toMatch(xlsx_description);
-  });
-
-  /*
-    it("Should parse correctly when conditions are meet", () => {
-        parser.parse()
+describe('[export_xlsx command]', () => {
+  describe('Check command availability', () => {
+    it('Should list to_xlsx in export command', async () => {
+      const output = await fetchOutput('export --help');
+      expect(output).toMatch('to_xlsx');
     });
-    */
+
+    it('Should display to_xlsx help output', async () => {
+      const output = await fetchOutput('export to_xlsx --help');
+      expect(output).toMatch(xlsx_description);
+    });
+  });
+
+  describe('Validations', () => {});
 });

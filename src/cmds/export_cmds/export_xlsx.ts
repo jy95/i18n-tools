@@ -1,4 +1,5 @@
 // for fs ops
+import fs from "fs";
 import path from "path";
 import Excel from 'exceljs';
 
@@ -41,10 +42,10 @@ export const builder = function (y : Argv) {
         // convert JSON inline, if present
         .coerce(["exportColumns"], (arg) => {
             if (isString(arg)) {
-                // arg was passed as string, convert it into a JSON
-                return JSON.parse(arg);
+                // arg is a Path, convert it into a JSON
+                return JSON.parse(fs.readFileSync(arg, 'utf-8'));
             } else {
-                // arg was passed as an object thanks to settings
+                // arg is an object thanks to settings
                 return arg;
             }
         })
