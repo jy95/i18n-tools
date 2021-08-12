@@ -129,12 +129,12 @@ function fetchOutput(cmd: string): Promise<string> {
 describe('[export_xlsx command] - tests', () => {
   it('Should list to_xlsx in export command', async () => {
     const output = await fetchOutput('export --help');
-    expect(output).toBe(expect.stringContaining('to_xlsx'));
+    expect(output).toMatch('to_xlsx');
   });
 
   it('Should display to_xlsx help output', async () => {
     const output = await fetchOutput('export to_xlsx --help');
-    expect(output).toBe(expect.stringContaining(xlsx_description));
+    expect(output).toMatch(xlsx_description);
   });
 
   /*
