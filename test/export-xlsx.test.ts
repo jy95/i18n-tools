@@ -68,8 +68,46 @@ const EXPORT_COLUMNS = (locales: string[]) =>
 // flat operation
 const flat = (arr: any[]) => [].concat(...arr);
 
+// type for fsify structure
+type fsify_structure = {
+  type: any;
+  name: string;
+  contents: string | fsify_structure;
+}[];
+
+// to access easier the paths of test file paths
+const test_files_list = [
+  // correct files
+  'exportColumns.json',
+  'files.json',
+  'settings1.json',
+  'settings2.json',
+  // wrong files
+  'emptyObject.json',
+  'emptyArray.json',
+  'files-duplicatedValues.json',
+  'exportColumns-missingLabelProp.json',
+  'exportColumns-wrongPropValue.json',
+  'exportColumns-duplicatedValues.json',
+  'exportColumns-missingKey.json',
+] as const;
+const [
+  TEST_FILE_EXPORT_COLUMNS,
+  TEST_FILE_FILES,
+  TEST_FILE_SETTINGS1,
+  TEST_FILE_SETTINGS2,
+  TEST_FILE_EMPTY_OBJECT,
+  TEST_FILE_EMPTY_ARRAY,
+  TEST_FILE_FILES_DUP,
+  TEST_FILE_EXPORT_COLUMNS_MISS_PROP,
+  TEST_FILE_EXPORT_COLUMNS_WRONG_PROP,
+  TEST_FILE_EXPORT_COLUMNS_DUP_VALS,
+  TEST_FILE_EXPORT_COLUMNS_MISS_KEY
+] = test_files_list;
+type test_files_type = typeof test_files_list[number];
+
 // file structure for fsify, in order to run the tests
-const structure = [
+const structure: fsify_structure = [
   {
     type: fsify.DIRECTORY,
     name: ROOT_TEST_FOLDER,
@@ -88,13 +126,13 @@ const structure = [
           // the exportColumns.json
           {
             type: fsify.FILE,
-            name: 'exportColumns.json',
+            name: TEST_FILE_EXPORT_COLUMNS,
             contents: JSON.stringify(EXPORT_COLUMNS(TRANSLATIONS_KEYS)),
           },
           // the files.json
           {
             type: fsify.FILE,
-            name: 'files.json',
+            name: TEST_FILE_FILES,
             contents: JSON.stringify(
               generate_files(TRANSLATIONS_KEYS, locale =>
                 path.resolve(
@@ -106,6 +144,47 @@ const structure = [
               )
             ),
           },
+          // First format of settings.json (Path)
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_SETTINGS1,
+            contents: JSON.stringify({
+              "files": path.resolve(
+                  TEMP_FOLDER,
+                  ROOT_TEST_FOLDER,
+                  VALID_TEST_FOLDER,
+                  TEST_FILE_FILES
+              ),
+              "exportColumns": path.resolve(
+                TEMP_FOLDER,
+                ROOT_TEST_FOLDER,
+                VALID_TEST_FOLDER,
+                TEST_FILE_EXPORT_COLUMNS
+              ),
+              "worksheetName": "Settings 1 - Worksheet",
+              "filename": "settings1-output",
+              "outputDir": TEMP_FOLDER,
+            })
+          },
+          // Second format of settings.json (Object/Array instead of Paths)
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_SETTINGS2,
+            contents: JSON.stringify({
+              "files": generate_files(TRANSLATIONS_KEYS, locale =>
+                path.resolve(
+                  TEMP_FOLDER,
+                  ROOT_TEST_FOLDER,
+                  VALID_TEST_FOLDER,
+                  `${locale.toLowerCase()}.json`
+                )
+              ),
+              "exportColumns": EXPORT_COLUMNS(TRANSLATIONS_KEYS),
+              "worksheetName": "Settings 2 - Worksheet",
+              "filename": "settings2-output",
+              "outputDir": TEMP_FOLDER,
+            })
+          }
         ]),
       },
       // In this folder, files used for validations
@@ -116,19 +195,19 @@ const structure = [
           // An empty object
           {
             type: fsify.FILE,
-            name: 'emptyObject.json',
+            name: TEST_FILE_EMPTY_OBJECT,
             contents: JSON.stringify({}),
           },
           // An empty array
           {
             type: fsify.FILE,
-            name: 'emptyArray.json',
+            name: TEST_FILE_EMPTY_ARRAY,
             contents: JSON.stringify([]),
           },
           // files.json with duplicated values
           {
             type: fsify.FILE,
-            name: 'files-duplicatedValues.json',
+            name: TEST_FILE_FILES_DUP,
             contents: JSON.stringify(
               generate_files(TRANSLATIONS_KEYS, _ =>
                 path.resolve(
@@ -140,11 +219,56 @@ const structure = [
               )
             ),
           },
+          // exportColumns.json with missing property (label)
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_EXPORT_COLUMNS_MISS_PROP,
+            contents: JSON.stringify([{ locale: 'FR' }]),
+          },
+          // exportColumns.json with wrong property type
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_EXPORT_COLUMNS_WRONG_PROP,
+            contents: JSON.stringify([{ locale: 'FR', label: 42 }]),
+          },
+          // exportColumns.json with duplicated value
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_EXPORT_COLUMNS_DUP_VALS,
+            contents: JSON.stringify([
+              { locale: 'FR', label: 'Hello World' },
+              { locale: 'NL', label: 'Hello World' },
+            ]),
+          },
+          // exportColumns.json with missing key for files.json
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_EXPORT_COLUMNS_MISS_KEY,
+            contents: JSON.stringify([
+              { locale: 'FR', label: 'French translation' },
+            ]),
+          },
         ],
       },
     ],
   },
 ];
+
+// files path
+const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
+  (acc: any, curr: test_files_type, idx: number) => {
+    // improvement for later : handle generically nested stuff
+    let arr = [
+      TEMP_FOLDER,
+      ROOT_TEST_FOLDER,
+      idx < 2 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
+      curr,
+    ];
+    acc[curr] = path.resolve(...arr);
+    return acc;
+  },
+  {}
+);
 
 beforeAll(() => {
   // write temporary files
@@ -165,8 +289,28 @@ function fetchOutput(cmd: string): Promise<string> {
   });
 }
 
+// return the expected error of a given command to the parser
+function fetchError(cmd: string) : Promise<Error> {
+  return new Promise((resolve, reject) => {
+    parser.parse(cmd, (err: Error | undefined, _argv: any, _output: string) => {
+      if (err){
+        resolve(err);
+      } else {
+        reject("Expected error wasn't thrown");
+      }
+    })
+  });
+}
+
+// to concat faster command
+type concat_cmd_type = (args : string[]) => string;
+type prepare_mandatory_args_type = (...args : string[]) => string[];
+const concat_cmd : concat_cmd_type = (args : string[]) => `export to_xlsx ${args.join(' ')}`;
+const prepare_mandatory_args : prepare_mandatory_args_type = (...args : string[]) => ["--files", `"${args[0]}"`, "--exportColumns", `"${args[1]}"`];
+
 describe('[export_xlsx command]', () => {
   describe('Check command availability', () => {
+
     it('Should list to_xlsx in export command', async () => {
       const output = await fetchOutput('export --help');
       expect(output).toMatch('to_xlsx');
@@ -178,5 +322,28 @@ describe('[export_xlsx command]', () => {
     });
   });
 
-  describe('Validations', () => {});
+  describe('Validations', () => {
+
+    it('Filename with extension should be rejected', async () => {
+      let filename = "test.xlsx";
+      let test_cmd = concat_cmd([
+        // mandatory args
+        ...prepare_mandatory_args(
+          TEST_FILES[TEST_FILE_FILES], 
+          TEST_FILES[TEST_FILE_EXPORT_COLUMNS]
+        ),
+        "--filename",
+        `"${filename}"`
+      ]);
+      let error = await fetchError(test_cmd);
+      // Test out the message : Error: test.xlsx has an extension : Remove it please
+      expect(error.message).toMatch(filename);
+      expect(error.message).toMatch("extensio");
+    });
+/*
+    it('', async () => {
+
+    });
+*/    
+  });
 });
