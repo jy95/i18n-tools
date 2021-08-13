@@ -1,7 +1,17 @@
 {
+  "name": "i18n-tools",
+  "author": "jy95",
   "version": "0.1.0",
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
+  "description": "CLI to make conversions from / to i18n files simpler",
+  "keywords": [
+    "i18n",
+    "cli",
+    "conversion",
+    "xlsx"
+  ],
   "main": "dist/index.js",
+  "module": "dist/i18n-tools.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist",
@@ -32,9 +42,6 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "i18n-tools",
-  "author": "jy95",
-  "module": "dist/i18n-tools.esm.js",
   "size-limit": [
     {
       "path": "dist/i18n-tools.cjs.production.min.js",
