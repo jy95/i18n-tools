@@ -10,6 +10,7 @@ import some from "lodash/some";
 import has from "lodash/has";
 import get from "lodash/get";
 import uniq from "lodash/uniq";
+import find from "lodash/find";
 import difference from "lodash/difference";
 
 // common fct
@@ -58,15 +59,28 @@ export const builder = function (y : Argv) {
             if (exportColumns.length === 0) {
                 throw new Error("Option exportColumns should have at least one entry");
             }
+            // checking rules
+            let errors_detectors : {
+                message: (prop : string) => string,
+                errorDetected: (prop : string) => boolean
+            }[] = [
+                {
+                    message: (prop : string) => `At least one item in exportColumns array doesn't have "${prop}" property`,
+                    errorDetected: (prop : string) => some(exportColumns, (item) => !has(item, prop) )
+                },
+                {
+                    message: (prop : string) => `At least one item in exportColumns array doesn't have "${prop}" property with a String value`,
+                    errorDetected: (prop : string) => some(exportColumns, (item) => !isString(get(item, prop)) )
+                },
+                {
+                    message: (prop : string) => `At least a duplicated value in exportColumns array in prop "${prop}" was detected`,
+                    errorDetected: (prop : string) => uniq(exportColumns.map( (item : string) => get(item, prop))).length !== exportColumns.length
+                }
+            ];
             ["locale", "label"].forEach(prop => {
-                if (some(exportColumns, (item) => !has(item, prop) )) {
-                    throw new Error(`At least one item in exportColumns array doesn't have "${prop}" property`);
-                }
-                if (some(exportColumns, (item) => !isString(get(item, prop)) )) {
-                    throw new Error(`At least one item in exportColumns array doesn't have "${prop}" property with a String value`);
-                }
-                if (uniq(exportColumns.map( (item : string) => get(item, prop))).length !== exportColumns.length) {
-                    throw new Error(`At least a duplicated value in exportColumns array in prop "${prop}" was detected`);
+                let err = find(errors_detectors, (rule) => rule.errorDetected(prop))
+                if (err) {
+                    throw new Error(err.message(prop));
                 }
             });
             // validated
