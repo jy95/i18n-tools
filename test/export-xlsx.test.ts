@@ -102,7 +102,7 @@ const [
   TEST_FILE_EXPORT_COLUMNS_MISS_PROP,
   TEST_FILE_EXPORT_COLUMNS_WRONG_PROP,
   TEST_FILE_EXPORT_COLUMNS_DUP_VALS,
-  TEST_FILE_EXPORT_COLUMNS_MISS_KEY
+  TEST_FILE_EXPORT_COLUMNS_MISS_KEY,
 ] = test_files_list;
 type test_files_type = typeof test_files_list[number];
 
@@ -149,29 +149,29 @@ const structure: fsify_structure = [
             type: fsify.FILE,
             name: TEST_FILE_SETTINGS1,
             contents: JSON.stringify({
-              "files": path.resolve(
-                  TEMP_FOLDER,
-                  ROOT_TEST_FOLDER,
-                  VALID_TEST_FOLDER,
-                  TEST_FILE_FILES
+              files: path.resolve(
+                TEMP_FOLDER,
+                ROOT_TEST_FOLDER,
+                VALID_TEST_FOLDER,
+                TEST_FILE_FILES
               ),
-              "exportColumns": path.resolve(
+              exportColumns: path.resolve(
                 TEMP_FOLDER,
                 ROOT_TEST_FOLDER,
                 VALID_TEST_FOLDER,
                 TEST_FILE_EXPORT_COLUMNS
               ),
-              "worksheetName": "Settings 1 - Worksheet",
-              "filename": "settings1-output",
-              "outputDir": TEMP_FOLDER,
-            })
+              worksheetName: 'Settings 1 - Worksheet',
+              filename: 'settings1-output',
+              outputDir: TEMP_FOLDER,
+            }),
           },
           // Second format of settings.json (Object/Array instead of Paths)
           {
             type: fsify.FILE,
             name: TEST_FILE_SETTINGS2,
             contents: JSON.stringify({
-              "files": generate_files(TRANSLATIONS_KEYS, locale =>
+              files: generate_files(TRANSLATIONS_KEYS, locale =>
                 path.resolve(
                   TEMP_FOLDER,
                   ROOT_TEST_FOLDER,
@@ -179,12 +179,12 @@ const structure: fsify_structure = [
                   `${locale.toLowerCase()}.json`
                 )
               ),
-              "exportColumns": EXPORT_COLUMNS(TRANSLATIONS_KEYS),
-              "worksheetName": "Settings 2 - Worksheet",
-              "filename": "settings2-output",
-              "outputDir": TEMP_FOLDER,
-            })
-          }
+              exportColumns: EXPORT_COLUMNS(TRANSLATIONS_KEYS),
+              worksheetName: 'Settings 2 - Worksheet',
+              filename: 'settings2-output',
+              outputDir: TEMP_FOLDER,
+            }),
+          },
         ]),
       },
       // In this folder, files used for validations
@@ -290,27 +290,29 @@ function fetchOutput(cmd: string): Promise<string> {
 }
 
 // return the expected error of a given command to the parser
-function fetchError(cmd: string) : Promise<Error> {
+function fetchError(cmd: string): Promise<Error> {
   return new Promise((resolve, reject) => {
     parser.parse(cmd, (err: Error | undefined, _argv: any, _output: string) => {
-      if (err){
+      if (err) {
         resolve(err);
       } else {
         reject("Expected error wasn't thrown");
       }
-    })
+    });
   });
 }
 
 // to concat faster command
-type concat_cmd_type = (args : string[]) => string;
-type prepare_mandatory_args_type = (...args : string[]) => string[];
-const concat_cmd : concat_cmd_type = (args : string[]) => `export to_xlsx ${args.join(' ')}`;
-const prepare_mandatory_args : prepare_mandatory_args_type = (...args : string[]) => ["--files", `"${args[0]}"`, "--exportColumns", `"${args[1]}"`];
+type concat_cmd_type = (args: string[]) => string;
+type prepare_mandatory_args_type = (...args: string[]) => string[];
+const concat_cmd: concat_cmd_type = (args: string[]) =>
+  `export to_xlsx ${args.join(' ')}`;
+const prepare_mandatory_args: prepare_mandatory_args_type = (
+  ...args: string[]
+) => ['--files', `"${args[0]}"`, '--exportColumns', `"${args[1]}"`];
 
 describe('[export_xlsx command]', () => {
   describe('Check command availability', () => {
-
     it('Should list to_xlsx in export command', async () => {
       const output = await fetchOutput('export --help');
       expect(output).toMatch('to_xlsx');
@@ -325,25 +327,144 @@ describe('[export_xlsx command]', () => {
   describe('Validations', () => {
 
     it('Filename with extension should be rejected', async () => {
-      let filename = "test.xlsx";
+      let filename = 'test.xlsx';
       let test_cmd = concat_cmd([
         // mandatory args
         ...prepare_mandatory_args(
-          TEST_FILES[TEST_FILE_FILES], 
+          TEST_FILES[TEST_FILE_FILES],
           TEST_FILES[TEST_FILE_EXPORT_COLUMNS]
         ),
-        "--filename",
-        `"${filename}"`
+        '--filename',
+        `"${filename}"`,
       ]);
       let error = await fetchError(test_cmd);
-      // Test out the message : Error: test.xlsx has an extension : Remove it please
+      // Test out the message : "Error: test.xlsx has an extension : Remove it please"
+      expect(error).toHaveProperty('message');
       expect(error.message).toMatch(filename);
-      expect(error.message).toMatch("extensio");
+      expect(error.message).toMatch('extension');
     });
-/*
+
+    it('Option files - empty object should be rejected', async () => {
+      let test_cmd = concat_cmd([
+        // mandatory args
+        ...prepare_mandatory_args(
+          TEST_FILES[TEST_FILE_EMPTY_OBJECT],
+          TEST_FILES[TEST_FILE_EXPORT_COLUMNS]
+        ),
+      ]);
+      let error = await fetchError(test_cmd);
+      // Test out the message : "Option files should have at least one entry"
+      expect(error).toHaveProperty('message');
+      expect(error.message).toMatch('at least one entry');
+    });
+
+    it('Option files - Duplicated values should be rejected', async () => {
+      let test_cmd = concat_cmd([
+        // mandatory args
+        ...prepare_mandatory_args(
+          TEST_FILES[TEST_FILE_FILES_DUP],
+          TEST_FILES[TEST_FILE_EXPORT_COLUMNS]
+        ),
+      ]);
+      let error = await fetchError(test_cmd);
+      // Test out the message : "At least a duplicated value in files JSON object was detected"
+      expect(error).toHaveProperty('message');
+      expect(error.message).toMatch('duplicated value');
+    });
+
+    it('Option exportColumns - unexpected file should be rejected', async () => {
+      let test_cmd = concat_cmd([
+        // mandatory args
+        ...prepare_mandatory_args(
+          TEST_FILES[TEST_FILE_FILES],
+          TEST_FILES[TEST_FILE_EMPTY_OBJECT]
+        ),
+      ]);
+      // console.log(test_cmd);
+      let error = await fetchError(test_cmd);
+      // Test out the message : "exportColumns is not a JSON Array"
+      expect(error).toHaveProperty('message');
+      expect(error.message).toMatch('not a JSON Array');
+    });
+
+    it('Option exportColumns - empty array should be rejected', async () => {
+      let test_cmd = concat_cmd([
+        // mandatory args
+        ...prepare_mandatory_args(
+          TEST_FILES[TEST_FILE_FILES],
+          TEST_FILES[TEST_FILE_EMPTY_ARRAY]
+        ),
+      ]);
+      let error = await fetchError(test_cmd);
+      // Test out the message : "Option exportColumns should have at least one entry"
+      expect(error).toHaveProperty('message');
+      expect(error.message).toMatch('at least one entry');
+    });
+
+    it('Option exportColumns - missing property in array should be rejected', async () => {
+      let test_cmd = concat_cmd([
+        // mandatory args
+        ...prepare_mandatory_args(
+          TEST_FILES[TEST_FILE_FILES],
+          TEST_FILES[TEST_FILE_EXPORT_COLUMNS_MISS_PROP]
+        ),
+      ]);
+      let error = await fetchError(test_cmd);
+      // Test out the message : `At least one item in exportColumns array doesn't have "${prop}" property`
+      expect(error).toHaveProperty('message');
+      expect(error.message).toMatch("doesn't have");
+      expect(error.message).toMatch('property');
+    });
+    // TODO BUG here
+    
+    it('Option exportColumns - unexpected property type should be rejected', async () => {
+      let test_cmd = concat_cmd([
+        // mandatory args
+        ...prepare_mandatory_args(
+          TEST_FILES[TEST_FILE_FILES],
+          TEST_FILES[TEST_FILE_EXPORT_COLUMNS_WRONG_PROP]
+        ),
+      ]);
+      let error = await fetchError(test_cmd);
+      // Test out the message : `At least one item in exportColumns array doesn't have "${prop}" property with a String value``
+      expect(error).toHaveProperty('message');
+      expect(error.message).toMatch("doesn't have");
+      expect(error.message).toMatch('property with a String value');
+    });
+    
+
+    it('Option exportColumns - duplicated value should be rejected', async () => {
+      let test_cmd = concat_cmd([
+        // mandatory args
+        ...prepare_mandatory_args(
+          TEST_FILES[TEST_FILE_FILES],
+          TEST_FILES[TEST_FILE_EXPORT_COLUMNS_DUP_VALS]
+        ),
+      ]);
+      let error = await fetchError(test_cmd);
+      // Test out the message : `At least a duplicated value in exportColumns array in prop "${prop}" was detected`
+      expect(error).toHaveProperty('message');
+      expect(error.message).toMatch('duplicated value');
+    });
+
+    it('Options files & exportColumns - incompatibles files should be rejected', async () => {
+      let test_cmd = concat_cmd([
+        // mandatory args
+        ...prepare_mandatory_args(
+          TEST_FILES[TEST_FILE_FILES],
+          TEST_FILES[TEST_FILE_EXPORT_COLUMNS_MISS_KEY]
+        ),
+      ]);
+      let error = await fetchError(test_cmd);
+      // Test out the message : 'At least one key differs between files and exportColumns options'
+      expect(error).toHaveProperty('message');
+      expect(error.message).toMatch('between files and exportColumns');
+    });
+    
+    /*
     it('', async () => {
 
     });
-*/    
+    */
   });
 });

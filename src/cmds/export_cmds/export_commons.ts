@@ -85,8 +85,7 @@ export function setUpCommonsOptions(y: Argv) {
                                 .readFile(i18nPath)
                                 .then( potentialJSON => {
                                     try {
-                                        JSON.parse(potentialJSON.toString());
-                                        resolve(undefined);
+                                        resolve(JSON.parse(potentialJSON.toString()));
                                     } catch(_) {
                                         reject(`${i18nPath} isn't a valid JSON`);
                                     }
@@ -95,9 +94,14 @@ export function setUpCommonsOptions(y: Argv) {
                         })
                     ])
                 )
-            )
-            // validated
-            return true;
+            ).then(_ => {
+                // validated
+                return true;
+            })
+            .catch(err => {
+                // failed
+                throw new err;
+            });
         })
 }
 
