@@ -53,23 +53,23 @@
     }
   ],
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^5.0.2",
+    "@size-limit/preset-small-lib": "^5.0.3",
     "@types/jest": "^26.0.24",
     "@types/lodash": "^4.14.172",
-    "@types/node": "^16.4.13",
+    "@types/node": "^16.6.1",
     "@types/yargs": "^17.0.2",
     "fsify": "^4.0.2",
     "husky": "^7.0.1",
-    "size-limit": "^5.0.2",
+    "size-limit": "^5.0.3",
     "tsdx": "^0.14.1",
-    "tslib": "^2.3.0",
+    "tslib": "^2.3.1",
     "typescript": "^4.3.5"
   },
   "dependencies": {
     "exceljs": "^4.2.1",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
-    "yargs": "^17.1.0"
+    "yargs": "^17.1.1"
   },
   "resolutions": {
     "**/@typescript-eslint/eslint-plugin": "^4.29.1",
