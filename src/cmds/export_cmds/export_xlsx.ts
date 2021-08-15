@@ -29,7 +29,17 @@ export const builder = function (y : Argv) {
     return setUpCommonsOptions(y) // set up common options for export
         .option("exportColumns", {
             description: "Path to a JSON array of objects, to control the export columns. Example : [{ \"locale\": \"FR\", \"label\": \"French translation\" }]",
-            demandOption: true
+            demandOption: true,
+            coerce: async (arg) => {
+                if (isString(arg)) {
+                    // arg is a Path, convert it into a JSON
+                    let potentialJSON = await fs.promises.readFile(arg, 'utf-8')
+                    return JSON.parse(potentialJSON);
+                } else {
+                    // arg is an object thanks to settings
+                    return arg;
+                }
+            }
         })
         .option("worksheetName", {
             type: "string",
@@ -40,19 +50,9 @@ export const builder = function (y : Argv) {
             type: "string",
             description: "Path to a JS module to customize the generated xlsx, thanks to exceljs. This js file exports a default function with the following signature : (worksheet : Excel.Worksheet, numberOfRows : number) : "
         })
-        // convert JSON inline, if present
-        .coerce(["exportColumns"], (arg) => {
-            if (isString(arg)) {
-                // arg is a Path, convert it into a JSON
-                return JSON.parse(fs.readFileSync(arg, 'utf-8'));
-            } else {
-                // arg is an object thanks to settings
-                return arg;
-            }
-        })
         // validations for exportColumns option
-        .check( (argv) => {
-            let exportColumns = argv.exportColumns;
+        .check( async (argv) => {
+            let exportColumns = await argv.exportColumns as any;
             if (!isArray(exportColumns)) {
                 throw new Error("exportColumns is not a JSON Array");
             }
@@ -77,23 +77,28 @@ export const builder = function (y : Argv) {
                     errorDetected: (prop : string) => uniq(exportColumns.map( (item : string) => get(item, prop))).length !== exportColumns.length
                 }
             ];
-            ["locale", "label"].forEach(prop => {
-                let err = find(errors_detectors, (rule) => rule.errorDetected(prop))
-                if (err) {
-                    throw new Error(err.message(prop));
+            // run check
+            return ["locale", "label"].reduce( (acc : boolean | string, prop : string) => {
+                if (acc !== true) {
+                    return acc;
+                } else {
+                    let error = find(errors_detectors, (rule) => rule.errorDetected(prop))
+                    return (error) ? error.message(prop) : acc;
                 }
-            });
-            // validated
-            return true;
+            }, true);
         })
         // validation for both exportColumns & files options
-        .check( (argv) => {
-            let keys_exportColumns : string[] = argv.exportColumns.map( (x : object) => get(x, "locale"));
-            let keys_files : string[] = Object.keys(argv.files);
+        .check( async (argv) => {
+            let exportColumns = await argv.exportColumns as any;
+            let files = await argv.files as any;
+
+            let keys_exportColumns : string[] = exportColumns.map( (x : object) => get(x, "locale"));
+            let keys_files : string[] = Object.keys(files);
             if (difference(keys_exportColumns, keys_files).length !== 0) {
                 throw new Error('At least one key differs between files and exportColumns options');
+            } else {
+                return true;
             }
-            return true;
         });
 }
 

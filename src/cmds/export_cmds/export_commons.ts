@@ -22,7 +22,17 @@ export function setUpCommonsOptions(y: Argv) {
     return y
         .option("files", {
             describe: "Path to a JSON object that have as key an unique identifier and value the absolute path to a i18n file, such as : { \"FR\": \"/somePath/fr.json\", \"NL\": \"/somePath/nl.json\"}",
-            demandOption: true
+            demandOption: true,
+            coerce: async (arg) => {
+                if (isString(arg)) {
+                    // arg is a Path, convert it into a JSON
+                    let potentialJSON = await fs.promises.readFile(arg, 'utf-8')
+                    return JSON.parse(potentialJSON);
+                } else {
+                    // arg is an object thanks to settings
+                    return arg;
+                }
+            }
         })
         .option("filename", {
             type: "string",
@@ -33,7 +43,9 @@ export function setUpCommonsOptions(y: Argv) {
             type: "string",
             alias: "od",
             describe: "Output folder where to store the output file",
-            default: process.cwd()
+            default: process.cwd(),
+            // coerce path provided by outputDir
+            coerce: (arg) => path.resolve(arg)
         })
         // default value for filename
         .default("filename", function() {
@@ -44,29 +56,18 @@ export function setUpCommonsOptions(y: Argv) {
         .config('settings', function (configPath) {
             return JSON.parse(fs.readFileSync(configPath, 'utf-8'))
         })
-        // coerce path provided by outputDir
-        .coerce(["outputDir"], path.resolve)
-        // convert JSON inline, if present
-        .coerce(["files"], (arg) => {
-            if (isString(arg)) {
-                // arg is a Path, convert it into a JSON
-                return JSON.parse(fs.readFileSync(arg, 'utf-8'));
-            } else {
-                // arg is an object thanks to settings
-                return arg;
-            }
-        })
         // validation for filename option
         .check( async (argv) => {
             let filename : unknown = argv["filename"];
             if (path.extname(filename as string).length !== 0) {
                 throw new Error(`${filename} has an extension : Remove it please`);
+            } else {
+                return true;
             }
-            return true;
         })
         // validation(s) for files option
         .check( async (argv) => {
-            let files = argv.files as Object;
+            let files = await argv.files;
             let entries : [String, any][] = Object.entries(files);
             if (entries.length === 0) {
                 throw new Error("Option files should have at least one entry");
@@ -75,25 +76,19 @@ export function setUpCommonsOptions(y: Argv) {
                 throw new Error(`At least a duplicated value in files JSON object was detected`);
             }
             await Promise.all(
-                entries.map(
-                    ([_, i18nPath]) => Promise.all([
-                        // check if file is a valid file path
-                        fs.promises.access(i18nPath),
+                entries.map( async ([_, i18nPath]) => {
+                    // check if file is a valid file path
+                    await fs.promises.access(i18nPath);
+                    // check if the file is readable
+                    let potentialJSON = await fs.promises.readFile(i18nPath);
+                    try {
                         // check if the file is a JSON
-                        new Promise((resolve, reject) => {
-                            fs.promises
-                                .readFile(i18nPath)
-                                .then( potentialJSON => {
-                                    try {
-                                        resolve(JSON.parse(potentialJSON.toString()));
-                                    } catch(_) {
-                                        reject(`${i18nPath} isn't a valid JSON`);
-                                    }
-                                })
-                                .catch(err => reject(err))
-                        })
-                    ])
-                )
+                        JSON.parse(potentialJSON.toString());
+                        return Promise.resolve(undefined);
+                    } catch (error) {
+                        return Promise.reject(`${i18nPath} isn't a valid JSON`);
+                    }
+                })
             ).then(_ => {
                 // validated
                 return true;
