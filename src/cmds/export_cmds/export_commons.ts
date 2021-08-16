@@ -3,6 +3,7 @@ import path from "path";
 
 // lodash methodes
 import isArray from "lodash/isArray";
+import isPlainObject from "lodash/isPlainObject";
 import isString from "lodash/isString";
 import groupBy from "lodash/groupBy";
 import uniq from "lodash/uniq";
@@ -17,22 +18,15 @@ type I18N_Result = {
     "locale": string
 }[]
 
+// middelware
+import { parsePathToJSON } from "../../middlewares/middlewares";
+
 // configure export commands with the common options in the builder step
 export function setUpCommonsOptions(y: Argv) {
     return y
         .option("files", {
             describe: "Path to a JSON object that have as key an unique identifier and value the absolute path to a i18n file, such as : { \"FR\": \"/somePath/fr.json\", \"NL\": \"/somePath/nl.json\"}",
-            demandOption: true,
-            coerce: async (arg) => {
-                if (isString(arg)) {
-                    // arg is a Path, convert it into a JSON
-                    let potentialJSON = await fs.promises.readFile(arg, 'utf-8')
-                    return JSON.parse(potentialJSON);
-                } else {
-                    // arg is an object thanks to settings
-                    return arg;
-                }
-            }
+            demandOption: true
         })
         .option("filename", {
             type: "string",
@@ -43,9 +37,7 @@ export function setUpCommonsOptions(y: Argv) {
             type: "string",
             alias: "od",
             describe: "Output folder where to store the output file",
-            default: process.cwd(),
-            // coerce path provided by outputDir
-            coerce: (arg) => path.resolve(arg)
+            default: process.cwd()
         })
         // default value for filename
         .default("filename", function() {
@@ -56,48 +48,65 @@ export function setUpCommonsOptions(y: Argv) {
         .config('settings', function (configPath) {
             return JSON.parse(fs.readFileSync(configPath, 'utf-8'))
         })
+        // coerce files into Object
+        .middleware(parsePathToJSON("files"), true)
+        // coerce path provided by outputDir
+        .coerce(["outputDir"], path.resolve)
         // validation for filename option
         .check( async (argv) => {
             let filename : unknown = argv["filename"];
             if (path.extname(filename as string).length !== 0) {
-                throw new Error(`${filename} has an extension : Remove it please`);
+                return new Error(`${filename} has an extension : Remove it please`);
             } else {
                 return true;
             }
         })
         // validation(s) for files option
         .check( async (argv) => {
-            let files = await argv.files;
+            let files = await argv.files as any;
+            if (!isPlainObject(files)) {
+                return new Error("Option files is not a JSON Object");
+            }
             let entries : [String, any][] = Object.entries(files);
             if (entries.length === 0) {
-                throw new Error("Option files should have at least one entry");
+                return new Error("Option files should have at least one entry");
             }
             if (uniq(Object.values(files)).length !== entries.length) {
-                throw new Error(`At least a duplicated value in files JSON object was detected`);
+                return new Error(`At least a duplicated value in files JSON object was detected`);
             }
             await Promise.all(
-                entries.map( async ([_, i18nPath]) => {
-                    // check if file is a valid file path
-                    await fs.promises.access(i18nPath);
-                    // check if the file is readable
-                    let potentialJSON = await fs.promises.readFile(i18nPath);
-                    try {
-                        // check if the file is a JSON
-                        JSON.parse(potentialJSON.toString());
-                        return Promise.resolve(undefined);
-                    } catch (error) {
-                        return Promise.reject(`${i18nPath} isn't a valid JSON`);
-                    }
-                })
+                entries.map( 
+                    entry => verify_files_entry(entry as [string, any])
+                )
             ).then(_ => {
                 // validated
                 return true;
             })
             .catch(err => {
                 // failed
-                throw new err;
+                return err;
             });
+            return true;
         })
+}
+
+// verify if an entry from files option meet requirements
+async function verify_files_entry([_, i18nPath] : [string, any]) : Promise<boolean | Error> {
+    let potentialJSON;
+    // check if file is readable
+    try {
+        await fs.promises.access(i18nPath);
+        potentialJSON = await fs.promises.readFile(i18nPath);
+    } catch (error) {
+        return Promise.reject(`${i18nPath} cannot be read : check permissions`);
+    }
+    // check if the file is a JSON
+    try {
+        JSON.parse(potentialJSON.toString());
+        return Promise.resolve(true);
+    } catch (error) {
+        return Promise.reject(`${i18nPath} isn't a valid JSON`);
+    }
 }
 
 // turns n i18n file(s) into a merged version
