@@ -71,7 +71,7 @@ export const builder = function (y : Argv) {
             ];
             // run check
             return ["locale", "label"].reduce( (acc : boolean | Error, prop : string) => {
-                if (acc !== true) {
+                if (acc instanceof Error) {
                     return acc;
                 } else {
                     let error = find(errors_detectors, (rule) => rule.errorDetected(prop))

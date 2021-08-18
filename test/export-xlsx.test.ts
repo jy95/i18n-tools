@@ -290,12 +290,12 @@ function fetchOutput(cmd: string): Promise<string> {
 }
 
 // makes assertions on errors
-async function expectError(cmd: string, ...messages : string[]) {
+async function expectError(cmd: string, ...messages: string[]) {
   // error to be retrieve
-  let error : any = undefined;
+  let error: any = undefined;
   // add fail() handler
   await parser
-    .fail( (_, e) => {
+    .fail((_, e) => {
       error = e;
     })
     .parseAsync(cmd);
@@ -304,7 +304,7 @@ async function expectError(cmd: string, ...messages : string[]) {
   // check if it is an error Object
   expect(error).toHaveProperty('message');
   // check if error message contains expected element
-  for(let expectedStr of messages) {
+  for (let expectedStr of messages) {
     expect((error as Error).message).toMatch(expectedStr);
   }
 }
@@ -332,119 +332,84 @@ describe('[export_xlsx command]', () => {
   });
 
   describe('Validations', () => {
-
-    it('Filename with extension should be rejected', async () => {
-      let filename = 'test.xlsx';
+    test.each([
+      [
+        // Test out the message : "Error: test.xlsx has an extension : Remove it please"
+        'Filename with extension should be rejected',
+        [
+          TEST_FILE_FILES,
+          TEST_FILE_EXPORT_COLUMNS,
+          '--filename',
+          `"test.xlsx"`,
+        ],
+        'test.xlsx',
+        'extension',
+      ],
+      [
+        // Test out the message : "Option files should have at least one entry"
+        'Option files - empty object should be rejected',
+        [TEST_FILE_EMPTY_OBJECT, TEST_FILE_EXPORT_COLUMNS],
+        'at least one entry',
+      ],
+      [
+        // Test out the message : "At least a duplicated value in files JSON object was detected"
+        'Option files - Duplicated values should be rejected',
+        [TEST_FILE_FILES_DUP, TEST_FILE_EXPORT_COLUMNS],
+        'duplicated value',
+      ],
+      [
+        // Test out the message : "exportColumns is not a JSON Array"
+        'Option exportColumns - unexpected file should be rejected',
+        [TEST_FILE_FILES, TEST_FILE_EMPTY_OBJECT],
+        'not a JSON Array',
+      ],
+      [
+        // Test out the message : "Option exportColumns should have at least one entry"
+        'Option exportColumns - empty array should be rejected',
+        [TEST_FILE_FILES, TEST_FILE_EMPTY_ARRAY],
+        'at least one entry',
+      ],
+      [
+        // Test out the message : `At least one item in exportColumns array doesn't have "${prop}" property`
+        'Option exportColumns - missing property in array should be rejected',
+        [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS_MISS_PROP],
+        "doesn't have",
+        'property',
+      ],
+      [
+        // Test out the message : `At least one item in exportColumns array doesn't have "${prop}" property with a String value`
+        'Option exportColumns - unexpected property type should be rejected',
+        [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS_WRONG_PROP],
+        "doesn't have",
+        'property with a String value',
+      ],
+      [
+        // Test out the message : `At least a duplicated value in exportColumns array in prop "${prop}" was detected`
+        'Option exportColumns - duplicated value should be rejected',
+        [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS_DUP_VALS],
+        'duplicated value',
+      ],
+      [
+        // Test out the message : 'At least one key differs between files and exportColumns options'
+        'Options files & exportColumns - incompatibles files should be rejected',
+        [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS_MISS_KEY],
+        'between files and exportColumns',
+      ],
+    ])('%s', async (_title: string, args: string[], ...messages: string[]) => {
+      let [files, exportColumns, ...otherArgs] = args;
       let test_cmd = concat_cmd([
         // mandatory args
         ...prepare_mandatory_args(
-          TEST_FILES[TEST_FILE_FILES],
-          TEST_FILES[TEST_FILE_EXPORT_COLUMNS]
+          TEST_FILES[files as test_files_type],
+          TEST_FILES[exportColumns as test_files_type]
         ),
-        '--filename',
-        `"${filename}"`,
+        // optional args
+        ...otherArgs,
       ]);
-      // Test out the message : "Error: test.xlsx has an extension : Remove it please"
-      await expectError(test_cmd, filename, 'extension');
+      // Test out if error message is thrown
+      await expectError(test_cmd, ...messages);
     });
 
-    it('Option files - empty object should be rejected', async () => {
-      let test_cmd = concat_cmd([
-        // mandatory args
-        ...prepare_mandatory_args(
-          TEST_FILES[TEST_FILE_EMPTY_OBJECT],
-          TEST_FILES[TEST_FILE_EXPORT_COLUMNS]
-        ),
-      ]);
-      // Test out the message : "Option files should have at least one entry"
-      await expectError(test_cmd, 'at least one entry');
-    });
-
-    it('Option files - Duplicated values should be rejected', async () => {
-      let test_cmd = concat_cmd([
-        // mandatory args
-        ...prepare_mandatory_args(
-          TEST_FILES[TEST_FILE_FILES_DUP],
-          TEST_FILES[TEST_FILE_EXPORT_COLUMNS]
-        ),
-      ]);
-      // Test out the message : "At least a duplicated value in files JSON object was detected"
-      await expectError(test_cmd, 'duplicated value');
-    });
-
-    it('Option exportColumns - unexpected file should be rejected', async () => {
-      let test_cmd = concat_cmd([
-        // mandatory args
-        ...prepare_mandatory_args(
-          TEST_FILES[TEST_FILE_FILES],
-          TEST_FILES[TEST_FILE_EMPTY_OBJECT]
-        ),
-      ]);
-      // Test out the message : "exportColumns is not a JSON Array"
-      await expectError(test_cmd, 'not a JSON Array');
-    });
-
-    it('Option exportColumns - empty array should be rejected', async () => {
-      let test_cmd = concat_cmd([
-        // mandatory args
-        ...prepare_mandatory_args(
-          TEST_FILES[TEST_FILE_FILES],
-          TEST_FILES[TEST_FILE_EMPTY_ARRAY]
-        ),
-      ]);
-      // Test out the message : "Option exportColumns should have at least one entry"
-      await expectError(test_cmd, 'at least one entry');
-    });
-
-    it('Option exportColumns - missing property in array should be rejected', async () => {
-      let test_cmd = concat_cmd([
-        // mandatory args
-        ...prepare_mandatory_args(
-          TEST_FILES[TEST_FILE_FILES],
-          TEST_FILES[TEST_FILE_EXPORT_COLUMNS_MISS_PROP]
-        ),
-      ]);
-      // Test out the message : `At least one item in exportColumns array doesn't have "${prop}" property`
-      await expectError(test_cmd, "doesn't have", 'property');
-    });
-    
-    it('Option exportColumns - unexpected property type should be rejected', async () => {
-      let test_cmd = concat_cmd([
-        // mandatory args
-        ...prepare_mandatory_args(
-          TEST_FILES[TEST_FILE_FILES],
-          TEST_FILES[TEST_FILE_EXPORT_COLUMNS_WRONG_PROP]
-        ),
-      ]);
-      // Test out the message : `At least one item in exportColumns array doesn't have "${prop}" property with a String value`
-      await expectError(test_cmd, "doesn't have", 'property with a String value');
-    });
-    
-
-    it('Option exportColumns - duplicated value should be rejected', async () => {
-      let test_cmd = concat_cmd([
-        // mandatory args
-        ...prepare_mandatory_args(
-          TEST_FILES[TEST_FILE_FILES],
-          TEST_FILES[TEST_FILE_EXPORT_COLUMNS_DUP_VALS]
-        ),
-      ]);
-      // Test out the message : `At least a duplicated value in exportColumns array in prop "${prop}" was detected`
-      await expectError(test_cmd, 'duplicated value');
-    });
-
-    it('Options files & exportColumns - incompatibles files should be rejected', async () => {
-      let test_cmd = concat_cmd([
-        // mandatory args
-        ...prepare_mandatory_args(
-          TEST_FILES[TEST_FILE_FILES],
-          TEST_FILES[TEST_FILE_EXPORT_COLUMNS_MISS_KEY]
-        ),
-      ]);
-      // Test out the message : 'At least one key differs between files and exportColumns options'
-      await expectError(test_cmd, 'between files and exportColumns');
-    });
-    
     /*
     it('', async () => {
 
