@@ -78,7 +78,7 @@ type fsify_structure = {
 // to access easier the paths of test file paths
 const test_files_list = [
   // correct files
-  'exportColumns.json',
+  'columns.json',
   'files.json',
   'settings1.json',
   'settings2.json',
@@ -86,10 +86,10 @@ const test_files_list = [
   'emptyObject.json',
   'emptyArray.json',
   'files-duplicatedValues.json',
-  'exportColumns-missingLabelProp.json',
-  'exportColumns-wrongPropValue.json',
-  'exportColumns-duplicatedValues.json',
-  'exportColumns-missingKey.json',
+  'columns-missingLabelProp.json',
+  'columns-wrongPropValue.json',
+  'columns-duplicatedValues.json',
+  'columns-missingKey.json',
 ] as const;
 const [
   TEST_FILE_EXPORT_COLUMNS,
@@ -123,7 +123,7 @@ const structure: fsify_structure = [
             name: `${locale.toLowerCase()}.json`,
             contents: JSON.stringify(generate_i18n(locale)),
           })),
-          // the exportColumns.json
+          // the columns.json
           {
             type: fsify.FILE,
             name: TEST_FILE_EXPORT_COLUMNS,
@@ -155,7 +155,7 @@ const structure: fsify_structure = [
                 VALID_TEST_FOLDER,
                 TEST_FILE_FILES
               ),
-              exportColumns: path.resolve(
+              columns: path.resolve(
                 TEMP_FOLDER,
                 ROOT_TEST_FOLDER,
                 VALID_TEST_FOLDER,
@@ -179,7 +179,7 @@ const structure: fsify_structure = [
                   `${locale.toLowerCase()}.json`
                 )
               ),
-              exportColumns: EXPORT_COLUMNS(TRANSLATIONS_KEYS),
+              columns: EXPORT_COLUMNS(TRANSLATIONS_KEYS),
               worksheetName: 'Settings 2 - Worksheet',
               filename: 'settings2-output',
               outputDir: TEMP_FOLDER,
@@ -219,19 +219,19 @@ const structure: fsify_structure = [
               )
             ),
           },
-          // exportColumns.json with missing property (label)
+          // columns.json with missing property (label)
           {
             type: fsify.FILE,
             name: TEST_FILE_EXPORT_COLUMNS_MISS_PROP,
             contents: JSON.stringify([{ locale: 'FR' }]),
           },
-          // exportColumns.json with wrong property type
+          // columns.json with wrong property type
           {
             type: fsify.FILE,
             name: TEST_FILE_EXPORT_COLUMNS_WRONG_PROP,
             contents: JSON.stringify([{ locale: 'FR', label: 42 }]),
           },
-          // exportColumns.json with duplicated value
+          // columns.json with duplicated value
           {
             type: fsify.FILE,
             name: TEST_FILE_EXPORT_COLUMNS_DUP_VALS,
@@ -240,7 +240,7 @@ const structure: fsify_structure = [
               { locale: 'NL', label: 'Hello World' },
             ]),
           },
-          // exportColumns.json with missing key for files.json
+          // columns.json with missing key for files.json
           {
             type: fsify.FILE,
             name: TEST_FILE_EXPORT_COLUMNS_MISS_KEY,
@@ -272,9 +272,7 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
 
 beforeAll(() => {
   // write temporary files
-  //console.log(structure);
   return fsify(structure);
-  //return Promise.resolve();
 });
 
 // Build the parser used for that command
@@ -316,7 +314,7 @@ const concat_cmd: concat_cmd_type = (args: string[]) =>
   `export to_xlsx ${args.join(' ')}`;
 const prepare_mandatory_args: prepare_mandatory_args_type = (
   ...args: string[]
-) => ['--files', `"${args[0]}"`, '--exportColumns', `"${args[1]}"`];
+) => ['--files', `"${args[0]}"`, '--columns', `"${args[1]}"`];
 
 describe('[export_xlsx command]', () => {
   describe('Check command availability', () => {
@@ -332,6 +330,19 @@ describe('[export_xlsx command]', () => {
   });
 
   describe('Validations', () => {
+    // mock console.log
+    let consoleLog: any;
+    beforeAll(() => {
+      consoleLog = jest.spyOn(console, 'log').mockImplementation();
+    });
+
+    // restore console.log
+    afterAll(() => {
+      if (consoleLog !== undefined) {
+        consoleLog.mockRestore();
+      }
+    });
+
     test.each([
       [
         // Test out the message : "Error: test.xlsx has an extension : Remove it please"
@@ -358,62 +369,105 @@ describe('[export_xlsx command]', () => {
         'duplicated value',
       ],
       [
-        // Test out the message : "exportColumns is not a JSON Array"
-        'Option exportColumns - unexpected file should be rejected',
+        // Test out the message : "columns is not a JSON Array"
+        'Option columns - unexpected file should be rejected',
         [TEST_FILE_FILES, TEST_FILE_EMPTY_OBJECT],
         'not a JSON Array',
       ],
       [
-        // Test out the message : "Option exportColumns should have at least one entry"
-        'Option exportColumns - empty array should be rejected',
+        // Test out the message : "Option columns should have at least one entry"
+        'Option columns - empty array should be rejected',
         [TEST_FILE_FILES, TEST_FILE_EMPTY_ARRAY],
         'at least one entry',
       ],
       [
-        // Test out the message : `At least one item in exportColumns array doesn't have "${prop}" property`
-        'Option exportColumns - missing property in array should be rejected',
+        // Test out the message : `At least one item in columns array doesn't have "${prop}" property`
+        'Option columns - missing property in array should be rejected',
         [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS_MISS_PROP],
         "doesn't have",
         'property',
       ],
       [
-        // Test out the message : `At least one item in exportColumns array doesn't have "${prop}" property with a String value`
-        'Option exportColumns - unexpected property type should be rejected',
+        // Test out the message : `At least one item in columns array doesn't have "${prop}" property with a String value`
+        'Option columns - unexpected property type should be rejected',
         [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS_WRONG_PROP],
         "doesn't have",
         'property with a String value',
       ],
       [
-        // Test out the message : `At least a duplicated value in exportColumns array in prop "${prop}" was detected`
-        'Option exportColumns - duplicated value should be rejected',
+        // Test out the message : `At least a duplicated value in columns array in prop "${prop}" was detected`
+        'Option columns - duplicated value should be rejected',
         [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS_DUP_VALS],
         'duplicated value',
       ],
       [
-        // Test out the message : 'At least one key differs between files and exportColumns options'
-        'Options files & exportColumns - incompatibles files should be rejected',
+        // Test out the message : 'At least one key differs between files and columns options'
+        'Options files & columns - incompatibles files should be rejected',
         [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS_MISS_KEY],
-        'between files and exportColumns',
+        'between files and columns',
       ],
     ])('%s', async (_title: string, args: string[], ...messages: string[]) => {
-      let [files, exportColumns, ...otherArgs] = args;
+      let [files, columns, ...otherArgs] = args;
       let test_cmd = concat_cmd([
         // mandatory args
         ...prepare_mandatory_args(
           TEST_FILES[files as test_files_type],
-          TEST_FILES[exportColumns as test_files_type]
+          TEST_FILES[columns as test_files_type]
         ),
         // optional args
         ...otherArgs,
       ]);
+      //console.warn(test_cmd);
       // Test out if error message is thrown
       await expectError(test_cmd, ...messages);
     });
-
-    /*
-    it('', async () => {
-
-    });
-    */
   });
+
+  /*
+  describe('E2E successful scenarios', () => {
+    // mock console.log
+    let consoleLog: any;
+    beforeAll(() => {
+      consoleLog = jest.spyOn(console, 'log').mockImplementation();
+    });
+
+    // clear mock after each call
+    afterEach(() => {
+      consoleLog.mockClear();
+    });
+
+    // reenable console.log
+    afterAll(() => {
+      // restore console.log
+      if (consoleLog !== undefined) {
+        consoleLog.mockRestore();
+      }
+    });
+
+    test.each([
+      ['(Paths)', TEST_FILE_SETTINGS1],
+      ['(Object/Array instead of Paths)', TEST_FILE_SETTINGS2],
+    ])(
+      'settings.json %s',
+      async (_title: string, settingsFile: test_files_type) => {
+        let test_cmd = concat_cmd([
+          '--settings',
+          `"${TEST_FILES[settingsFile]}"`,
+        ]);
+        // 'settings1-output'
+        let expectedFile = path.resolve(
+          TEMP_FOLDER,
+          `${settingsFile.substring(0, settingsFile.length - 5)}-output.xlsx`
+        );
+        // run command
+        await parser.parseAsync(test_cmd);
+
+        expect(consoleLog).toHaveBeenCalledWith('Preparing XLSX file ...');
+        expect(consoleLog).toHaveBeenCalledWith(
+          `${expectedFile} successfully written`
+        );
+      }
+    );
+  });
+  */
 });

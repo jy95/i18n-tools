@@ -11,7 +11,7 @@ export interface CommonExportArguments extends Argv {
 }
 // Yargs export arguments for TO_XLSX command
 export interface XLSXExportArguments extends CommonExportArguments {
-  exportColumns: {
+  columns: {
     locale: string;
     label: string;
   }[];
