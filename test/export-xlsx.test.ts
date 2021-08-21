@@ -316,6 +316,76 @@ const prepare_mandatory_args: prepare_mandatory_args_type = (
   ...args: string[]
 ) => ['--files', `"${args[0]}"`, '--columns', `"${args[1]}"`];
 
+// test scenarios for validations
+const VALIDATIONS_SCENARIOS : [
+  string,
+  string[],
+  ...string[]
+][] = [
+  [
+    // Test out the message : "Error: test.xlsx has an extension : Remove it please"
+    'Filename with extension should be rejected',
+    [
+      TEST_FILE_FILES,
+      TEST_FILE_EXPORT_COLUMNS,
+      '--filename',
+      `"test.xlsx"`,
+    ],
+    'test.xlsx',
+    'extension',
+  ],
+  [
+    // Test out the message : "Option files should have at least one entry"
+    'Option files - empty object should be rejected',
+    [TEST_FILE_EMPTY_OBJECT, TEST_FILE_EXPORT_COLUMNS],
+    'at least one entry',
+  ],
+  [
+    // Test out the message : "At least a duplicated value in files JSON object was detected"
+    'Option files - Duplicated values should be rejected',
+    [TEST_FILE_FILES_DUP, TEST_FILE_EXPORT_COLUMNS],
+    'duplicated value',
+  ],
+  [
+    // Test out the message : "columns is not a JSON Array"
+    'Option columns - unexpected file should be rejected',
+    [TEST_FILE_FILES, TEST_FILE_EMPTY_OBJECT],
+    'not a JSON Array',
+  ],
+  [
+    // Test out the message : "Option columns should have at least one entry"
+    'Option columns - empty array should be rejected',
+    [TEST_FILE_FILES, TEST_FILE_EMPTY_ARRAY],
+    'at least one entry',
+  ],
+  [
+    // Test out the message : `At least one item in columns array doesn't have "${prop}" property`
+    'Option columns - missing property in array should be rejected',
+    [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS_MISS_PROP],
+    "doesn't have",
+    'property',
+  ],
+  [
+    // Test out the message : `At least one item in columns array doesn't have "${prop}" property with a String value`
+    'Option columns - unexpected property type should be rejected',
+    [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS_WRONG_PROP],
+    "doesn't have",
+    'property with a String value',
+  ],
+  [
+    // Test out the message : `At least a duplicated value in columns array in prop "${prop}" was detected`
+    'Option columns - duplicated value should be rejected',
+    [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS_DUP_VALS],
+    'duplicated value',
+  ],
+  [
+    // Test out the message : 'At least one key differs between files and columns options'
+    'Options files & columns - incompatibles files should be rejected',
+    [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS_MISS_KEY],
+    'between files and columns',
+  ],
+];
+
 describe('[export_xlsx command]', () => {
   describe('Check command availability', () => {
     it('Should list to_xlsx in export command', async () => {
@@ -343,70 +413,7 @@ describe('[export_xlsx command]', () => {
       }
     });
 
-    test.each([
-      [
-        // Test out the message : "Error: test.xlsx has an extension : Remove it please"
-        'Filename with extension should be rejected',
-        [
-          TEST_FILE_FILES,
-          TEST_FILE_EXPORT_COLUMNS,
-          '--filename',
-          `"test.xlsx"`,
-        ],
-        'test.xlsx',
-        'extension',
-      ],
-      [
-        // Test out the message : "Option files should have at least one entry"
-        'Option files - empty object should be rejected',
-        [TEST_FILE_EMPTY_OBJECT, TEST_FILE_EXPORT_COLUMNS],
-        'at least one entry',
-      ],
-      [
-        // Test out the message : "At least a duplicated value in files JSON object was detected"
-        'Option files - Duplicated values should be rejected',
-        [TEST_FILE_FILES_DUP, TEST_FILE_EXPORT_COLUMNS],
-        'duplicated value',
-      ],
-      [
-        // Test out the message : "columns is not a JSON Array"
-        'Option columns - unexpected file should be rejected',
-        [TEST_FILE_FILES, TEST_FILE_EMPTY_OBJECT],
-        'not a JSON Array',
-      ],
-      [
-        // Test out the message : "Option columns should have at least one entry"
-        'Option columns - empty array should be rejected',
-        [TEST_FILE_FILES, TEST_FILE_EMPTY_ARRAY],
-        'at least one entry',
-      ],
-      [
-        // Test out the message : `At least one item in columns array doesn't have "${prop}" property`
-        'Option columns - missing property in array should be rejected',
-        [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS_MISS_PROP],
-        "doesn't have",
-        'property',
-      ],
-      [
-        // Test out the message : `At least one item in columns array doesn't have "${prop}" property with a String value`
-        'Option columns - unexpected property type should be rejected',
-        [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS_WRONG_PROP],
-        "doesn't have",
-        'property with a String value',
-      ],
-      [
-        // Test out the message : `At least a duplicated value in columns array in prop "${prop}" was detected`
-        'Option columns - duplicated value should be rejected',
-        [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS_DUP_VALS],
-        'duplicated value',
-      ],
-      [
-        // Test out the message : 'At least one key differs between files and columns options'
-        'Options files & columns - incompatibles files should be rejected',
-        [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS_MISS_KEY],
-        'between files and columns',
-      ],
-    ])('%s', async (_title: string, args: string[], ...messages: string[]) => {
+    test.each(VALIDATIONS_SCENARIOS)('%s', async (_title: string, args: string[], ...messages: string[]) => {
       let [files, columns, ...otherArgs] = args;
       let test_cmd = concat_cmd([
         // mandatory args

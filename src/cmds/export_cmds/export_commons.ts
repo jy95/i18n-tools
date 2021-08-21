@@ -2,9 +2,11 @@ import fs, { PathLike } from "fs";
 import path from "path";
 
 // lodash methodes
-import isArray from "lodash/isArray";
-import isString from "lodash/isString";
+import isObject from "lodash/isObject";
 import groupBy from "lodash/groupBy";
+import flattenDeep from "lodash/flattenDeep";
+import reduce from "lodash/reduce";
+import get from "lodash/get";
 
 // For typings
 import type { Argv } from "yargs";
@@ -82,40 +84,46 @@ function readFile([locale, file_path] : [string, PathLike]) : Promise<I18N_Resul
     return new Promise((resolve, reject) => {
         fs.promises.readFile(file_path, 'utf8')
             .then(jsonData => Promise.resolve(JSON.parse(jsonData)))
-            .then(json => i18n_to_result_format(json, "", locale))
+            .then(json => i18n_to_result_format(json, locale))
             .then(result => resolve(result))
             .catch(err => reject(err));        
     });
 }
 
-// turning a i18n into a useable object for later group by
-const flat = (arr: any[]) => [].concat(...arr);
+// Get all leaves paths of a object
+// Typescript code inspired by https://stackoverflow.com/a/55381003/6149867
+function getLeavesPathes(dataObj : any) : string[] {
+    const reducer = (aggregator : string[], val : any, key : string) => {
+        let paths = [key];
+        if(isObject(val)) {
+            paths = reduce(val, reducer, []);
+            paths = paths.map(path => key + '.' + path);
+        }
+        aggregator.push(...paths);
+        return aggregator;
+    };
+    const arrayIndexRegEx = /\.(\d+)/gi;
+    let paths = reduce(dataObj, reducer, []);
+    paths = paths.map(path => path.replace(arrayIndexRegEx, '[$1]'));
 
-// 
-function i18n_to_result_format(obj : I18N_Object, prefix = "", locale = "") : I18N_Result {
-    return flat(
-        Object
-            .keys(obj)
-            .map(key => {
-                let val = obj[key];
-                let technicalKey = `${prefix}.${key}`
-                // terminal condition first
-                if (isString(val)) {
-                    return {"technical_key": technicalKey, "label": val, "locale": locale}
-                } else if (isArray(val)) {
-                    // hardly ever saw that in a i18n file but better prevent than care
-                    return val.map( (item, index) => i18n_to_result_format(item, `${technicalKey}[${index}]`,locale)) 
-                } else {
-                    return i18n_to_result_format(val, technicalKey, locale);
-                }
-        })
-    );
+    return paths;
+}
+
+// turns i18n object to usable format
+function i18n_to_result_format(obj : I18N_Object, locale: string) : I18N_Result {
+    let leafPaths = getLeavesPathes(obj);
+    return leafPaths.map(leafPath => ({
+        locale: locale,
+        technical_key: leafPath,
+        label: get(obj, leafPath) as string
+    }));
 }
 
 // merge array of {"technical_key": "...", "label": "...", "locale": "..."}
 // into {"technical_key": ..., "labels": { "FR": ..., "NL": ..., "DE": ... }}
 function mergeResults(results : I18N_Result[]) : Promise<I18N_Merged_Data> {
-    let groupBy_technical_key = groupBy(flat(results), 'technical_key');
+    const flattenResults = flattenDeep(results);
+    let groupBy_technical_key = groupBy(flattenResults, 'technical_key');
 
     let final_result = Object
         .keys(groupBy_technical_key)
@@ -124,7 +132,7 @@ function mergeResults(results : I18N_Result[]) : Promise<I18N_Merged_Data> {
             return {
                 "technical_key": key, 
                 "labels": groupBy_technical_key[key]
-                    .reduce( (prev, curr) => {
+                    .reduce( (prev : any, curr : any) => {
                         prev[curr["locale"]] = curr["label"];
                         return prev;
                     }, {})
