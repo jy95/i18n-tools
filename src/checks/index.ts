@@ -12,8 +12,8 @@ export const resolveChecksInOrder = (checks : PromiseCheck[]) => {
     return async (argv : any) => {
         for(let check of checks) {
             try {
+                //console.log(`Check ${check.name}`); // to make easier debugging in the future
                 let result = await check(argv);
-                //console.log(`Check ${check.name} : ${result}`); // to make easier debugging in the future
                 if (result !== true) {
                     return result;
                 }

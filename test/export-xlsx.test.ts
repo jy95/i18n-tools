@@ -261,7 +261,7 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
     let arr = [
       TEMP_FOLDER,
       ROOT_TEST_FOLDER,
-      idx < 2 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
+      idx < 4 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
       curr,
     ];
     acc[curr] = path.resolve(...arr);
@@ -423,7 +423,7 @@ describe('[export_xlsx command]', () => {
     });
   });
 
-  /*
+  
   describe('E2E successful scenarios', () => {
     // mock console.log
     let consoleLog: any;
@@ -460,6 +460,7 @@ describe('[export_xlsx command]', () => {
           `${settingsFile.substring(0, settingsFile.length - 5)}-output.xlsx`
         );
         // run command
+        //console.warn(test_cmd);
         await parser.parseAsync(test_cmd);
 
         expect(consoleLog).toHaveBeenCalledWith('Preparing XLSX file ...');
@@ -469,5 +470,5 @@ describe('[export_xlsx command]', () => {
       }
     );
   });
-  */
+  
 });
