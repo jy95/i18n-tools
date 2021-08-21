@@ -44,8 +44,11 @@ const locale_label = (locale: string) => `${KEYS_LABEL[locale]} translation`;
 const generate_i18n = (locale: string) => ({
   commons: {
     myNestedKey: `Hello world ${locale}`,
+    myNestedArray: ['1', '2', '3'].map(item => `${item} ${locale}`)
   },
   array: ['1', '2', '3'].map(item => `${item} ${locale}`),
+  simpleKey: `[${locale}] not setted key`,
+  "Key with spaces": [ {"test": "42 is the answer"} ] 
 });
 
 // Export files
@@ -291,12 +294,22 @@ function fetchOutput(cmd: string): Promise<string> {
 async function expectError(cmd: string, ...messages: string[]) {
   // error to be retrieve
   let error: any = undefined;
+  // In tests, I had to make sure yargs doesn't override error for the following reason :
+  // Even when validation failed, it somehow can go to handler()
+  let isFirstError = true;
+  
   // add fail() handler
-  await parser
+  // Because of problem explained above, I had to ignore if an error occurs afterwards
+  try {
+    await parser
     .fail((_, e) => {
-      error = e;
+      if (isFirstError) {
+        isFirstError = false;
+        error = e;
+      }
     })
-    .parseAsync(cmd);
+    .parseAsync(cmd);    
+  } catch (_) {}
   // check if error was set
   expect(error).not.toEqual(undefined);
   // check if it is an error Object
