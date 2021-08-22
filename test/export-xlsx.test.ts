@@ -394,6 +394,12 @@ const VALIDATIONS_SCENARIOS : [
     'extension',
   ],
   [
+    // Test out the message : "Option files is not a JSON Object"
+    'Option files - unexpected file should be rejected',
+    [TEST_FILE_EMPTY_ARRAY, TEST_FILE_EXPORT_COLUMNS],
+    'not a JSON Object'
+  ],
+  [
     // Test out the message : "Option files should have at least one entry"
     'Option files - empty object should be rejected',
     [TEST_FILE_EMPTY_OBJECT, TEST_FILE_EXPORT_COLUMNS],
