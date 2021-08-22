@@ -48,7 +48,8 @@ const generate_i18n = (locale: string) => ({
   },
   array: ['1', '2', '3'].map(item => `${item} ${locale}`),
   simpleKey: `[${locale}] not setted key`,
-  "Key with spaces": [ {"test": "42 is the answer"} ] 
+  "Key with spaces": [ {"test": "42 is the answer"} ],
+  "Missing key in DE": (locale !== TRANSLATIONS_KEYS[2]) ? "present" : undefined
 });
 
 // Export files

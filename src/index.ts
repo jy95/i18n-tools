@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* istanbul ignore file */
+// Simple way to test this file : node dist/index.js
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import exportCmd from './cmds/export';
@@ -9,4 +11,5 @@ yargs(hideBin(process.argv))
   // commandDir doesn't work very well in Typescript
   .command(exportCmd)
   .demandCommand()
-  .help().argv;
+  .help()
+  .argv;
