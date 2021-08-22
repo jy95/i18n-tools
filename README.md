@@ -1,4 +1,4 @@
-# @jy95/i18n-tools
+# @jy95/i18n-tools [![codecov](https://codecov.io/gh/jy95/i18n-tools/branch/master/graph/badge.svg?token=PQDE2R2GYR)](https://codecov.io/gh/jy95/i18n-tools)
 
 CLI to make conversions from / to i18n files simpler.
 

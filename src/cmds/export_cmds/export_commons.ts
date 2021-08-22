@@ -73,7 +73,7 @@ export function merge_i18n_files(argv : CommonExportArguments) : Promise<I18N_Me
             // merge results
             .then(results => mergeResults(results))
             .then(data => resolve(data))
-            .catch(err => reject(err));
+            .catch(/* istanbul ignore next */ err => reject(err));
     });
 }
 
@@ -86,7 +86,7 @@ function readFile([locale, file_path] : [string, PathLike]) : Promise<I18N_Resul
             .then(jsonData => Promise.resolve(JSON.parse(jsonData)))
             .then(json => i18n_to_result_format(json, locale))
             .then(result => resolve(result))
-            .catch(err => reject(err));        
+            .catch(/* istanbul ignore next */ err => reject(err));        
     });
 }
 

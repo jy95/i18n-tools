@@ -44,6 +44,7 @@ export const COLUMNS_CHECK = async (argv: any) => {
   ];
   // run check
   return ['locale', 'label'].reduce((acc: boolean | Error, prop: string) => {
+    /* istanbul ignore if */
     if (acc instanceof Error) {
       return acc;
     } else {

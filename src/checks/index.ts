@@ -18,6 +18,7 @@ export const resolveChecksInOrder = (checks : PromiseCheck[]) => {
                     return result;
                 }
             } catch (error) {
+                /* istanbul ignore next */
                 return error;
             }
         }

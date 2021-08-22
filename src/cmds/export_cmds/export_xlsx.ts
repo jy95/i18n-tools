@@ -55,7 +55,7 @@ export const handler = async function (argv : XLSXExportArguments) {
         await export_as_excel(XLSX_FILE, argv, data);
         console.log(`${XLSX_FILE} successfully written`);
         return Promise.resolve(undefined);
-    } catch(err) {
+    } catch(/* istanbul ignore next */ err) {
         return Promise.reject(err);
     }
 };

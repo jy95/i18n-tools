@@ -37,7 +37,7 @@ export const FILES_CHECK = async (argv : any) => {
         // validated
         return true;
     })
-    .catch(err => {
+    .catch(/* istanbul ignore next */ err => {
         // failed
         return err;
     });

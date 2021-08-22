@@ -12,6 +12,7 @@ export const builder = function(y: any) {
       .command(export_xlsx)
   );
 };
+/* istanbul ignore next */
 export const handler = function(_: any) {};
 
 // default export
