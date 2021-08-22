@@ -2,6 +2,9 @@
 import path from "path";
 import Excel from 'exceljs';
 
+// lodash methodes
+import isFunction from "lodash/isFunction";
+
 // common fct
 import { merge_i18n_files, setUpCommonsOptions } from "./export_commons";
 import { parsePathToJSON } from "../../middlewares/middlewares";
@@ -27,7 +30,7 @@ export const description = "Export i18n files into a xlsx file, created by excel
 export const builder = function (y : Argv) {
     return setUpCommonsOptions(y) // set up common options for export
         .option("columns", {
-            description: "Path to a JSON array of objects, to control the columns. Example : [{ \"locale\": \"FR\", \"label\": \"French translation\" }]",
+            description: "Absolute path to a JSON array of objects, to control the columns. Example : [{ \"locale\": \"FR\", \"label\": \"French translation\" }]",
             demandOption: true
         })
         .option("worksheetName", {
@@ -37,7 +40,7 @@ export const builder = function (y : Argv) {
         })
         .option("worksheetCustomizer", {
             type: "string",
-            description: "Path to a JS module to customize the generated xlsx, thanks to exceljs. This js file exports a default function with the following signature : (worksheet : Excel.Worksheet, numberOfRows : number) : "
+            description: "Absolute path to a JS module to customize the generated xlsx, thanks to exceljs. This js file exports a default async function with the following signature : (worksheet : Excel.Worksheet) => Promise<Excel.Worksheet>"
         })
         // coerce columns into Object
         .middleware(parsePathToJSON("columns"), true)
@@ -58,13 +61,13 @@ export const handler = async function (argv : XLSXExportArguments) {
 };
 
 // write 
-function export_as_excel(XLSX_FILE : string, argv : XLSXExportArguments, data : I18N_Merged_Data) {
+async function export_as_excel(XLSX_FILE : string, argv : XLSXExportArguments, data : I18N_Merged_Data) {
 
     console.log("Preparing XLSX file ...");
 
     // prepare data
     const workbook = new Excel.Workbook();
-    const worksheet = workbook.addWorksheet(argv.worksheetName);
+    let worksheet = workbook.addWorksheet(argv.worksheetName);
 
     // Set up columns
     worksheet.columns = [
@@ -82,43 +85,19 @@ function export_as_excel(XLSX_FILE : string, argv : XLSXExportArguments, data : 
                 return acc;
             }, { "technical_key": item["technical_key"] })
         )
-    )
-    
-    // TODO move that part into a separate file
-    // Conditionaly formatting (to better view view stuff)
-    /*
-    worksheet.addConditionalFormatting({
-        ref: "B2:D" + data.length + 2,
-        rules: [
-            // cell is empty : put it in red 
-            {
-                type: 'containsText',
-                operator: "containsBlanks",
-                style: {fill: {type: 'pattern', pattern: 'solid', bgColor: {argb: 'FF5733'}}},
-            },
-            // cell contains either [FR], [NL] or [DE] : put it in orange
-            {
-                type: "containsText",
-                operator: "containsText",
-                text: "[FR]",
-                style: {fill: {type: 'pattern', pattern: 'solid', bgColor: {argb: 'FF9633'}}}
-            },
-            {
-                type: "containsText",
-                operator: "containsText",
-                text: "[NL]",
-                style: {fill: {type: 'pattern', pattern: 'solid', bgColor: {argb: 'FF9633'}}}
-            },
-            {
-                type: "containsText",
-                operator: "containsText",
-                text: "[DE]",
-                style: {fill: {type: 'pattern', pattern: 'solid', bgColor: {argb: 'FF9633'}}}
-            }          
-        ]
-    });
-    */
+    );
 
+    // If worksheetCustomizer was set, give user total control on worksheet output 
+    if (argv.worksheetCustomizer) {
+        let newWorksheetFct = require(argv.worksheetCustomizer);
+        if (isFunction(newWorksheetFct) && newWorksheetFct.length === 1) {
+            console.log("Applying worksheetCustomizer ...");
+            worksheet = await newWorksheetFct(worksheet)
+        } else {
+            return Promise.reject(new Error("worksheetCustomizer is not an function or doesn't take an single argument"));
+        }
+    }
+    
     // finally write this file
     return workbook.xlsx.writeFile(XLSX_FILE);
 }

@@ -16,6 +16,7 @@ export interface XLSXExportArguments extends CommonExportArguments {
     label: string;
   }[];
   worksheetName: string;
+  worksheetCustomizer?: string; 
 }
 
 // Result after extract of multiple i18n files
