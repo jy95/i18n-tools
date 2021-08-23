@@ -11,5 +11,4 @@ yargs(hideBin(process.argv))
   // commandDir doesn't work very well in Typescript
   .command(exportCmd)
   .demandCommand()
-  .help()
-  .argv;
+  .help().argv;

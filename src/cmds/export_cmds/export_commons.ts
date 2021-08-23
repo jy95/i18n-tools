@@ -25,7 +25,7 @@ import { parsePathToJSON } from "../../middlewares/middlewares";
 export function setUpCommonsOptions(y: Argv) {
     return y
         .option("files", {
-            describe: "Path to a JSON object that have as key an unique identifier and value the absolute path to a i18n file, such as : { \"FR\": \"/somePath/fr.json\", \"NL\": \"/somePath/nl.json\"}",
+            describe: "Absolute path to a JSON object that have as key an unique identifier and value the absolute path to a i18n file, such as : { \"FR\": \"/somePath/fr.json\", \"NL\": \"/somePath/nl.json\"}",
             demandOption: true
         })
         .option("filename", {
@@ -42,7 +42,7 @@ export function setUpCommonsOptions(y: Argv) {
         // default value for filename
         .default("filename", function() {
             const date = new Date();
-            const timestamp = `${date.getDay() + 1}-${date.getMonth() + 1}-${date.getFullYear()} ${date.getHours()}h${date.getMinutes()}m${date.getSeconds()}`;
+            const timestamp = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()} ${date.getHours()}h${date.getMinutes()}m${date.getSeconds()}`;
             return `translations_${timestamp}`;
         })
         .config('settings', function (configPath) {
@@ -52,11 +52,6 @@ export function setUpCommonsOptions(y: Argv) {
         .middleware(parsePathToJSON("files"), true)
         // coerce path provided by outputDir
         .coerce(["outputDir"], path.resolve)
-
-        /*
-        // validation for filename option
-        // validation(s) for files option
-        */
 }
 
 
