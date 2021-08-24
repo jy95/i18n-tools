@@ -67,7 +67,7 @@ async function xlsx_2_translation_objects(argv : XLSXExportArguments) {
     // Warning : Exceljs put for some reason a undefined value at the 0 index
     let headers = worksheet.getRow(1).values as (undefined | string)[];
     // retrieve data of the table
-    let data = (worksheet.getRows(2, rowCount-1) || []).map(item => item.values);
+    let data = (worksheet.getRows(2, rowCount-1) || /* istanbul ignore next */ []).map(item => item.values);
 
     // find out where the technical key is
     const technical_key_index = headers.findIndex(h => (h || '').includes(columns.technical_key));
@@ -88,6 +88,7 @@ async function xlsx_2_translation_objects(argv : XLSXExportArguments) {
         .filter( ([_, idx]) => idx === -1);
 
     for(let [locale, ] of missing_indexes) {
+        /* istanbul ignore next Not worthy to create a test case for that*/
         console.warn(`Couldn't find index for ${locale} locale with provided label`)
     }
 
