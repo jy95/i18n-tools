@@ -5,6 +5,7 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import exportCmd from './cmds/export';
 import importCmd from './cmds/import';
+import diffCmd from './cmds/diff';
 
 /* eslint-disable  @typescript-eslint/no-unused-expressions */
 yargs(hideBin(process.argv))
@@ -12,5 +13,6 @@ yargs(hideBin(process.argv))
   // commandDir doesn't work very well in Typescript
   .command(exportCmd)
   .command(importCmd)
+  .command(diffCmd)
   .demandCommand()
   .help().argv;

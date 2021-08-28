@@ -21,7 +21,7 @@ import reporters from "./diff/reporter-strategies/index";
 const CHECKS = DIFF_CHECKS.CHECKS;
 
 // named exports
-export const command = 'diff [options] [files..]';
+export const command = 'diff [options] <files..>';
 export const description = 'Compare at least two i18n files & generate a report';
 
 export const builder = function (y : Argv) {
@@ -61,12 +61,12 @@ export const builder = function (y : Argv) {
         .check(resolveChecksInOrder(CHECKS))
 }
 
-export const handler = async function (argv : CommonDiffArguments) {
+export const handler = async function (argv : any) {
     try {
-        const changes = detectChanges(argv);
+        const changes = detectChanges(argv as CommonDiffArguments);
         console.log(`Preparing the report file ...`);
         await reporters({
-            yargs: argv,
+            yargs: argv as CommonDiffArguments,
             changes: changes
         });
         console.log("Successfully wrote the report file");
