@@ -1,5 +1,6 @@
 import os from 'os';
 import path from 'path';
+import fs from 'fs';
 import yargs from 'yargs';
 import set from 'lodash/set';
 import unset from 'lodash/unset';
@@ -105,7 +106,7 @@ const [
   TEST_FILE_FILE2, 
   TEST_FILE_FILE3,
   TEST_FILE_JSON_SETTINGS1,
-  //TEST_FILE_JSON_SETTINGS2,
+  TEST_FILE_JSON_SETTINGS2,
 ] = test_files_list;
 type test_files_type = typeof test_files_list[number];
 
@@ -115,7 +116,7 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
     acc[curr] = path.resolve(
       TEMP_FOLDER, 
       ROOT_TEST_FOLDER,
-      (idx < 5) ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
+      (idx < 6) ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
       curr
     );
     return acc;
@@ -163,10 +164,21 @@ const structure: fsify_structure = [
             type: fsify.FILE,
             name: TEST_FILE_JSON_SETTINGS1,
             contents: JSON.stringify({
-              filename: "diff_settings1",
+              filename: "diff_settings1-JSON",
               outputDir: TEMP_FOLDER,
               outputFormat: "JSON",
               files: [TEST_FILE_FILE1, TEST_FILE_FILE2].map(file => TEST_FILES[file])
+            })
+          },
+          // With three files
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_JSON_SETTINGS2,
+            contents: JSON.stringify({
+              filename: "diff_settings2-JSON",
+              outputDir: TEMP_FOLDER,
+              outputFormat: "JSON",
+              files: [TEST_FILE_FILE1, TEST_FILE_FILE2, TEST_FILE_FILE3].map(file => TEST_FILES[file])
             })
           }
         ],
@@ -188,6 +200,44 @@ const VALIDATIONS_SCENARIOS : [
     "At least two paths must be provided"
   ]
 ];
+
+// E2E scenarios for JSON reporter
+const E2E_JSON_REPORTER : [
+  string,
+  // if a single test_files_type, it is a settings file, multiple inline files otherwise
+  [test_files_type[], ...string[]],
+  string,
+  any
+][] = [
+  [
+    "Inline paths should be accepted",
+    [ [TEST_FILE_FILE1, TEST_FILE_FILE1], "--filename", `"diff_inline-JSON"`, "--outputDir", `"${TEMP_FOLDER}"`],
+    path.resolve(TEMP_FOLDER, "diff_inline-JSON.json"),
+    [],
+  ],
+  [
+    "should work with two files",
+    [ [TEST_FILE_JSON_SETTINGS1] ],
+    path.resolve(TEMP_FOLDER, "diff_settings1-JSON.json"),
+    [
+      {"from": "1","key": "commons.nestedKey.changedValue","newValue": "Changed value 1","oldValue": "Changed value 0","to": "2","type": "REPLACED"},
+      {"from": "1","key": "commons.conditionalDeletedKey","oldValue": "Present","to": "2","type": "DELETE"},
+      {"from": "1","key": "commons.array[1]","newValue": "Paul","to": "2","type": "ADD"},
+    ]
+  ],
+  [
+    "should work with three files",
+    [ [TEST_FILE_JSON_SETTINGS2] ],
+    path.resolve(TEMP_FOLDER, "diff_settings2-JSON.json"),
+    [
+      {"key":"commons.nestedKey.changedValue","type":"REPLACED","from":"1","to":"2","oldValue":"Changed value 0","newValue":"Changed value 1"},
+      {"key":"commons.conditionalDeletedKey","type":"DELETE","from":"1","to":"2","oldValue":"Present"},
+      {"key":"commons.array[1]","type":"ADD","from":"1","to":"2","newValue":"Paul"},
+      {"key":"commons.nestedKey.changedValue","type":"REPLACED","from":"2","to":"3","oldValue":"Changed value 1","newValue":"Changed value 2"},
+      {"key":"commons.array[2]","type":"ADD","from":"2","to":"3","newValue":"Jacques"},
+      {"key":"commons.conditionalDeletedKey","type":"ADD","from":"2","to":"3","newValue":"Present"}]
+  ]
+]
 
 beforeAll(() => {
   // write temporary files
@@ -219,7 +269,7 @@ describe('[diff command]', () => {
         }
       });
 
-      test.each(VALIDATIONS_SCENARIOS)('%s', async(_title: string, args: [test_files_type[], ...string[]],...messages: string[]) => {
+      test.each(VALIDATIONS_SCENARIOS)('%s', async(_title: string, args: [test_files_type[], ...string[]], ...messages: string[]) => {
         let [files, ...otherArgs] = args;
         let test_cmd = concat_cmd([
           // optional args
@@ -230,6 +280,52 @@ describe('[diff command]', () => {
         //console.warn(test_cmd);
         // Test out if error message is thrown
         await expectError(test_cmd, ...messages);
+      });
+
+    });
+
+    describe('E2E successful scenarios', () => {
+      // mock console.log
+      let consoleLog: any;
+      beforeAll(() => {
+        consoleLog = jest.spyOn(console, 'log').mockImplementation();
+      });
+  
+      // clear mock after each call
+      afterEach(() => {
+        consoleLog.mockClear();
+      });
+  
+      // reenable console.log
+      afterAll(() => {
+        // restore console.log
+        if (consoleLog !== undefined) {
+          consoleLog.mockRestore();
+        }
+      });
+
+      // JSON reporter tests
+      test.each(E2E_JSON_REPORTER)('JSON reporter - %s', async(_title: string, args: [test_files_type[], ...string[]], filepath: string, expectedObj: any) => {
+        let [files, ...otherArgs] = args;
+
+        let test_cmd = concat_cmd([
+          ...( (files.length === 1) ? ["--settings", ...prepare_mandatory_args(...files.map(file => TEST_FILES[file]))] : [] ),
+          // optional args
+          ...otherArgs,
+          // mandatory args (if needed)
+          ...( (files.length >= 2) ? [...prepare_mandatory_args(...files.map(file => TEST_FILES[file]))] : [])
+        ]);
+
+        await parser.parseAsync(test_cmd);
+
+        expect(consoleLog).toHaveBeenCalledWith('Preparing the report file ...');
+        expect(consoleLog).toHaveBeenCalledWith("Successfully wrote the report file");
+
+        // check out the file
+        let potentialJSON = await fs.promises.readFile(filepath, 'utf-8');
+        let result = JSON.parse(potentialJSON);
+        // checking the result
+        expect(result).toEqual(expectedObj);
       });
 
     });

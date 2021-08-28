@@ -32,7 +32,7 @@ export function parsePathToJSON(prop: string) {
 // Turn variadic paths into each a JSON object
 export function parsePathsToJSON(prop: string) {
   return async (argv: any) => {
-    let paths = argv[prop] as (string | any)[];
+    let paths = (argv[prop] || []) as (string | any)[];
     let results: any[] = [];
     for (let file of paths) {
       let potentialJSON = await path2JSON(file);
