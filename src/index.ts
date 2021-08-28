@@ -4,7 +4,7 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import exportCmd from './cmds/export';
-import importCmd from "./cmds/import";
+import importCmd from './cmds/import';
 
 /* eslint-disable  @typescript-eslint/no-unused-expressions */
 yargs(hideBin(process.argv))
