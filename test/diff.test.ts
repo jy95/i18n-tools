@@ -220,9 +220,9 @@ const E2E_JSON_REPORTER : [
     [ [TEST_FILE_JSON_SETTINGS1] ],
     path.resolve(TEMP_FOLDER, "diff_settings1-JSON.json"),
     [
-      {"from": "1","key": "commons.nestedKey.changedValue","newValue": "Changed value 1","oldValue": "Changed value 0","to": "2","type": "REPLACED"},
-      {"from": "1","key": "commons.conditionalDeletedKey","oldValue": "Present","to": "2","type": "DELETE"},
-      {"from": "1","key": "commons.array[1]","newValue": "Paul","to": "2","type": "ADD"},
+      {"from": "file1","key": "commons.nestedKey.changedValue","newValue": "Changed value 1","oldValue": "Changed value 0","to": "file2","type": "REPLACED"},
+      {"from": "file1","key": "commons.conditionalDeletedKey","oldValue": "Present","to": "file2","type": "DELETE"},
+      {"from": "file1","key": "commons.array[1]","newValue": "Paul","to": "file2","type": "ADD"},
     ]
   ],
   [
@@ -230,12 +230,12 @@ const E2E_JSON_REPORTER : [
     [ [TEST_FILE_JSON_SETTINGS2] ],
     path.resolve(TEMP_FOLDER, "diff_settings2-JSON.json"),
     [
-      {"key":"commons.nestedKey.changedValue","type":"REPLACED","from":"1","to":"2","oldValue":"Changed value 0","newValue":"Changed value 1"},
-      {"key":"commons.conditionalDeletedKey","type":"DELETE","from":"1","to":"2","oldValue":"Present"},
-      {"key":"commons.array[1]","type":"ADD","from":"1","to":"2","newValue":"Paul"},
-      {"key":"commons.nestedKey.changedValue","type":"REPLACED","from":"2","to":"3","oldValue":"Changed value 1","newValue":"Changed value 2"},
-      {"key":"commons.array[2]","type":"ADD","from":"2","to":"3","newValue":"Jacques"},
-      {"key":"commons.conditionalDeletedKey","type":"ADD","from":"2","to":"3","newValue":"Present"}]
+      {"key":"commons.nestedKey.changedValue","type":"REPLACED","from":"file1","to":"file2","oldValue":"Changed value 0","newValue":"Changed value 1"},
+      {"key":"commons.conditionalDeletedKey","type":"DELETE","from":"file1","to":"file2","oldValue":"Present"},
+      {"key":"commons.array[1]","type":"ADD","from":"file1","to":"file2","newValue":"Paul"},
+      {"key":"commons.nestedKey.changedValue","type":"REPLACED","from":"file2","to":"file3","oldValue":"Changed value 1","newValue":"Changed value 2"},
+      {"key":"commons.array[2]","type":"ADD","from":"file2","to":"file3","newValue":"Jacques"},
+      {"key":"commons.conditionalDeletedKey","type":"ADD","from":"file2","to":"file3","newValue":"Present"}]
   ]
 ]
 

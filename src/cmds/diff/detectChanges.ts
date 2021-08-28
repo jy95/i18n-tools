@@ -51,7 +51,7 @@ export default function detectChanges(argv : CommonDiffArguments) : ChangeOperat
     // Fetch keys 
     let files : fileParam[] = argv.files.map( (file, idx) => ({
         // like done in backupPaths function
-        file: `${idx + 1}`,
+        file: `file${idx + 1}`,
         // get leaves paths for provided file
         keys: getLeavesPathes(file),
         // object in order to access properties
