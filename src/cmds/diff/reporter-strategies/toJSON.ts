@@ -8,5 +8,11 @@ export default async function(params: DiffExportParameters) {
     `${params.yargs.filename}.json`
   );
   // KISS : just return the changes array
-  return await fs.promises.writeFile(filename, JSON.stringify(params.changes));
+  return await fs.promises.writeFile(
+    filename,
+    JSON.stringify({
+      files: params.yargs.paths,
+      changes: params.changes,
+    })
+  );
 }

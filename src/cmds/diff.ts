@@ -72,6 +72,7 @@ export const handler = async function (argv : any) {
         console.log("Successfully wrote the report file");
         return Promise.resolve(undefined);
     } catch(/* istanbul ignore next */ err) {
+        /* istanbul ignore next */
         return Promise.reject(err);
     }
 }

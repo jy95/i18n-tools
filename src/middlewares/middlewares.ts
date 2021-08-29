@@ -36,7 +36,9 @@ export function parsePathsToJSON(prop: string) {
     let results: any[] = [];
     for (let file of paths) {
       let potentialJSON = await path2JSON(file);
-      results.push(potentialJSON !== file ? potentialJSON : file);
+      results.push(
+        potentialJSON !== file ? potentialJSON : /* istanbul ignore next */ file
+      );
     }
     argv[prop] = results;
     return argv;
