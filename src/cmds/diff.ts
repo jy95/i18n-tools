@@ -21,7 +21,7 @@ import reporters from "./diff/reporter-strategies/index";
 const CHECKS = DIFF_CHECKS.CHECKS;
 
 // named exports
-export const command = 'diff [options] [files..]';
+export const command = 'diff [files..]';
 export const description = 'Compare at least two i18n files & generate a report';
 
 export const builder = function (y : Argv) {
