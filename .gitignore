@@ -2,3 +2,9 @@
 .DS_Store
 node_modules
 dist
+
+# Files / Folders created by the testing
+coverage
+diff_report_*
+translations_*
+test.xlsx.xlsx
