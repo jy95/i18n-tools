@@ -1,6 +1,7 @@
 // re export stuff for easier import
 export * as EXPORT_CHECKS from "./export/index";
 export * as IMPORT_CHECKS from "./import/index";
+export * as DIFF_CHECKS from "./diff_checks";
 
 // Yargs parser doesn't stop when issue(s) occurs and only returns last error.
 // So I need something that resolves promises sequentially and return first error

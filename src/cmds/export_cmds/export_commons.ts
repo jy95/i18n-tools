@@ -2,10 +2,8 @@ import fs, { PathLike } from "fs";
 import path from "path";
 
 // lodash methodes
-import isObject from "lodash/isObject";
 import groupBy from "lodash/groupBy";
 import flattenDeep from "lodash/flattenDeep";
-import reduce from "lodash/reduce";
 import get from "lodash/get";
 
 // For typings
@@ -20,6 +18,7 @@ type I18N_Result = {
 
 // middelware
 import { parsePathToJSON } from "../../middlewares/middlewares";
+import getLeavesPathes from "../../commons/getLeavesPathes";
 
 // configure export commands with the common options in the builder step
 export function setUpCommonsOptions(y: Argv) {
@@ -83,25 +82,6 @@ function readFile([locale, file_path] : [string, PathLike]) : Promise<I18N_Resul
             .then(result => resolve(result))
             .catch(/* istanbul ignore next */ err => reject(err));        
     });
-}
-
-// Get all leaves paths of a object
-// Typescript code inspired by https://stackoverflow.com/a/55381003/6149867
-function getLeavesPathes(dataObj : any) : string[] {
-    const reducer = (aggregator : string[], val : any, key : string) => {
-        let paths = [key];
-        if(isObject(val)) {
-            paths = reduce(val, reducer, []);
-            paths = paths.map(path => key + '.' + path);
-        }
-        aggregator.push(...paths);
-        return aggregator;
-    };
-    const arrayIndexRegEx = /\.(\d+)/gi;
-    let paths = reduce(dataObj, reducer, []);
-    paths = paths.map(path => path.replace(arrayIndexRegEx, '[$1]'));
-
-    return paths;
 }
 
 // turns i18n object to usable format
