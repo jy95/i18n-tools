@@ -8,7 +8,14 @@
     "i18n",
     "cli",
     "conversion",
-    "xlsx"
+    "xlsx",
+    "json",
+    "diff",
+    "export",
+    "import",
+    "internationalization",
+    "translation",
+    "localization"
   ],
   "bin": "bin/cli.js",
   "main": "dist/index.js",
