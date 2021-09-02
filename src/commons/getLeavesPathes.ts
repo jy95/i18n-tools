@@ -14,7 +14,7 @@ export default function getLeavesPathes(dataObj: any): string[] {
     aggregator.push(...paths);
     return aggregator;
   };
-  const arrayIndexRegEx = /\.(\d+)/gi;
+  const arrayIndexRegEx = /\.(\d+)(?!\w+)/gi;
   let paths = reduce(dataObj, reducer, []);
   paths = paths.map(path => path.replace(arrayIndexRegEx, '[$1]'));
 
