@@ -7,7 +7,8 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
   title: '@jy95/i18n-tools',
   tagline: 'CLI to make common operations around i18n files simpler',
   url: 'https://jy95.github.io',
-  baseUrl: '/',
+  baseUrl: '/i18n-tools/',
+  trailingSlash: false, // Needed for Gh pages - https://github.com/facebook/docusaurus/issues/5026
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
