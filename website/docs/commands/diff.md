@@ -34,7 +34,7 @@ npx @jy95/i18n-tools diff --help
 npx @jy95/i18n-tools diff --settings "/absolutePath/to/settings1.json"
 ```
 
-### With two files
+### With three files
 
 ```json title="settings2.json"
 {

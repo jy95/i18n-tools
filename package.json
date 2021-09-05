@@ -89,6 +89,7 @@
     "**/ts-jest": "^27.0.4",
     "**/typescript": "^4.3.5"
   },
+  "homepage": "https://jy95.github.io/i18n-tools/",
   "repository": {
     "type": "git",
     "url": "https://github.com/jy95/i18n-tools.git"
