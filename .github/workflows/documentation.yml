@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths:
-      - '.github/workflows/deploy.yml'
+      - '.github/workflows/documentation.yml'
       - 'website/**'
 
 jobs:
