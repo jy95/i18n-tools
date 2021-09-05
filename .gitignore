@@ -8,3 +8,10 @@ coverage
 diff_report_*
 translations_*
 test.xlsx.xlsx
+
+# Files / Folder for the website
+/website/.docusaurus
+/website/build
+/website/backers.json
+/website/node_modules
+/website/yarn.lock
