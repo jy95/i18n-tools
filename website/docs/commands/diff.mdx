@@ -1,0 +1,265 @@
+---
+sidebar_position: 3
+sidebar_label: Diff
+---
+
+# Diff 
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+> Compare at least two i18n files and generate a report
+
+## Command
+
+```bash
+# Display help for diff
+npx @jy95/i18n-tools diff --help
+```
+
+## Purpose
+
+Suppose you have several versions of a i18n locale file such as :
+
+<Tabs
+  defaultValue="fr_v0.json"
+  values={[
+    { label: 'fr_v0.json', value: 'fr_v0.json', },
+    { label: 'fr_v1.json', value: 'fr_v1.json', },
+    { label: 'fr_v2.json', value: 'fr_v2.json', },
+  ]
+}>
+<TabItem value="fr_v0.json">
+
+```json title="fr_v0.json"
+{
+    "untouchedKey":"Hello World",
+    "commons":{
+      "nestedKey":{
+        "changedValue":"Changed value 0"
+      },
+      "array":[
+        "Pierre"
+      ],
+      "conditionalDeletedKey":"Present"
+    }
+}
+```
+
+</TabItem>
+
+<TabItem value="fr_v1.json">
+
+```json title="fr_v1.json"
+{
+    "untouchedKey":"Hello World",
+    "commons":{
+      "nestedKey":{
+        "changedValue":"Changed value 1"
+      },
+      "array":[
+        "Pierre",
+        "Paul"
+      ]
+    }
+}
+```
+</TabItem>
+
+<TabItem value="fr_v2.json">
+
+```json title="fr_v2.json"
+{
+    "untouchedKey":"Hello World",
+    "commons":{
+      "nestedKey":{
+        "changedValue":"Changed value 2"
+      },
+      "array":[
+        "Pierre",
+        "Paul",
+        "Jacques"
+      ],
+      "conditionalDeletedKey":"Present"
+    }
+}
+```
+
+</TabItem>
+</Tabs>
+
+This command generates a report (in JSON by default) that shows change(s) between files :
+
+<Tabs
+  defaultValue="fr_v0-fr_v0"
+  values={[
+    { label: 'fr_v0.json & fr_v0.json', value: 'fr_v0-fr_v0', },
+    { label: 'fr_v0.json & fr_v1.json', value: 'fr_v0-fr_v1', },
+    { label: 'fr_v0.json & fr_v1.json & fr_v2.json', value: 'fr_v0-fr_v1-fr_v2', },
+  ]
+}>
+<TabItem value="fr_v0-fr_v0">
+
+```json title="fr_v0-fr_v0.json"
+{
+  "files": {
+    "file1":"D:\\TEMP\\fr_v0.json",
+    "file2":"D:\\TEMP\\fr_v0.json"
+  },
+  "changes": []
+}
+```
+
+</TabItem>
+
+<TabItem value="fr_v0-fr_v1">
+
+```json title="fr_v0-fr_v1.json"
+{
+  "files":{
+    "file1":"D:\\TEMP\\fr_v0.json",
+    "file2":"D:\\TEMP\\fr_v1.json"
+  },
+  "changes":[
+    {
+      "from":"file1",
+      "key":"commons.nestedKey.changedValue",
+      "newValue":"Changed value 1",
+      "oldValue":"Changed value 0",
+      "to":"file2",
+      "type":"REPLACED"
+    },
+    {
+      "from":"file1",
+      "key":"commons.conditionalDeletedKey",
+      "oldValue":"Present",
+      "to":"file2",
+      "type":"DELETE"
+    },
+    {
+      "from":"file1",
+      "key":"commons.array[1]",
+      "newValue":"Paul",
+      "to":"file2",
+      "type":"ADD"
+    }
+  ]
+}
+```
+
+</TabItem>
+
+<TabItem value="fr_v0-fr_v1-fr_v2">
+
+```json title="fr_v0-fr_v1-fr_v2.json"
+{
+  "files":{
+    "file1":"D:\\TEMP\\fr_v0.json",
+    "file2":"D:\\TEMP\\fr_v1.json",
+    "file3":"D:\\TEMP\\fr_v2.json"
+  },
+  "changes":[
+    {
+      "key":"commons.nestedKey.changedValue",
+      "type":"REPLACED",
+      "from":"file1",
+      "to":"file2",
+      "oldValue":"Changed value 0",
+      "newValue":"Changed value 1"
+    },
+    {
+      "key":"commons.conditionalDeletedKey",
+      "type":"DELETE",
+      "from":"file1",
+      "to":"file2",
+      "oldValue":"Present"
+    },
+    {
+      "key":"commons.array[1]",
+      "type":"ADD",
+      "from":"file1",
+      "to":"file2",
+      "newValue":"Paul"
+    },
+    {
+      "key":"commons.nestedKey.changedValue",
+      "type":"REPLACED",
+      "from":"file2",
+      "to":"file3",
+      "oldValue":"Changed value 1",
+      "newValue":"Changed value 2"
+    },
+    {
+      "key":"commons.array[2]",
+      "type":"ADD",
+      "from":"file2",
+      "to":"file3",
+      "newValue":"Jacques"
+    },
+    {
+      "key":"commons.conditionalDeletedKey",
+      "type":"ADD",
+      "from":"file2",
+      "to":"file3",
+      "newValue":"Present"
+    }
+  ]
+}
+```
+
+</TabItem>
+
+</Tabs>
+
+## Examples of settings
+
+<Tabs
+  defaultValue="settings1"
+  values={[
+    { label: 'With two files', value: 'settings1', },
+    { label: 'With three files', value: 'settings2', },
+  ]
+}>
+
+<TabItem value="settings1">
+
+```bash
+npx @jy95/i18n-tools diff --settings "/absolutePath/to/settings1.json"
+```
+
+```json title="settings1.json"
+{
+   "filename":"diff_settings1-JSON",
+   "outputDir":"D:\\TEMP\\TEMP",
+   "outputFormat":"JSON",
+   "files":[
+      "D:\\TEMP\\fr_v0.json",
+      "D:\\TEMP\\fr_v1.json"
+   ]
+}
+```
+
+</TabItem>
+
+<TabItem value="settings2">
+
+```bash
+npx @jy95/i18n-tools diff --settings "/absolutePath/to/settings2.json"
+```
+
+```json title="settings2.json"
+{
+   "filename":"diff_settings2-JSON",
+   "outputDir":"D:\\TEMP\\TEMP",
+   "outputFormat":"JSON",
+   "files":[
+      "D:\\TEMP\\fr_v0.json",
+      "D:\\TEMP\\fr_v1.json",
+      "D:\\TEMP\\fr_v2.json",
+   ]
+}
+```
+
+</TabItem>
+
+</Tabs>
