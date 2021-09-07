@@ -2,21 +2,17 @@
 
 CLI to make common operations around i18n files simpler.
 
-## Available commands
+- 👩‍💻 Export i18n files into something else (xlsx, ...)
+- ✨ Turn a file (xlsx, ...) to i18n file(s)
+- 📜 Compare at least two i18n files and generate a report
+- ...
 
-Usage :
+Read more on [https://jy95.github.io/i18n-tools/](https://jy95.github.io/i18n-tools/)
+
 ```bash
 # Display all available commands
 npx @jy95/i18n-tools --help
 ```
-
-## Examples
-
-| Description                                       | Command | settings.json |
-|---------------------------------------------------|---------|---------------|
-| Export several i18n files into a single xlsx file | `npx @jy95/i18n-tools export to_xlsx --settings "/absolutePath/to/settings.json"` |  [One of the examples listed here](https://github.com/jy95/i18n-tools/wiki/Examples-of-settings.json#export-to_xlsx)  |
-| Convert a xlsx file into several i18n files       | `npx @jy95/i18n-tools import from_xlsx --settings "/absolutePath/to/settings.json"` | [One of the examples listed here](https://github.com/jy95/i18n-tools/wiki/Examples-of-settings.json#import-from_xlsx) |
-| Compare multiple i18n files & generate a report | `npx @jy95/i18n-tools diff --settings "/absolutePath/to/settings.json"` | [One of the examples listed here](https://github.com/jy95/i18n-tools/wiki/Examples-of-settings.json#diff) |
 
 ## Contributing
 
