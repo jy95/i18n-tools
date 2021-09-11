@@ -215,6 +215,7 @@ const structure: fsify_structure = [
               ),
               worksheetCustomizer: path.resolve(
                 __dirname,
+                "..",
                 "fixtures/export-xlsx",
                 "worksheetCustomizer-dynamic.js"
               ),
