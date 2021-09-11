@@ -118,6 +118,7 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
             (idx === 0) 
                 ? [
                     __dirname,
+                    "..",
                     "fixtures",
                     "import-xlsx",
                     curr,
