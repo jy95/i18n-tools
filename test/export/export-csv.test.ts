@@ -6,9 +6,9 @@ import {
   command,
   description as describeText,
   builder,
-} from '../src/cmds/export';
+} from '../../src/cmds/export';
 // CSV description
-import { description as csv_description } from '../src/cmds/export_cmds/export_csv';
+import { description as csv_description } from '../../src/cmds/export_cmds/export_csv';
 
 // temp folder
 const TEMP_FOLDER = os.tmpdir();
