@@ -21,7 +21,7 @@ const FeatureList: FeatureItem[] = [
     image: '/img/export.svg',
     description: (
       <>
-        Export i18n files into something else (xlsx, ...)
+        Export i18n files into something else (xlsx, csv, ...)
       </>
     ),
   },
@@ -30,7 +30,7 @@ const FeatureList: FeatureItem[] = [
     image: '/img/import.svg',
     description: (
       <>
-        Turn a file (xlsx, ...) to i18n file(s)
+        Turn a file (xlsx, csv, ...) to i18n file(s)
       </>
     ),
   },

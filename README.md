@@ -2,8 +2,8 @@
 
 CLI to make common operations around i18n files simpler.
 
-- 👩‍💻 Export i18n files into something else (xlsx, ...)
-- ✨ Turn a file (xlsx, ...) to i18n file(s)
+- 👩‍💻 Export i18n files into something else (xlsx, csv, ...)
+- ✨ Turn a file (xlsx, csv, ...) to i18n file(s)
 - 📜 Compare at least two i18n files and generate a report
 - ...
 
