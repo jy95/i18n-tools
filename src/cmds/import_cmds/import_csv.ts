@@ -75,7 +75,6 @@ async function csv_2_translation_objects(argv : CSVImportArguments) {
     const options = {
         // https://c2fo.io/fast-csv/docs/parsing/options
         parserOptions: {
-            headers: true, // needed for algorithm
             delimiter: argv.delimiter,
             quote: argv.quote,
             escape: argv.escape,
@@ -116,7 +115,7 @@ async function csv_2_translation_objects(argv : CSVImportArguments) {
     for(let [locale, ] of missing_indexes) {
         /* istanbul ignore next Not worthy to create a test case for that*/
         console.warn(`Couldn't find index for ${locale} locale with provided label`)
-    }    
+    }
 
     // build results
     let results = data.map(
