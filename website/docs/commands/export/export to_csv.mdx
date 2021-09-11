@@ -1,0 +1,217 @@
+---
+sidebar_position: 2
+sidebar_label: export to_csv
+---
+
+# export to_csv
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+> Export i18n files into a csv file
+
+## Command
+
+```bash
+# Display help for export to_csv
+npx @jy95/i18n-tools export to_csv --help
+```
+
+## Purpose
+
+Suppose you have several i18n locales such as :
+
+<Tabs
+  defaultValue="fr.json"
+  values={[
+    { label: 'fr.json', value: 'fr.json', },
+    { label: 'nl.json', value: 'nl.json', },
+    { label: 'de.json', value: 'de.json', },
+  ]
+}>
+<TabItem value="fr.json">
+
+```json title="fr.json"
+{
+  "commons":{
+    "myNestedKey":"Hello world FR",
+    "myNestedArray":[
+      "1 FR",
+      "2 FR",
+      "3 FR"
+    ]
+  },
+  "array":[
+    "1 FR",
+    "2 FR",
+    "3 FR"
+  ],
+  "simpleKey":"[FR] not setted key",
+  "Key with spaces":[
+    {
+      "test":"42 is the answer"
+    }
+  ],
+  "Missing key in DE":"present"
+}
+```
+</TabItem>
+
+<TabItem value="nl.json">
+
+```json title="nl.json"
+{
+  "commons":{
+    "myNestedKey":"Hello world NL",
+    "myNestedArray":[
+      "1 NL",
+      "2 NL",
+      "3 NL"
+    ]
+  },
+  "array":[
+    "1 NL",
+    "2 NL",
+    "3 NL"
+  ],
+  "simpleKey":"[NL] not setted key",
+  "Key with spaces":[
+    {
+      "test":"42 is the answer"
+    }
+  ],
+  "Missing key in DE":"present"
+}
+```
+</TabItem>
+
+<TabItem value="de.json">
+
+```json title="de.json"
+{
+  "commons":{
+    "myNestedKey":"Hello world DE",
+    "myNestedArray":[
+      "1 DE",
+      "2 DE",
+      "3 DE"
+    ]
+  },
+  "array":[
+    "1 DE",
+    "2 DE",
+    "3 DE"
+  ],
+  "simpleKey":"[DE] not setted key",
+  "Key with spaces":[
+    {
+      "test":"42 is the answer"
+    }
+  ]
+}
+```
+</TabItem>
+
+</Tabs>
+
+This command helps you to turn them into a single csv file such as [this one](./assets/export-csv.csv).
+
+```csv title="export-csv.csv"
+Technical Key;French translation;Dutch translation;German translation
+Key with spaces[0].test;42 is the answer;42 is the answer;42 is the answer
+Missing key in DE;present;present;
+array[0];1 FR;1 NL;1 DE
+array[1];2 FR;2 NL;2 DE
+array[2];3 FR;3 NL;3 DE
+commons.myNestedArray[0];1 FR;1 NL;1 DE
+commons.myNestedArray[1];2 FR;2 NL;2 DE
+commons.myNestedArray[2];3 FR;3 NL;3 DE
+commons.myNestedKey;Hello world FR;Hello world NL;Hello world DE
+simpleKey;[FR] not setted key;[NL] not setted key;[DE] not setted key
+```
+
+## Examples of settings
+
+<Tabs
+  defaultValue="settings1"
+  values={[
+    { label: 'Paths', value: 'settings1', },
+    { label: 'Objects/Arrays', value: 'settings2', }
+  ]
+}>
+
+<TabItem value="settings1">
+
+```bash
+npx @jy95/i18n-tools export to_csv --settings "/absolutePath/to/settings1.json"
+```
+
+```json title="settings1.json"
+{
+   "files":"D:\\TEMP\\TEMP\\tests-for-export\\correct\\files.json",
+   "columns":"D:\\TEMP\\TEMP\\tests-for-export\\correct\\columns.json",
+   "filename":"settings1-output",
+   "outputDir":"D:\\TEMP\\TEMP"
+}
+```
+
+```json title="files.json"
+{
+    "FR":"D:\\TEMP\\TEMP\\tests-for-export\\correct\\fr.json",
+    "NL":"D:\\TEMP\\TEMP\\tests-for-export\\correct\\nl.json",
+    "DE":"D:\\TEMP\\TEMP\\tests-for-export\\correct\\de.json"
+}
+```
+
+```json title="columns.json"
+[
+    {
+        "locale":"FR",
+        "label":"French translation"
+    },
+    {
+        "locale":"NL",
+        "label":"Dutch translation"
+    },
+    {
+        "locale":"DE",
+        "label":"German translation"
+    }
+]
+```
+</TabItem>
+
+<TabItem value="settings2">
+
+```bash
+npx @jy95/i18n-tools export to_csv --settings "/absolutePath/to/settings2.json"
+```
+
+```json title="settings2.json"
+{
+   "files":{
+      "FR":"D:\\TEMP\\TEMP\\tests-for-export\\correct\\fr.json",
+      "NL":"D:\\TEMP\\TEMP\\tests-for-export\\correct\\nl.json",
+      "DE":"D:\\TEMP\\TEMP\\tests-for-export\\correct\\de.json"
+   },
+   "columns":[
+      {
+         "locale":"FR",
+         "label":"French translation"
+      },
+      {
+         "locale":"NL",
+         "label":"Dutch translation"
+      },
+      {
+         "locale":"DE",
+         "label":"German translation"
+      }
+   ],
+   "filename":"settings2-output",
+   "outputDir":"D:\\TEMP\\TEMP"
+}
+```
+</TabItem>
+
+</Tabs>
