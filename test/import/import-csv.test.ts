@@ -6,14 +6,14 @@ import {
   command,
   description as describeText,
   builder,
-} from '../src/cmds/import';
-// XLSX description
-import { description as xlsx_description } from '../src/cmds/import_cmds/import_xlsx';
+} from '../../src/cmds/import';
+// CSV description
+import { description as csv_description } from '../../src/cmds/import_cmds/import_csv';
 
 // temp folder
 const TEMP_FOLDER = os.tmpdir();
 // test folders constants
-const ROOT_TEST_FOLDER = 'tests-for-import';
+const ROOT_TEST_FOLDER = 'tests-for-import-csv';
 const [VALID_TEST_FOLDER, USELESS_TEST_FOLDER] = [
     'correct', // folder where every file are correct
     'useless', // folder where file has an useless content
@@ -38,7 +38,7 @@ const parser = yargs.command(command, describeText, builder).help();
 type concat_cmd_type = (args: string[]) => string;
 type prepare_mandatory_args_type = (...args: [string, string, string[]]) => string[];
 const concat_cmd: concat_cmd_type = (args: string[]) =>
-  `import from_xlsx ${args.join(' ')}`;
+  `import from_csv ${args.join(' ')}`;
 const prepare_mandatory_args: prepare_mandatory_args_type = (
   ...[input, columns, ...locales]
 ) => ['--input', `"${input}"`, '--columns', `"${columns}"`, '--locales', locales.join(' ')];
@@ -85,7 +85,7 @@ async function expectError(cmd: string, ...messages: string[]) {
 // to access easier the paths of test file paths
 const test_files_list = [
     // inpput file
-    'export-xlsx.xlsx',
+    'export-csv.csv',
     // correct files
     'columns.json',
     'settings1.json',
@@ -118,8 +118,9 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
             (idx === 0) 
                 ? [
                     __dirname,
+                    "..",
                     "fixtures",
-                    "import-xlsx",
+                    "import-csv",
                     curr,
                 ]
                 : [
@@ -302,17 +303,17 @@ beforeAll(() => {
   return fsify(structure);
 });
 
-describe('[import_xlsx command]', () => {
+describe('[import_csv command]', () => {
 
     describe('Check command availability', () => {
-        it('Should list from_xlsx in import command', async () => {
+        it('Should list from_csv in import command', async () => {
           const output = await fetchOutput('import --help');
-          expect(output).toMatch('from_xlsx');
+          expect(output).toMatch('from_csv');
         });
     
-        it('Should display from_xlsx help output', async () => {
-          const output = await fetchOutput('import from_xlsx --help');
-          expect(output).toMatch(xlsx_description);
+        it('Should display from_csv help output', async () => {
+          const output = await fetchOutput('import from_csv --help');
+          expect(output).toMatch(csv_description);
         });
     });
 

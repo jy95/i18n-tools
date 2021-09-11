@@ -1,5 +1,6 @@
 // import command
 import import_xlsx from './import_cmds/import_xlsx';
+import import_csv from './import_cmds/import_csv';
 
 // named exports
 export const command = 'import <command>';
@@ -10,6 +11,7 @@ export const builder = function(y: any) {
     y
       // commandDir doesn't work very well in Typescript
       .command(import_xlsx)
+      .command(import_csv)
   );
 };
 

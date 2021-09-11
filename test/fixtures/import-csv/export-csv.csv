@@ -1,0 +1,11 @@
+Technical Key;French translation;Dutch translation;German translation
+Key with spaces[0].test;42 is the answer;42 is the answer;42 is the answer
+Missing key in DE;present;present;
+array[0];1 FR;1 NL;1 DE
+array[1];2 FR;2 NL;2 DE
+array[2];3 FR;3 NL;3 DE
+commons.myNestedArray[0];1 FR;1 NL;1 DE
+commons.myNestedArray[1];2 FR;2 NL;2 DE
+commons.myNestedArray[2];3 FR;3 NL;3 DE
+commons.myNestedKey;Hello world FR;Hello world NL;Hello world DE
+simpleKey;[FR] not setted key;[NL] not setted key;[DE] not setted key

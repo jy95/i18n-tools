@@ -1,9 +1,9 @@
-# @jy95/i18n-tools [![codecov](https://codecov.io/gh/jy95/i18n-tools/branch/master/graph/badge.svg?token=PQDE2R2GYR)](https://codecov.io/gh/jy95/i18n-tools)
+# @jy95/i18n-tools [![codecov](https://codecov.io/gh/jy95/i18n-tools/branch/master/graph/badge.svg?token=PQDE2R2GYR)](https://codecov.io/gh/jy95/i18n-tools) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/95593519673143d6a1e475c1d2c4332c)](https://www.codacy.com/gh/jy95/i18n-tools)
 
 CLI to make common operations around i18n files simpler.
 
-- 👩‍💻 Export i18n files into something else (xlsx, ...)
-- ✨ Turn a file (xlsx, ...) to i18n file(s)
+- 👩‍💻 Export i18n files into something else (xlsx, csv, ...)
+- ✨ Turn a file (xlsx, csv, ...) to i18n file(s)
 - 📜 Compare at least two i18n files and generate a report
 - ...
 

@@ -1,5 +1,6 @@
 // export command
 import export_xlsx from './export_cmds/export_xlsx';
+import export_csv from './export_cmds/export_csv';
 
 // named exports
 export const command = 'export <command>';
@@ -10,6 +11,7 @@ export const builder = function(y: any) {
     y
       // commandDir doesn't work very well in Typescript
       .command(export_xlsx)
+      .command(export_csv)
   );
 };
 /* istanbul ignore next */

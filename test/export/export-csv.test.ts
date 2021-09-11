@@ -6,14 +6,14 @@ import {
   command,
   description as describeText,
   builder,
-} from '../src/cmds/export';
-// XLSX description
-import { description as xlsx_description } from '../src/cmds/export_cmds/export_xlsx';
+} from '../../src/cmds/export';
+// CSV description
+import { description as csv_description } from '../../src/cmds/export_cmds/export_csv';
 
 // temp folder
 const TEMP_FOLDER = os.tmpdir();
 // test folders constants
-const ROOT_TEST_FOLDER = 'tests-for-export';
+const ROOT_TEST_FOLDER = 'tests-for-export-csv';
 const [VALID_TEST_FOLDER, USELESS_TEST_FOLDER] = [
   'correct', // folder where every file are correct
   'useless', // folder where file has an useless content ([])
@@ -86,7 +86,6 @@ const test_files_list = [
   'files.json',
   'settings1.json',
   'settings2.json',
-  'settings3.json',
   // wrong files
   'emptyObject.json',
   'emptyArray.json',
@@ -95,16 +94,12 @@ const test_files_list = [
   'columns-wrongPropValue.json',
   'columns-duplicatedValues.json',
   'columns-missingKey.json',
-  // wrong worksheetCustomizer implementations
-  'worksheetCustomizer-notAFunction.json',
-  'worksheetCustomizer-wrongArity.js'
 ] as const;
 const [
   TEST_FILE_EXPORT_COLUMNS,
   TEST_FILE_FILES,
   TEST_FILE_SETTINGS1,
   TEST_FILE_SETTINGS2,
-  TEST_FILE_SETTINGS3,
   TEST_FILE_EMPTY_OBJECT,
   TEST_FILE_EMPTY_ARRAY,
   TEST_FILE_FILES_DUP,
@@ -112,8 +107,6 @@ const [
   TEST_FILE_EXPORT_COLUMNS_WRONG_PROP,
   TEST_FILE_EXPORT_COLUMNS_DUP_VALS,
   TEST_FILE_EXPORT_COLUMNS_MISS_KEY,
-  TEST_FILE_WORKSHEETCUSTOMIZER_NAF,
-  TEST_FILE_WORKSHEETCUSTOMIZER_WA
 ] = test_files_list;
 type test_files_type = typeof test_files_list[number];
 
@@ -172,7 +165,6 @@ const structure: fsify_structure = [
                 VALID_TEST_FOLDER,
                 TEST_FILE_EXPORT_COLUMNS
               ),
-              worksheetName: 'Settings 1 - Worksheet',
               filename: 'settings1-output',
               outputDir: TEMP_FOLDER,
             }),
@@ -191,38 +183,10 @@ const structure: fsify_structure = [
                 )
               ),
               columns: EXPORT_COLUMNS(TRANSLATIONS_KEYS),
-              worksheetName: 'Settings 2 - Worksheet',
               filename: 'settings2-output',
               outputDir: TEMP_FOLDER,
             }),
           },
-          // Third format of settings.json (Include the worksheetCustomizer)
-          {
-            type: fsify.FILE,
-            name: TEST_FILE_SETTINGS3,
-            contents: JSON.stringify({
-              files: path.resolve(
-                TEMP_FOLDER,
-                ROOT_TEST_FOLDER,
-                VALID_TEST_FOLDER,
-                TEST_FILE_FILES
-              ),
-              columns: path.resolve(
-                TEMP_FOLDER,
-                ROOT_TEST_FOLDER,
-                VALID_TEST_FOLDER,
-                TEST_FILE_EXPORT_COLUMNS
-              ),
-              worksheetCustomizer: path.resolve(
-                __dirname,
-                "fixtures/export-xlsx",
-                "worksheetCustomizer-dynamic.js"
-              ),
-              worksheetName: 'Settings 3 - Worksheet',
-              filename: 'settings3-output',
-              outputDir: TEMP_FOLDER,
-            }),
-          }
         ]),
       },
       // In this folder, files used for validations
@@ -286,18 +250,6 @@ const structure: fsify_structure = [
               { locale: 'FR', label: 'French translation' },
             ]),
           },
-          // worksheetCustomer : not a function
-          {
-            type: fsify.FILE,
-            name: TEST_FILE_WORKSHEETCUSTOMIZER_NAF,
-            contents: JSON.stringify({"message": "helloWorld"})
-          },
-          // worksheetCustomer : wrong arity
-          {
-            type: fsify.FILE,
-            name: TEST_FILE_WORKSHEETCUSTOMIZER_WA,
-            contents: "module.exports = function() {}"
-          }
         ],
       },
     ],
@@ -311,7 +263,7 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
     let arr = [
       TEMP_FOLDER,
       ROOT_TEST_FOLDER,
-      idx < 5 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
+      idx < 4 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
       curr,
     ];
     acc[curr] = path.resolve(...arr);
@@ -371,7 +323,7 @@ async function expectError(cmd: string, ...messages: string[]) {
 type concat_cmd_type = (args: string[]) => string;
 type prepare_mandatory_args_type = (...args: string[]) => string[];
 const concat_cmd: concat_cmd_type = (args: string[]) =>
-  `export to_xlsx ${args.join(' ')}`;
+  `export to_csv ${args.join(' ')}`;
 const prepare_mandatory_args: prepare_mandatory_args_type = (
   ...args: string[]
 ) => ['--files', `"${args[0]}"`, '--columns', `"${args[1]}"`];
@@ -383,15 +335,15 @@ const VALIDATIONS_SCENARIOS : [
   ...string[]
 ][] = [
   [
-    // Test out the message : "Error: test.xlsx has an extension : Remove it please"
+    // Test out the message : "Error: test.csv has an extension : Remove it please"
     'Filename with extension should be rejected',
     [
       TEST_FILE_FILES,
       TEST_FILE_EXPORT_COLUMNS,
       '--filename',
-      `"test.xlsx"`,
+      `"test.csv"`,
     ],
-    'test.xlsx',
+    'test.csv',
     'extension',
   ],
   [
@@ -449,41 +401,19 @@ const VALIDATIONS_SCENARIOS : [
     'Options files & columns - incompatibles files should be rejected',
     [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS_MISS_KEY],
     'between files and columns',
-  ],
-  [
-    // Test out thhe message : "worksheetCustomizer is not an function or doesn't take an single argument"
-    'Option worksheetCustomizer - Not a function',
-    [
-      TEST_FILE_FILES,
-      TEST_FILE_EXPORT_COLUMNS,
-      "--worksheetCustomizer",
-      `"${TEST_FILES[TEST_FILE_WORKSHEETCUSTOMIZER_NAF]}"`
-    ],
-    "is not an function"
-  ],
-  [
-    // Test out thhe message : "worksheetCustomizer is not an function or doesn't take an single argument"
-    'Option worksheetCustomizer - Not the expected function arity',
-    [
-      TEST_FILE_FILES,
-      TEST_FILE_EXPORT_COLUMNS,
-      "--worksheetCustomizer",
-      `"${TEST_FILES[TEST_FILE_WORKSHEETCUSTOMIZER_WA]}"`
-    ],
-    "doesn't take an single argument"
-  ],
+  ]
 ];
 
-describe('[export_xlsx command]', () => {
+describe('[export_csv command]', () => {
   describe('Check command availability', () => {
-    it('Should list to_xlsx in export command', async () => {
+    it('Should list to_csv in export command', async () => {
       const output = await fetchOutput('export --help');
-      expect(output).toMatch('to_xlsx');
+      expect(output).toMatch('to_csv');
     });
 
-    it('Should display to_xlsx help output', async () => {
-      const output = await fetchOutput('export to_xlsx --help');
-      expect(output).toMatch(xlsx_description);
+    it('Should display to_csv help output', async () => {
+      const output = await fetchOutput('export to_csv --help');
+      expect(output).toMatch(csv_description);
     });
   });
 
@@ -541,8 +471,7 @@ describe('[export_xlsx command]', () => {
 
     test.each([
       ['(Paths)', TEST_FILE_SETTINGS1],
-      ['(Object/Array instead of Paths)', TEST_FILE_SETTINGS2],
-      ['(Include the worksheetCustomizer)', TEST_FILE_SETTINGS3]
+      ['(Object/Array instead of Paths)', TEST_FILE_SETTINGS2]
     ])(
       'settings.json %s',
       async (_title: string, settingsFile: test_files_type) => {
@@ -553,13 +482,13 @@ describe('[export_xlsx command]', () => {
         // example : 'settings1-output'
         let expectedFile = path.resolve(
           TEMP_FOLDER,
-          `${settingsFile.substring(0, settingsFile.length - 5)}-output.xlsx`
+          `${settingsFile.substring(0, settingsFile.length - 5)}-output.csv`
         );
         // run command
         //console.warn(test_cmd);
         await parser.parseAsync(test_cmd);
 
-        expect(consoleLog).toHaveBeenCalledWith('Preparing XLSX file ...');
+        expect(consoleLog).toHaveBeenCalledWith('Preparing CSV file ...');
         expect(consoleLog).toHaveBeenCalledWith(
           `${expectedFile} successfully written`
         );
