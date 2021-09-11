@@ -6,9 +6,9 @@ import {
   command,
   description as describeText,
   builder,
-} from '../src/cmds/export';
+} from '../../src/cmds/export';
 // XLSX description
-import { description as xlsx_description } from '../src/cmds/export_cmds/export_xlsx';
+import { description as xlsx_description } from '../../src/cmds/export_cmds/export_xlsx';
 
 // temp folder
 const TEMP_FOLDER = os.tmpdir();
