@@ -13,7 +13,7 @@ import { description as xlsx_description } from '../src/cmds/export_cmds/export_
 // temp folder
 const TEMP_FOLDER = os.tmpdir();
 // test folders constants
-const ROOT_TEST_FOLDER = 'tests-for-export';
+const ROOT_TEST_FOLDER = 'tests-for-export-xlsx';
 const [VALID_TEST_FOLDER, USELESS_TEST_FOLDER] = [
   'correct', // folder where every file are correct
   'useless', // folder where file has an useless content ([])

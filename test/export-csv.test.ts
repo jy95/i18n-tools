@@ -8,7 +8,7 @@ import {
   builder,
 } from '../src/cmds/export';
 // CSV description
-import { description as xlsx_description } from '../src/cmds/export_cmds/export_csv';
+import { description as csv_description } from '../src/cmds/export_cmds/export_csv';
 
 // temp folder
 const TEMP_FOLDER = os.tmpdir();
@@ -343,7 +343,7 @@ const VALIDATIONS_SCENARIOS : [
       '--filename',
       `"test.csv"`,
     ],
-    'test.xlsx',
+    'test.csv',
     'extension',
   ],
   [
@@ -413,7 +413,7 @@ describe('[export_csv command]', () => {
 
     it('Should display to_csv help output', async () => {
       const output = await fetchOutput('export to_csv --help');
-      expect(output).toMatch(xlsx_description);
+      expect(output).toMatch(csv_description);
     });
   });
 
