@@ -1,5 +1,6 @@
 // lodash methodes
 import isString from 'lodash/isString';
+import isFunction from 'lodash/isFunction';
 import isArray from 'lodash/isArray';
 import isEmpty from 'lodash/isEmpty';
 import some from 'lodash/some';
@@ -76,5 +77,25 @@ export const COLUMNS_AND_FILES_CHECK = async (argv: any) => {
   }
 };
 
+// validations for worksheetCustomizer option
+export const WORKSHEETCUSTOMIZER_CHECK = async (argv: any) => {
+  if ('worksheetCustomizer' in argv) {
+    let fct = argv.worksheetCustomizer as any;
+    if (isFunction(fct) && fct.length === 1) {
+      return true;
+    } else {
+      return new Error(
+        "worksheetCustomizer is not an function or doesn't take an single argument"
+      );
+    }
+  } else {
+    return true;
+  }
+};
+
 // export checks in expected order into a single array
-export const CHECKS = [COLUMNS_CHECK, COLUMNS_AND_FILES_CHECK];
+export const CHECKS = [
+  COLUMNS_CHECK,
+  COLUMNS_AND_FILES_CHECK,
+  WORKSHEETCUSTOMIZER_CHECK,
+];

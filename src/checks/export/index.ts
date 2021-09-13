@@ -6,4 +6,4 @@ export * as XLSX from "./export_xlsx_checks";
 
 // check for csv sub command
 // as it is identical (at that time) to xlsx, simply re-export same module
-export * as CSV from "./export_xlsx_checks"; 
+export * as CSV from "./export_csv_checks"; 

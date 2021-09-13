@@ -30,7 +30,7 @@ export interface CSVImportArguments extends CommonImportArguments {
   delimiter: ',' | ';' | '\t' | ' ' | '|';
   quote: '"' | string;
   escape: '"' | string;
-  encoding: 'utf8' | 'utf16le' | 'latin1'  
+  encoding: 'utf8' | 'utf16le' | 'latin1';
 }
 
 // Result after extract of input file

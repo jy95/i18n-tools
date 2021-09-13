@@ -1,5 +1,7 @@
 // reuse yargs Argv type
 import { Argv } from 'yargs';
+// reuse exceljs Worksheet type
+import { Worksheet } from 'exceljs';
 
 // Yargs export arguments
 export interface CommonExportArguments extends Argv {
@@ -16,7 +18,7 @@ export interface XLSXExportArguments extends CommonExportArguments {
     label: string;
   }[];
   worksheetName: string;
-  worksheetCustomizer?: string;
+  worksheetCustomizer?: string | ((x: Worksheet) => Promise<Worksheet>);
 }
 // Yargs export arguments for TO_CSV command
 export interface CSVExportArguments extends CommonExportArguments {

@@ -1,13 +1,12 @@
 // for fs ops
 import path from "path";
 import Excel from 'exceljs';
-
-// lodash methodes
-import isFunction from "lodash/isFunction";
+// reuse exceljs Worksheet type
+import { Worksheet } from "exceljs";
 
 // common fct
 import { merge_i18n_files, setUpCommonsOptions } from "./export_commons";
-import { parsePathToJSON } from "../../middlewares/middlewares";
+import { parsePathToJSON, parsePathToFunction } from "../../middlewares/middlewares";
 
 // checks import
 import { 
@@ -39,11 +38,12 @@ export const builder = function (y : Argv) {
             default: "Translations"
         })
         .option("worksheetCustomizer", {
-            type: "string",
             description: "Absolute path to a JS module to customize the generated xlsx, thanks to exceljs. This js file exports a default async function with the following signature : (worksheet : Excel.Worksheet) => Promise<Excel.Worksheet>"
         })
         // coerce columns into Object
         .middleware(parsePathToJSON("columns"), true)
+        // coerce worksheetCustomizer into function
+        .middleware(parsePathToFunction("worksheetCustomizer"), true)
         // validations
         .check(resolveChecksInOrder(CHECKS))
 }
@@ -89,13 +89,8 @@ async function export_as_excel(XLSX_FILE : string, argv : XLSXExportArguments, d
 
     // If worksheetCustomizer was set, give user total control on worksheet output 
     if (argv.worksheetCustomizer) {
-        let newWorksheetFct = require(argv.worksheetCustomizer);
-        if (isFunction(newWorksheetFct) && newWorksheetFct.length === 1) {
-            console.log("Applying worksheetCustomizer ...");
-            worksheet = await newWorksheetFct(worksheet)
-        } else {
-            return Promise.reject(new Error("worksheetCustomizer is not an function or doesn't take an single argument"));
-        }
+        console.log("Applying worksheetCustomizer ...");
+        worksheet = await (argv.worksheetCustomizer as (x: Worksheet) => Promise<Worksheet> )(worksheet);
     }
     
     // finally write this file

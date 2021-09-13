@@ -61,3 +61,14 @@ export function backupPaths(prop: string, backupKey: string) {
     return argv;
   };
 }
+
+// Turn path into function
+export function parsePathToFunction(prop: string) {
+  return async (argv: any) => {
+    let param = argv[prop] as string | ((x: any) => any) | undefined;
+    if (param) {
+      argv[prop] = isString(param) ? require(param) : param;
+    }
+    return argv;
+  };
+}
