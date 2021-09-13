@@ -87,6 +87,7 @@ const test_files_list = [
   'settings1.json',
   'settings2.json',
   'settings3.json',
+  'settings4.js',
   // wrong files
   'emptyObject.json',
   'emptyArray.json',
@@ -105,6 +106,7 @@ const [
   TEST_FILE_SETTINGS1,
   TEST_FILE_SETTINGS2,
   TEST_FILE_SETTINGS3,
+  TEST_FILE_SETTINGS4,
   TEST_FILE_EMPTY_OBJECT,
   TEST_FILE_EMPTY_ARRAY,
   TEST_FILE_FILES_DUP,
@@ -223,6 +225,21 @@ const structure: fsify_structure = [
               filename: 'settings3-output',
               outputDir: TEMP_FOLDER,
             }),
+          },
+          // First format of settings.js (Mixins config)
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_SETTINGS4,
+            // As fsify uses fs.writeFile, we need to double backslash stuff again
+            contents: `module.exports = {
+                "files": "${ path.resolve(TEMP_FOLDER, ROOT_TEST_FOLDER, VALID_TEST_FOLDER, TEST_FILE_FILES).replace(/\\/g, "\\\\") }",
+                "columns": "${ path.resolve(TEMP_FOLDER, ROOT_TEST_FOLDER, VALID_TEST_FOLDER, TEST_FILE_EXPORT_COLUMNS).replace(/\\/g, "\\\\") }",
+                "worksheetCustomizer" : async function(worksheet) { return worksheet },
+                "worksheetName": "Settings 4 - Worksheet",
+                "filename": 'settings4-output',
+                "outputDir": "${TEMP_FOLDER.replace(/\\/g, "\\\\")}"
+              }
+            `
           }
         ]),
       },
@@ -312,7 +329,7 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
     let arr = [
       TEMP_FOLDER,
       ROOT_TEST_FOLDER,
-      idx < 5 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
+      idx < 6 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
       curr,
     ];
     acc[curr] = path.resolve(...arr);
@@ -541,11 +558,12 @@ describe('[export_xlsx command]', () => {
     });
 
     test.each([
-      ['(Paths)', TEST_FILE_SETTINGS1],
-      ['(Object/Array instead of Paths)', TEST_FILE_SETTINGS2],
-      ['(Include worksheetCustomizer as string)', TEST_FILE_SETTINGS3]
+      ['settings.json (Paths)', TEST_FILE_SETTINGS1],
+      ['settings.json (Object/Array instead of Paths)', TEST_FILE_SETTINGS2],
+      ['settings.json (Include worksheetCustomizer as string)', TEST_FILE_SETTINGS3],
+      ["settings.js (Include worksheetCustomizer as fct)", TEST_FILE_SETTINGS4]
     ])(
-      'settings.json %s',
+      '%s',
       async (_title: string, settingsFile: test_files_type) => {
         let test_cmd = concat_cmd([
           '--settings',

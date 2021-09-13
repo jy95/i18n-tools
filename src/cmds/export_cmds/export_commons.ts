@@ -45,7 +45,10 @@ export function setUpCommonsOptions(y: Argv) {
             return `translations_${timestamp}`;
         })
         .config('settings', function (configPath) {
-            return JSON.parse(fs.readFileSync(configPath, 'utf-8'))
+            let ext = path.extname(configPath);
+            return (/\.js$/i.test(ext)) 
+                ? require(configPath) 
+                : JSON.parse(fs.readFileSync(configPath, 'utf-8'));
         })
         // coerce files into Object
         .middleware(parsePathToJSON("files"), true)
