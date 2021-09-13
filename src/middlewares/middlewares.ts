@@ -67,7 +67,7 @@ export function parsePathToFunction(prop: string) {
   return async (argv: any) => {
     let param = argv[prop] as string | ((x: any) => any) | undefined;
     if (param) {
-      argv[prop] = isString(param) ? require(param) : param;
+      argv[prop] = isString(param) ? require(param) /* istanbul ignore next */ : param;
     }
     return argv;
   };

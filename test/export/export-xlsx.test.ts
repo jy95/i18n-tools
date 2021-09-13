@@ -543,7 +543,7 @@ describe('[export_xlsx command]', () => {
     test.each([
       ['(Paths)', TEST_FILE_SETTINGS1],
       ['(Object/Array instead of Paths)', TEST_FILE_SETTINGS2],
-      ['(Include the worksheetCustomizer)', TEST_FILE_SETTINGS3]
+      ['(Include worksheetCustomizer as string)', TEST_FILE_SETTINGS3]
     ])(
       'settings.json %s',
       async (_title: string, settingsFile: test_files_type) => {
@@ -552,9 +552,10 @@ describe('[export_xlsx command]', () => {
           `"${TEST_FILES[settingsFile]}"`,
         ]);
         // example : 'settings1-output'
+        let filename = settingsFile.substring(0, settingsFile.lastIndexOf('.'));
         let expectedFile = path.resolve(
           TEMP_FOLDER,
-          `${settingsFile.substring(0, settingsFile.length - 5)}-output.xlsx`
+          `${filename}-output.xlsx`
         );
         // run command
         //console.warn(test_cmd);
