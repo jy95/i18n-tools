@@ -66,7 +66,7 @@
     "@size-limit/preset-small-lib": "^5.0.3",
     "@types/jest": "^26.0.24",
     "@types/lodash": "^4.14.172",
-    "@types/node": "^16.6.1",
+    "@types/node": "^16.9.1",
     "@types/yargs": "^17.0.2",
     "fsify": "^4.0.2",
     "husky": "^7.0.2",
