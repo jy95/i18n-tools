@@ -90,6 +90,7 @@ const test_files_list = [
   'emptyObject.json',
   'emptyArray.json',
   'files-duplicatedValues.json',
+  'files-invalidPath.json',
   'columns-missingLabelProp.json',
   'columns-wrongPropValue.json',
   'columns-duplicatedValues.json',
@@ -103,6 +104,7 @@ const [
   TEST_FILE_EMPTY_OBJECT,
   TEST_FILE_EMPTY_ARRAY,
   TEST_FILE_FILES_DUP,
+  TEST_FILE_FILES_INVALID,
   TEST_FILE_EXPORT_COLUMNS_MISS_PROP,
   TEST_FILE_EXPORT_COLUMNS_WRONG_PROP,
   TEST_FILE_EXPORT_COLUMNS_DUP_VALS,
@@ -220,6 +222,14 @@ const structure: fsify_structure = [
                 )
               )
             ),
+          },
+          // files.json with invalid path
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_FILES_INVALID,
+            contents: JSON.stringify({
+              "fr": "/not/a/valid/path/fr.json"
+            })
           },
           // columns.json with missing property (label)
           {
@@ -363,6 +373,12 @@ const VALIDATIONS_SCENARIOS : [
     'Option files - Duplicated values should be rejected',
     [TEST_FILE_FILES_DUP, TEST_FILE_EXPORT_COLUMNS],
     'duplicated value',
+  ],
+  [
+    // Test out the message : `${i18nPath} cannot be read : check permissions`
+    'Option files - invalid path(s) should be rejected',
+    [TEST_FILE_FILES_INVALID, TEST_FILE_EXPORT_COLUMNS],
+    'cannot be read'
   ],
   [
     // Test out the message : "columns is not a JSON Array"

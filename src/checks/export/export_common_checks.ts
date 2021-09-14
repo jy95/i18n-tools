@@ -29,36 +29,35 @@ export const FILES_CHECK = async (argv : any) => {
     if (uniq(Object.values(files)).length !== entries.length) {
         return new Error(`At least a duplicated value in files JSON object was detected`);
     }
-    return Promise.all(
-        entries.map( 
-            entry => verify_files_entry(entry)
-        )
-    ).then(_ => {
-        // validated
-        return true;
-    })
-    .catch(/* istanbul ignore next */ err => {
-        // failed
-        return err;
-    });
+
+    try {
+        await Promise.all(
+            entries.map( 
+                entry => verify_files_entry(entry)
+            )
+        );
+        return true;     
+    } catch (error) {
+        return error;
+    }
 }
 
 // verify if an entry from files option meet requirements
-async function verify_files_entry([_, i18nPath] : [string, any]) : Promise<boolean | Error> {
+async function verify_files_entry([_, i18nPath] : [string, any]) : Promise<boolean> {
     let potentialJSON;
     // check if file is readable
     try {
         await fs.promises.access(i18nPath);
         potentialJSON = await fs.promises.readFile(i18nPath);
     } catch (error) {
-        return Promise.reject(`${i18nPath} cannot be read : check permissions`);
+        return Promise.reject(new Error(`${i18nPath} cannot be read : check permissions`));
     }
     // check if the file is a JSON
     try {
         JSON.parse(potentialJSON.toString());
         return Promise.resolve(true);
     } catch (error) {
-        return Promise.reject(`${i18nPath} isn't a valid JSON`);
+        return Promise.reject(new Error(`${i18nPath} isn't a valid JSON`));
     }
 }
 
