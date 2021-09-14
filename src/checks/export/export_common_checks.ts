@@ -38,12 +38,12 @@ export const FILES_CHECK = async (argv : any) => {
         );
         return true;     
     } catch (error) {
-        return error;
+        return error as Error;
     }
 }
 
 // verify if an entry from files option meet requirements
-async function verify_files_entry([_, i18nPath] : [string, any]) : Promise<boolean> {
+async function verify_files_entry([_, i18nPath] : [string, any]) : Promise<boolean |  Error> {
     let potentialJSON;
     // check if file is readable
     try {
