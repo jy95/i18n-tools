@@ -5,7 +5,7 @@ import Excel from 'exceljs';
 import { Worksheet } from "exceljs";
 
 // common fct
-import { merge_i18n_files, setUpCommonsOptions } from "./export_commons";
+import { merge_i18n_files, CommonExportYargsBuilder } from "./export_commons";
 import { parsePathToJSON, parsePathToFunction } from "../../middlewares/middlewares";
 
 // checks import
@@ -26,24 +26,50 @@ const CHECKS = [...EXPORT_CHECKS.CHECKS, ...EXPORT_CHECKS.XLSX.CHECKS];
 export const command = "to_xlsx";
 export const description = "Export i18n files into a xlsx file, created by exceljs";
 
+// Builder for yargs
+export class XlsxExportYargsBuilder extends CommonExportYargsBuilder {
+    addColumnsOption() {
+        this.y = this.y
+            .option("columns", {
+                description: "Absolute path to a JSON array of objects, to control the columns. Example : [{ \"locale\": \"FR\", \"label\": \"French translation\" }]",
+                demandOption: true
+            })
+            // coerce columns into Object
+            .middleware(parsePathToJSON("columns"), true);
+        return this;
+    }
+
+    addWorksheetCustomizerOption() {
+        this.y = this.y
+            .option("worksheetCustomizer", {
+                description: "Absolute path to a JS module to customize the generated xlsx, thanks to exceljs. This js file exports a default async function with the following signature : (worksheet : Excel.Worksheet) => Promise<Excel.Worksheet>"
+            })
+            // coerce worksheetCustomizer into function
+            .middleware(parsePathToFunction("worksheetCustomizer"), true);
+        return this;
+    }
+
+    addWorksheetNameOption() {
+        this.y = this.y
+            .option("worksheetName", {
+                type: "string",
+                description: "Name of the worksheet",
+                default: "Translations"
+            });
+        return this;
+    }
+}
+
 export const builder = function (y : Argv) {
-    return setUpCommonsOptions(y) // set up common options for export
-        .option("columns", {
-            description: "Absolute path to a JSON array of objects, to control the columns. Example : [{ \"locale\": \"FR\", \"label\": \"French translation\" }]",
-            demandOption: true
-        })
-        .option("worksheetName", {
-            type: "string",
-            description: "Name of the worksheet",
-            default: "Translations"
-        })
-        .option("worksheetCustomizer", {
-            description: "Absolute path to a JS module to customize the generated xlsx, thanks to exceljs. This js file exports a default async function with the following signature : (worksheet : Excel.Worksheet) => Promise<Excel.Worksheet>"
-        })
-        // coerce columns into Object
-        .middleware(parsePathToJSON("columns"), true)
-        // coerce worksheetCustomizer into function
-        .middleware(parsePathToFunction("worksheetCustomizer"), true)
+    return new XlsxExportYargsBuilder(y)
+        .addFilesOption()
+        .addFilenameOption()
+        .addOutputDirOption()
+        .addSettingConfig()
+        .addColumnsOption()
+        .addWorksheetCustomizerOption()
+        .addWorksheetNameOption()
+        .build()
         // validations
         .check(resolveChecksInOrder(CHECKS))
 }

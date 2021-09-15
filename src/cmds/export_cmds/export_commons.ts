@@ -24,7 +24,7 @@ import getLeavesPathes from "../../commons/getLeavesPathes";
 export class CommonExportYargsBuilder {
     y : Argv<{[x: string]: any}>; // current yargs result
 
-    constructor(y: Argv) {
+    constructor(y: Argv<{[x: string]: any}>) {
         this.y = y;
     }
 
@@ -83,17 +83,6 @@ export class CommonExportYargsBuilder {
         return this.y;
     }
 }
-
-// configure export commands with the common options in the builder step
-export function setUpCommonsOptions(y: Argv) {
-    return new CommonExportYargsBuilder(y)
-        .addFilesOption()
-        .addFilenameOption()
-        .addOutputDirOption()
-        .addSettingConfig()
-        .build();
-}
-
 
 // turns n i18n file(s) into a merged version
 export function merge_i18n_files(argv : CommonExportArguments) : Promise<I18N_Merged_Data> {
