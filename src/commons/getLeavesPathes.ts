@@ -9,14 +9,14 @@ export default function getLeavesPathes(dataObj: any): string[] {
     let paths = [key];
     if (isObject(val)) {
       paths = reduce(val, reducer, []);
-      paths = paths.map(path => key + '.' + path);
+      paths = paths.map((path) => key + '.' + path);
     }
     aggregator.push(...paths);
     return aggregator;
   };
   const arrayIndexRegEx = /\.(\d+)(?!\w+)/gi;
   let paths = reduce(dataObj, reducer, []);
-  paths = paths.map(path => path.replace(arrayIndexRegEx, '[$1]'));
+  paths = paths.map((path) => path.replace(arrayIndexRegEx, '[$1]'));
 
   return paths;
 }

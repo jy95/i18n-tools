@@ -2,7 +2,7 @@
 // (So I can easily update this script in the future)
 //import { Worksheet } from "exceljs";
 
-module.exports = async function(worksheet /*: Worksheet*/) {
+module.exports = async function (worksheet /*: Worksheet*/) {
   // Conditionaly formatting (to better view stuff)
   let rowCount = worksheet.rowCount;
   let columnCount = worksheet.columnCount;

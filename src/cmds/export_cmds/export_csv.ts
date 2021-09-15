@@ -92,7 +92,7 @@ export class CsvExportYargsBuilder extends CommonExportYargsBuilder {
   }
 }
 
-export const builder = function(y: Argv) {
+export const builder = function (y: Argv) {
   return (
     new CsvExportYargsBuilder(y)
       .addFilesOption()
@@ -112,7 +112,7 @@ export const builder = function(y: Argv) {
   );
 };
 
-export const handler = async function(argv: CSVExportArguments) {
+export const handler = async function (argv: CSVExportArguments) {
   try {
     let data: I18N_Merged_Data = await merge_i18n_files(argv);
     const CSV_FILE = path.resolve(argv.outputDir, argv.filename + '.csv');
@@ -148,7 +148,7 @@ async function export_as_csv(
 
   // workaround as Exceljs doesn't support nested key
   worksheet.addRows(
-    data.map(item =>
+    data.map((item) =>
       argv.columns.reduce(
         (acc: { [x: string]: string }, { locale }) => {
           acc[`labels.${locale}`] = item['labels'][locale] || '';

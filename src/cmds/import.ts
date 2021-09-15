@@ -6,7 +6,7 @@ import import_csv from './import_cmds/import_csv';
 export const command = 'import <command>';
 export const description = 'Turn a file to i18n file(s)';
 
-export const builder = function(y: any) {
+export const builder = function (y: any) {
   return (
     y
       // commandDir doesn't work very well in Typescript
@@ -16,7 +16,7 @@ export const builder = function(y: any) {
 };
 
 /* istanbul ignore next */
-export const handler = function(_: any) {};
+export const handler = function (_: any) {};
 
 // default export
 export default {

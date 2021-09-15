@@ -27,13 +27,14 @@ export const COLUMNS_CHECK = async (argv: any) => {
     {
       message: (prop: string) =>
         `At least one item in columns array doesn't have "${prop}" property`,
-      errorDetected: (prop: string) => some(columns, item => !has(item, prop)),
+      errorDetected: (prop: string) =>
+        some(columns, (item) => !has(item, prop)),
     },
     {
       message: (prop: string) =>
         `At least one item in columns array doesn't have "${prop}" property with a String value`,
       errorDetected: (prop: string) =>
-        some(columns, item => !isString(get(item, prop))),
+        some(columns, (item) => !isString(get(item, prop))),
     },
     {
       message: (prop: string) =>
@@ -49,7 +50,7 @@ export const COLUMNS_CHECK = async (argv: any) => {
     if (acc instanceof Error) {
       return acc;
     } else {
-      let error = find(errors_detectors, rule => rule.errorDetected(prop));
+      let error = find(errors_detectors, (rule) => rule.errorDetected(prop));
       if (error) {
         return new Error(error.message(prop));
       } else {
