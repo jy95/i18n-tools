@@ -22,7 +22,7 @@ import getLeavesPathes from "../../commons/getLeavesPathes";
 
 // Builder for yargs
 export class CommonExportYargsBuilder {
-    y; // current yargs result
+    y : Argv<{[x: string]: any}>; // current yargs result
 
     constructor(y: Argv) {
         this.y = y;
