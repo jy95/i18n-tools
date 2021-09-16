@@ -99,6 +99,7 @@ const test_files_list = [
   // to test out the json reporter
   'settings1-JSON.json',
   'settings2-JSON.json',
+  'settings3-JSON.js',
   // TODO test out future reporters
 ] as const;
 const [
@@ -107,6 +108,7 @@ const [
   TEST_FILE_FILE3,
   TEST_FILE_JSON_SETTINGS1,
   TEST_FILE_JSON_SETTINGS2,
+  TEST_FILE_JSON_SETTINGS3,
 ] = test_files_list;
 type test_files_type = typeof test_files_list[number];
 
@@ -116,7 +118,7 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
     acc[curr] = path.resolve(
       TEMP_FOLDER,
       ROOT_TEST_FOLDER,
-      idx < 6 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
+      idx < 7 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
       curr
     );
     return acc;
@@ -186,6 +188,19 @@ const structure: fsify_structure = [
                 (file) => TEST_FILES[file]
               ),
             }),
+          },
+          // js file
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_JSON_SETTINGS3,
+            contents: `module.exports = {
+              filename: 'diff_settings3-JSON',
+              outputDir: "${TEMP_FOLDER.replace(/\\/g, '\\\\')}",
+              outputFormat: 'JSON',
+              files: [${[TEST_FILE_FILE1, TEST_FILE_FILE2]
+                .map((file) => `"${TEST_FILES[file].replace(/\\/g, '\\\\')}"`)
+                .join(',')}]
+            }`,
           },
         ],
       },
@@ -322,6 +337,41 @@ const E2E_JSON_REPORTER: [
           from: 'file2',
           to: 'file3',
           newValue: 'Present',
+        },
+      ],
+    },
+  ],
+  [
+    'should work with js config file',
+    [[TEST_FILE_JSON_SETTINGS3]],
+    path.resolve(TEMP_FOLDER, 'diff_settings3-JSON.json'),
+    {
+      files: {
+        file1: TEST_FILES[TEST_FILE_FILE1],
+        file2: TEST_FILES[TEST_FILE_FILE2],
+      },
+      changes: [
+        {
+          from: 'file1',
+          key: 'commons.nestedKey.changedValue',
+          newValue: 'Changed value 1',
+          oldValue: 'Changed value 0',
+          to: 'file2',
+          type: 'REPLACED',
+        },
+        {
+          from: 'file1',
+          key: 'commons.conditionalDeletedKey',
+          oldValue: 'Present',
+          to: 'file2',
+          type: 'DELETE',
+        },
+        {
+          from: 'file1',
+          key: 'commons.array[1]',
+          newValue: 'Paul',
+          to: 'file2',
+          type: 'ADD',
         },
       ],
     },
