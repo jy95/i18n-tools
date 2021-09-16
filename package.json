@@ -64,9 +64,9 @@
   ],
   "devDependencies": {
     "@size-limit/preset-small-lib": "^5.0.3",
-    "@types/jest": "^26.0.24",
-    "@types/lodash": "^4.14.172",
-    "@types/node": "^16.9.1",
+    "@types/jest": "^27.0.1",
+    "@types/lodash": "^4.14.173",
+    "@types/node": "^16.9.2",
     "@types/yargs": "^17.0.2",
     "dts-cli": "^0.17.1",
     "fsify": "^4.0.2",
@@ -85,7 +85,10 @@
   "eslintConfig": {
     "overrides": [
       {
-        "files": ["*.ts","*.js"],
+        "files": [
+          "*.ts",
+          "*.js"
+        ],
         "rules": {
           "import/no-anonymous-default-export": "off"
         }
