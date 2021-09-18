@@ -99,6 +99,7 @@ const test_files_list = [
   'columns.json',
   'settings1.json',
   'settings2.json',
+  'settings3.js',
   // wrong files
   'emptyObject.json',
   'emptyArray.json',
@@ -112,6 +113,7 @@ const [
   TEST_FILE_COLUMNS,
   TEST_FILE_SETTINGS1,
   TEST_FILE_SETTINGS2,
+  TEST_FILE_SETTINGS3,
   TEST_FILE_EMPTY_OBJECT,
   TEST_FILE_EMPTY_ARRAY,
   TEST_FILE_COLUMNS_TKNS,
@@ -129,7 +131,7 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
         : [
             TEMP_FOLDER,
             ROOT_TEST_FOLDER,
-            idx > 0 && idx < 4 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
+            idx > 0 && idx < 5 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
             curr,
           ];
     acc[curr] = path.resolve(...arr);
@@ -244,6 +246,26 @@ const structure: fsify_structure = [
               outputDir: path.resolve(TEMP_FOLDER, ROOT_TEST_FOLDER),
               suffix: '_settings2',
             }),
+          },
+          // First format of settings.js (Mixins config)
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_SETTINGS3,
+            // As fsify uses fs.writeFile, we need to double backslash stuff again
+            contents: `module.exports = {
+              "input": "${TEST_FILES[TEST_FILE_INPUT].replace(/\\/g, '\\\\')}",
+              "columns": {
+                "technical_key": 'Technical Key',
+                "locales": {
+                  "FR": 'French translation',
+                  "NL": 'Dutch translation',
+                  "DE": 'German translation'
+                }
+              },
+              "locales": ['FR', 'NL', 'DE'],
+              "outputDir": "${TEMP_FOLDER.replace(/\\/g, '\\\\')}",
+              "suffix": '_settings3',
+            }`,
           },
         ],
       },
@@ -380,21 +402,19 @@ describe('[import_xlsx command]', () => {
     test.each([
       ['(Paths)', TEST_FILE_SETTINGS1],
       ['(Object/Array instead of Paths)', TEST_FILE_SETTINGS2],
-    ])(
-      'settings.json %s',
-      async (_title: string, settingsFile: test_files_type) => {
-        let test_cmd = concat_cmd([
-          '--settings',
-          `"${TEST_FILES[settingsFile]}"`,
-        ]);
-        // run command
-        //console.warn(test_cmd);
-        await parser.parseAsync(test_cmd);
+      ['should work with js config file', TEST_FILE_SETTINGS3],
+    ])('settings %s', async (_title: string, settingsFile: test_files_type) => {
+      let test_cmd = concat_cmd([
+        '--settings',
+        `"${TEST_FILES[settingsFile]}"`,
+      ]);
+      // run command
+      //console.warn(test_cmd);
+      await parser.parseAsync(test_cmd);
 
-        expect(consoleLog).toHaveBeenCalledWith(
-          'Successfully exported found locale(s) to i18n json file(s)'
-        );
-      }
-    );
+      expect(consoleLog).toHaveBeenCalledWith(
+        'Successfully exported found locale(s) to i18n json file(s)'
+      );
+    });
   });
 });
