@@ -44,12 +44,12 @@ const locale_label = (locale: string) => `${KEYS_LABEL[locale]} translation`;
 const generate_i18n = (locale: string) => ({
   commons: {
     myNestedKey: `Hello world ${locale}`,
-    myNestedArray: ['1', '2', '3'].map(item => `${item} ${locale}`)
+    myNestedArray: ['1', '2', '3'].map((item) => `${item} ${locale}`),
   },
-  array: ['1', '2', '3'].map(item => `${item} ${locale}`),
+  array: ['1', '2', '3'].map((item) => `${item} ${locale}`),
   simpleKey: `[${locale}] not setted key`,
-  "Key with spaces": [ {"test": "42 is the answer"} ],
-  "Missing key in DE": (locale !== TRANSLATIONS_KEYS[2]) ? "present" : undefined
+  'Key with spaces': [{ test: '42 is the answer' }],
+  'Missing key in DE': locale !== TRANSLATIONS_KEYS[2] ? 'present' : undefined,
 });
 
 // Export files
@@ -64,7 +64,7 @@ const generate_files = (
 
 // Export columns
 const EXPORT_COLUMNS = (locales: string[]) =>
-  locales.map(locale => ({
+  locales.map((locale) => ({
     locale,
     label: locale_label(locale),
   }));
@@ -87,17 +87,19 @@ const test_files_list = [
   'settings1.json',
   'settings2.json',
   'settings3.json',
+  'settings4.js',
   // wrong files
   'emptyObject.json',
   'emptyArray.json',
   'files-duplicatedValues.json',
+  'files-invalidPath.json',
   'columns-missingLabelProp.json',
   'columns-wrongPropValue.json',
   'columns-duplicatedValues.json',
   'columns-missingKey.json',
   // wrong worksheetCustomizer implementations
   'worksheetCustomizer-notAFunction.json',
-  'worksheetCustomizer-wrongArity.js'
+  'worksheetCustomizer-wrongArity.js',
 ] as const;
 const [
   TEST_FILE_EXPORT_COLUMNS,
@@ -105,15 +107,17 @@ const [
   TEST_FILE_SETTINGS1,
   TEST_FILE_SETTINGS2,
   TEST_FILE_SETTINGS3,
+  TEST_FILE_SETTINGS4,
   TEST_FILE_EMPTY_OBJECT,
   TEST_FILE_EMPTY_ARRAY,
   TEST_FILE_FILES_DUP,
+  TEST_FILE_FILES_INVALID,
   TEST_FILE_EXPORT_COLUMNS_MISS_PROP,
   TEST_FILE_EXPORT_COLUMNS_WRONG_PROP,
   TEST_FILE_EXPORT_COLUMNS_DUP_VALS,
   TEST_FILE_EXPORT_COLUMNS_MISS_KEY,
   TEST_FILE_WORKSHEETCUSTOMIZER_NAF,
-  TEST_FILE_WORKSHEETCUSTOMIZER_WA
+  TEST_FILE_WORKSHEETCUSTOMIZER_WA,
 ] = test_files_list;
 type test_files_type = typeof test_files_list[number];
 
@@ -129,7 +133,7 @@ const structure: fsify_structure = [
         name: VALID_TEST_FOLDER,
         contents: flat([
           // 3 i18n files
-          TRANSLATIONS_KEYS.map(locale => ({
+          TRANSLATIONS_KEYS.map((locale) => ({
             type: fsify.FILE,
             name: `${locale.toLowerCase()}.json`,
             contents: JSON.stringify(generate_i18n(locale)),
@@ -145,7 +149,7 @@ const structure: fsify_structure = [
             type: fsify.FILE,
             name: TEST_FILE_FILES,
             contents: JSON.stringify(
-              generate_files(TRANSLATIONS_KEYS, locale =>
+              generate_files(TRANSLATIONS_KEYS, (locale) =>
                 path.resolve(
                   TEMP_FOLDER,
                   ROOT_TEST_FOLDER,
@@ -182,7 +186,7 @@ const structure: fsify_structure = [
             type: fsify.FILE,
             name: TEST_FILE_SETTINGS2,
             contents: JSON.stringify({
-              files: generate_files(TRANSLATIONS_KEYS, locale =>
+              files: generate_files(TRANSLATIONS_KEYS, (locale) =>
                 path.resolve(
                   TEMP_FOLDER,
                   ROOT_TEST_FOLDER,
@@ -215,15 +219,44 @@ const structure: fsify_structure = [
               ),
               worksheetCustomizer: path.resolve(
                 __dirname,
-                "..",
-                "fixtures/export-xlsx",
-                "worksheetCustomizer-dynamic.js"
+                '..',
+                'fixtures/export-xlsx',
+                'worksheetCustomizer-dynamic.js'
               ),
               worksheetName: 'Settings 3 - Worksheet',
               filename: 'settings3-output',
               outputDir: TEMP_FOLDER,
             }),
-          }
+          },
+          // First format of settings.js (Mixins config)
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_SETTINGS4,
+            // As fsify uses fs.writeFile, we need to double backslash stuff again
+            contents: `module.exports = {
+                "files": "${path
+                  .resolve(
+                    TEMP_FOLDER,
+                    ROOT_TEST_FOLDER,
+                    VALID_TEST_FOLDER,
+                    TEST_FILE_FILES
+                  )
+                  .replace(/\\/g, '\\\\')}",
+                "columns": "${path
+                  .resolve(
+                    TEMP_FOLDER,
+                    ROOT_TEST_FOLDER,
+                    VALID_TEST_FOLDER,
+                    TEST_FILE_EXPORT_COLUMNS
+                  )
+                  .replace(/\\/g, '\\\\')}",
+                "worksheetCustomizer" : async function(worksheet) { return worksheet },
+                "worksheetName": "Settings 4 - Worksheet",
+                "filename": 'settings4-output',
+                "outputDir": "${TEMP_FOLDER.replace(/\\/g, '\\\\')}"
+              }
+            `,
+          },
         ]),
       },
       // In this folder, files used for validations
@@ -248,7 +281,7 @@ const structure: fsify_structure = [
             type: fsify.FILE,
             name: TEST_FILE_FILES_DUP,
             contents: JSON.stringify(
-              generate_files(TRANSLATIONS_KEYS, _ =>
+              generate_files(TRANSLATIONS_KEYS, (_) =>
                 path.resolve(
                   TEMP_FOLDER,
                   ROOT_TEST_FOLDER,
@@ -257,6 +290,14 @@ const structure: fsify_structure = [
                 )
               )
             ),
+          },
+          // files.json with invalid path
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_FILES_INVALID,
+            contents: JSON.stringify({
+              fr: '/not/a/valid/path/fr.json',
+            }),
           },
           // columns.json with missing property (label)
           {
@@ -291,14 +332,14 @@ const structure: fsify_structure = [
           {
             type: fsify.FILE,
             name: TEST_FILE_WORKSHEETCUSTOMIZER_NAF,
-            contents: JSON.stringify({"message": "helloWorld"})
+            contents: JSON.stringify({ message: 'helloWorld' }),
           },
           // worksheetCustomer : wrong arity
           {
             type: fsify.FILE,
             name: TEST_FILE_WORKSHEETCUSTOMIZER_WA,
-            contents: "module.exports = function() {}"
-          }
+            contents: 'module.exports = function() {}',
+          },
         ],
       },
     ],
@@ -312,7 +353,7 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
     let arr = [
       TEMP_FOLDER,
       ROOT_TEST_FOLDER,
-      idx < 5 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
+      idx < 6 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
       curr,
     ];
     acc[curr] = path.resolve(...arr);
@@ -331,7 +372,7 @@ const parser = yargs.command(command, describeText, builder).help();
 
 // return the output of a given command to the parser
 function fetchOutput(cmd: string): Promise<string> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     parser.parse(cmd, (_err: Error | undefined, _argv: any, output: string) => {
       resolve(output);
     });
@@ -345,18 +386,18 @@ async function expectError(cmd: string, ...messages: string[]) {
   // In tests, I had to make sure yargs doesn't override error for the following reason :
   // Even when validation failed, it somehow can go to handler()
   let isFirstError = true;
-  
+
   // add fail() handler
   // Because of problem explained above, I had to ignore if an error occurs afterwards
   try {
     await parser
-    .fail((_, e) => {
-      if (isFirstError) {
-        isFirstError = false;
-        error = e;
-      }
-    })
-    .parseAsync(cmd);    
+      .fail((_, e) => {
+        if (isFirstError) {
+          isFirstError = false;
+          error = e;
+        }
+      })
+      .parseAsync(cmd);
   } catch (_) {}
   // check if error was set
   expect(error).not.toEqual(undefined);
@@ -378,20 +419,11 @@ const prepare_mandatory_args: prepare_mandatory_args_type = (
 ) => ['--files', `"${args[0]}"`, '--columns', `"${args[1]}"`];
 
 // test scenarios for validations
-const VALIDATIONS_SCENARIOS : [
-  string,
-  string[],
-  ...string[]
-][] = [
+const VALIDATIONS_SCENARIOS: [string, string[], ...string[]][] = [
   [
     // Test out the message : "Error: test.xlsx has an extension : Remove it please"
     'Filename with extension should be rejected',
-    [
-      TEST_FILE_FILES,
-      TEST_FILE_EXPORT_COLUMNS,
-      '--filename',
-      `"test.xlsx"`,
-    ],
+    [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS, '--filename', `"test.xlsx"`],
     'test.xlsx',
     'extension',
   ],
@@ -399,7 +431,7 @@ const VALIDATIONS_SCENARIOS : [
     // Test out the message : "Option files is not a JSON Object"
     'Option files - unexpected file should be rejected',
     [TEST_FILE_EMPTY_ARRAY, TEST_FILE_EXPORT_COLUMNS],
-    'not a JSON Object'
+    'not a JSON Object',
   ],
   [
     // Test out the message : "Option files should have at least one entry"
@@ -412,6 +444,12 @@ const VALIDATIONS_SCENARIOS : [
     'Option files - Duplicated values should be rejected',
     [TEST_FILE_FILES_DUP, TEST_FILE_EXPORT_COLUMNS],
     'duplicated value',
+  ],
+  [
+    // Test out the message : `${i18nPath} cannot be read : check permissions`
+    'Option files - invalid path(s) should be rejected',
+    [TEST_FILE_FILES_INVALID, TEST_FILE_EXPORT_COLUMNS],
+    'cannot be read',
   ],
   [
     // Test out the message : "columns is not a JSON Array"
@@ -457,10 +495,10 @@ const VALIDATIONS_SCENARIOS : [
     [
       TEST_FILE_FILES,
       TEST_FILE_EXPORT_COLUMNS,
-      "--worksheetCustomizer",
-      `"${TEST_FILES[TEST_FILE_WORKSHEETCUSTOMIZER_NAF]}"`
+      '--worksheetCustomizer',
+      `"${TEST_FILES[TEST_FILE_WORKSHEETCUSTOMIZER_NAF]}"`,
     ],
-    "is not an function"
+    'is not an function',
   ],
   [
     // Test out thhe message : "worksheetCustomizer is not an function or doesn't take an single argument"
@@ -468,10 +506,10 @@ const VALIDATIONS_SCENARIOS : [
     [
       TEST_FILE_FILES,
       TEST_FILE_EXPORT_COLUMNS,
-      "--worksheetCustomizer",
-      `"${TEST_FILES[TEST_FILE_WORKSHEETCUSTOMIZER_WA]}"`
+      '--worksheetCustomizer',
+      `"${TEST_FILES[TEST_FILE_WORKSHEETCUSTOMIZER_WA]}"`,
     ],
-    "doesn't take an single argument"
+    "doesn't take an single argument",
   ],
 ];
 
@@ -502,24 +540,26 @@ describe('[export_xlsx command]', () => {
       }
     });
 
-    test.each(VALIDATIONS_SCENARIOS)('%s', async (_title: string, args: string[], ...messages: string[]) => {
-      let [files, columns, ...otherArgs] = args;
-      let test_cmd = concat_cmd([
-        // mandatory args
-        ...prepare_mandatory_args(
-          TEST_FILES[files as test_files_type],
-          TEST_FILES[columns as test_files_type]
-        ),
-        // optional args
-        ...otherArgs,
-      ]);
-      //console.warn(test_cmd);
-      // Test out if error message is thrown
-      await expectError(test_cmd, ...messages);
-    });
+    test.each(VALIDATIONS_SCENARIOS)(
+      '%s',
+      async (_title: string, args: string[], ...messages: string[]) => {
+        let [files, columns, ...otherArgs] = args;
+        let test_cmd = concat_cmd([
+          // mandatory args
+          ...prepare_mandatory_args(
+            TEST_FILES[files as test_files_type],
+            TEST_FILES[columns as test_files_type]
+          ),
+          // optional args
+          ...otherArgs,
+        ]);
+        //console.warn(test_cmd);
+        // Test out if error message is thrown
+        await expectError(test_cmd, ...messages);
+      }
+    );
   });
 
-  
   describe('E2E successful scenarios', () => {
     // mock console.log
     let consoleLog: any;
@@ -541,31 +581,29 @@ describe('[export_xlsx command]', () => {
     });
 
     test.each([
-      ['(Paths)', TEST_FILE_SETTINGS1],
-      ['(Object/Array instead of Paths)', TEST_FILE_SETTINGS2],
-      ['(Include the worksheetCustomizer)', TEST_FILE_SETTINGS3]
-    ])(
-      'settings.json %s',
-      async (_title: string, settingsFile: test_files_type) => {
-        let test_cmd = concat_cmd([
-          '--settings',
-          `"${TEST_FILES[settingsFile]}"`,
-        ]);
-        // example : 'settings1-output'
-        let expectedFile = path.resolve(
-          TEMP_FOLDER,
-          `${settingsFile.substring(0, settingsFile.length - 5)}-output.xlsx`
-        );
-        // run command
-        //console.warn(test_cmd);
-        await parser.parseAsync(test_cmd);
+      ['settings.json (Paths)', TEST_FILE_SETTINGS1],
+      ['settings.json (Object/Array instead of Paths)', TEST_FILE_SETTINGS2],
+      [
+        'settings.json (Include worksheetCustomizer as string)',
+        TEST_FILE_SETTINGS3,
+      ],
+      ['settings.js (Include worksheetCustomizer as fct)', TEST_FILE_SETTINGS4],
+    ])('%s', async (_title: string, settingsFile: test_files_type) => {
+      let test_cmd = concat_cmd([
+        '--settings',
+        `"${TEST_FILES[settingsFile]}"`,
+      ]);
+      // example : 'settings1-output'
+      let filename = settingsFile.substring(0, settingsFile.lastIndexOf('.'));
+      let expectedFile = path.resolve(TEMP_FOLDER, `${filename}-output.xlsx`);
+      // run command
+      //console.warn(test_cmd);
+      await parser.parseAsync(test_cmd);
 
-        expect(consoleLog).toHaveBeenCalledWith('Preparing XLSX file ...');
-        expect(consoleLog).toHaveBeenCalledWith(
-          `${expectedFile} successfully written`
-        );
-      }
-    );
+      expect(consoleLog).toHaveBeenCalledWith('Preparing XLSX file ...');
+      expect(consoleLog).toHaveBeenCalledWith(
+        `${expectedFile} successfully written`
+      );
+    });
   });
-  
 });

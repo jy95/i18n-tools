@@ -15,7 +15,7 @@ export const COLUMNS_CHECK = async (argv: any) => {
   }
 
   // check presence of required properties
-  let missingProp = find(REQUIRED_PROPERTIES, prop => !has(columns, prop));
+  let missingProp = find(REQUIRED_PROPERTIES, (prop) => !has(columns, prop));
   if (missingProp) {
     return new Error(`${missingProp} couldn't be found in columns object`);
   }
@@ -31,7 +31,7 @@ export const COLUMNS_CHECK = async (argv: any) => {
   }
 
   // check if locales values all are string
-  if (!Object.values(columns.locales).every(v => isString(v))) {
+  if (!Object.values(columns.locales).every((v) => isString(v))) {
     return new Error(
       "At least one value for locales key in columns object isn't a string"
     );

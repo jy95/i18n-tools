@@ -126,6 +126,7 @@ This command helps you to turn them into a single xlsx file such as [this one](.
     { label: 'Paths', value: 'settings1', },
     { label: 'Objects/Arrays', value: 'settings2', },
     { label: 'Customize xlsx file', value: 'settings3', },
+    { label: 'Settings.js', value: 'settings4', },
   ]
 }>
 
@@ -320,4 +321,110 @@ module.exports = async function(worksheet /*: Worksheet*/) {
 };
 ```
 </TabItem>
+
+<TabItem value="settings4">
+
+```bash
+npx @jy95/i18n-tools export to_xlsx --settings "/absolutePath/to/settings4.js"
+```
+
+```js title="settings4.js"
+// I keep in comments the stuff needed for the typings
+// (So I can easily update this script in the future)
+//import { Worksheet } from "exceljs";
+
+module.exports = {
+  files2: ["fr", "nl", "de"].reduce(
+    (prev, curr) =>
+      Object.assign(prev, {
+        [curr.toUpperCase()]: `D:\\TEMP\\TEMP\\tests-for-export\\correct\\${curr}.json`,
+      }),
+    {}
+  ),
+  columns: [
+    ["FR", "French translation"],
+    ["NL", "Dutch translation"],
+    ["DE", "German translation"],
+  ].map(([locale, label]) => ({ locale: locale, label: label })),
+  worksheetCustomizer: async function (worksheet /*: Worksheet*/) {
+    // Conditionaly formatting (to better view stuff)
+    let rowCount = worksheet.rowCount;
+    let columnCount = worksheet.columnCount;
+
+    // for easiness in the future, for arbitrary number of translations
+    // As table have a least one language (starting to 'B'), pretty simple to compute last column letter
+    let lastColumnLetter = String.fromCharCode(66 + (columnCount - 2));
+
+    // domain for rules ; All the cells
+    // Ex : "B2:D" + rowCount + 2" for three languages
+    let computedRef = `B2:${lastColumnLetter + rowCount + 2}`;
+
+    worksheet.addConditionalFormatting({
+      ref: computedRef,
+      rules: [
+        // cell is empty : put it in red
+        {
+          type: "containsText",
+          operator: "containsBlanks",
+          style: {
+            fill: {
+              type: "pattern",
+              pattern: "solid",
+              bgColor: { argb: "FF5733" },
+            },
+          },
+          priority: 1,
+        },
+        // cell contains either [FR], [NL] or [DE] : put it in orange
+        {
+          type: "containsText",
+          operator: "containsText",
+          text: "[FR]",
+          style: {
+            fill: {
+              type: "pattern",
+              pattern: "solid",
+              bgColor: { argb: "FF9633" },
+            },
+          },
+          priority: 2,
+        },
+        {
+          type: "containsText",
+          operator: "containsText",
+          text: "[NL]",
+          style: {
+            fill: {
+              type: "pattern",
+              pattern: "solid",
+              bgColor: { argb: "FF9633" },
+            },
+          },
+          priority: 2,
+        },
+        {
+          type: "containsText",
+          operator: "containsText",
+          text: "[DE]",
+          style: {
+            fill: {
+              type: "pattern",
+              pattern: "solid",
+              bgColor: { argb: "FF9633" },
+            },
+          },
+          priority: 2,
+        },
+      ],
+    });
+    return worksheet;
+  },
+  worksheetName: "Settings 4 - Worksheet",
+  filename: "settings4-output",
+  outputDir: "D:\\TEMP\\TEMP"
+};
+```
+
+</TabItem>
+
 </Tabs>

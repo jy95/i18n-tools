@@ -1,7 +1,7 @@
 import { DiffExportParameters } from '../../../types/diffTypes';
 import toJSON from './toJSON';
 
-export default async function(params: DiffExportParameters) {
+export default async function (params: DiffExportParameters) {
   switch (params.yargs.outputFormat) {
     case 'JSON':
       return toJSON(params);

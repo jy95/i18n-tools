@@ -6,7 +6,7 @@ import export_csv from './export_cmds/export_csv';
 export const command = 'export <command>';
 export const description = 'Export i18n files into something else';
 
-export const builder = function(y: any) {
+export const builder = function (y: any) {
   return (
     y
       // commandDir doesn't work very well in Typescript
@@ -15,7 +15,7 @@ export const builder = function(y: any) {
   );
 };
 /* istanbul ignore next */
-export const handler = function(_: any) {};
+export const handler = function (_: any) {};
 
 // default export
 export default {

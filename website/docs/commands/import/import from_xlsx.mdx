@@ -125,6 +125,7 @@ This command helps you to turn this into several i18n json files :
   values={[
     { label: 'Paths', value: 'settings1', },
     { label: 'Objects/Arrays', value: 'settings2', },
+    { label: 'Settings.js', value: 'settings3', },
   ]
 }>
 
@@ -188,6 +189,36 @@ npx @jy95/i18n-tools import from_xlsx --settings "/absolutePath/to/settings2.jso
 }
 ```
 
+</TabItem>
+
+<TabItem value="settings3">
+
+```bash
+npx @jy95/i18n-tools import from_xlsx --settings "/absolutePath/to/settings3.js"
+```
+
+```js title="settings3.js"
+module.exports = {
+  input: "D:\\workspace\\i18n-tools\\test\\fixtures\\import-xlsx\\export-xlsx.xlsx",
+  columns: {
+    technical_key: "Technical Key",
+    locales: [
+      ["FR", "French translation"],
+      ["NL", "Dutch translation"],
+      ["DE", "German translation"],
+    ].reduce(
+      (prev, [locale, label]) =>
+        Object.assign(prev, {
+          [locale]: label,
+        }),
+      {}
+    ),
+  },
+  locales: ["FR", "NL", "DE"],
+  outputDir: "D:\\TEMP\\TEMP\\tests-for-import",
+  suffix: "_settings3",
+};
+```
 </TabItem>
 
 </Tabs>

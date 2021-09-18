@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { DiffExportParameters } from '../../../types/diffTypes';
 
-export default async function(params: DiffExportParameters) {
+export default async function (params: DiffExportParameters) {
   let filename = path.resolve(
     params.yargs.outputDir,
     `${params.yargs.filename}.json`

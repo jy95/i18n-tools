@@ -44,12 +44,12 @@ const locale_label = (locale: string) => `${KEYS_LABEL[locale]} translation`;
 const generate_i18n = (locale: string) => ({
   commons: {
     myNestedKey: `Hello world ${locale}`,
-    myNestedArray: ['1', '2', '3'].map(item => `${item} ${locale}`)
+    myNestedArray: ['1', '2', '3'].map((item) => `${item} ${locale}`),
   },
-  array: ['1', '2', '3'].map(item => `${item} ${locale}`),
+  array: ['1', '2', '3'].map((item) => `${item} ${locale}`),
   simpleKey: `[${locale}] not setted key`,
-  "Key with spaces": [ {"test": "42 is the answer"} ],
-  "Missing key in DE": (locale !== TRANSLATIONS_KEYS[2]) ? "present" : undefined
+  'Key with spaces': [{ test: '42 is the answer' }],
+  'Missing key in DE': locale !== TRANSLATIONS_KEYS[2] ? 'present' : undefined,
 });
 
 // Export files
@@ -64,7 +64,7 @@ const generate_files = (
 
 // Export columns
 const EXPORT_COLUMNS = (locales: string[]) =>
-  locales.map(locale => ({
+  locales.map((locale) => ({
     locale,
     label: locale_label(locale),
   }));
@@ -90,6 +90,7 @@ const test_files_list = [
   'emptyObject.json',
   'emptyArray.json',
   'files-duplicatedValues.json',
+  'files-invalidPath.json',
   'columns-missingLabelProp.json',
   'columns-wrongPropValue.json',
   'columns-duplicatedValues.json',
@@ -103,6 +104,7 @@ const [
   TEST_FILE_EMPTY_OBJECT,
   TEST_FILE_EMPTY_ARRAY,
   TEST_FILE_FILES_DUP,
+  TEST_FILE_FILES_INVALID,
   TEST_FILE_EXPORT_COLUMNS_MISS_PROP,
   TEST_FILE_EXPORT_COLUMNS_WRONG_PROP,
   TEST_FILE_EXPORT_COLUMNS_DUP_VALS,
@@ -122,7 +124,7 @@ const structure: fsify_structure = [
         name: VALID_TEST_FOLDER,
         contents: flat([
           // 3 i18n files
-          TRANSLATIONS_KEYS.map(locale => ({
+          TRANSLATIONS_KEYS.map((locale) => ({
             type: fsify.FILE,
             name: `${locale.toLowerCase()}.json`,
             contents: JSON.stringify(generate_i18n(locale)),
@@ -138,7 +140,7 @@ const structure: fsify_structure = [
             type: fsify.FILE,
             name: TEST_FILE_FILES,
             contents: JSON.stringify(
-              generate_files(TRANSLATIONS_KEYS, locale =>
+              generate_files(TRANSLATIONS_KEYS, (locale) =>
                 path.resolve(
                   TEMP_FOLDER,
                   ROOT_TEST_FOLDER,
@@ -174,7 +176,7 @@ const structure: fsify_structure = [
             type: fsify.FILE,
             name: TEST_FILE_SETTINGS2,
             contents: JSON.stringify({
-              files: generate_files(TRANSLATIONS_KEYS, locale =>
+              files: generate_files(TRANSLATIONS_KEYS, (locale) =>
                 path.resolve(
                   TEMP_FOLDER,
                   ROOT_TEST_FOLDER,
@@ -211,7 +213,7 @@ const structure: fsify_structure = [
             type: fsify.FILE,
             name: TEST_FILE_FILES_DUP,
             contents: JSON.stringify(
-              generate_files(TRANSLATIONS_KEYS, _ =>
+              generate_files(TRANSLATIONS_KEYS, (_) =>
                 path.resolve(
                   TEMP_FOLDER,
                   ROOT_TEST_FOLDER,
@@ -220,6 +222,14 @@ const structure: fsify_structure = [
                 )
               )
             ),
+          },
+          // files.json with invalid path
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_FILES_INVALID,
+            contents: JSON.stringify({
+              fr: '/not/a/valid/path/fr.json',
+            }),
           },
           // columns.json with missing property (label)
           {
@@ -282,7 +292,7 @@ const parser = yargs.command(command, describeText, builder).help();
 
 // return the output of a given command to the parser
 function fetchOutput(cmd: string): Promise<string> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     parser.parse(cmd, (_err: Error | undefined, _argv: any, output: string) => {
       resolve(output);
     });
@@ -296,18 +306,18 @@ async function expectError(cmd: string, ...messages: string[]) {
   // In tests, I had to make sure yargs doesn't override error for the following reason :
   // Even when validation failed, it somehow can go to handler()
   let isFirstError = true;
-  
+
   // add fail() handler
   // Because of problem explained above, I had to ignore if an error occurs afterwards
   try {
     await parser
-    .fail((_, e) => {
-      if (isFirstError) {
-        isFirstError = false;
-        error = e;
-      }
-    })
-    .parseAsync(cmd);    
+      .fail((_, e) => {
+        if (isFirstError) {
+          isFirstError = false;
+          error = e;
+        }
+      })
+      .parseAsync(cmd);
   } catch (_) {}
   // check if error was set
   expect(error).not.toEqual(undefined);
@@ -329,20 +339,11 @@ const prepare_mandatory_args: prepare_mandatory_args_type = (
 ) => ['--files', `"${args[0]}"`, '--columns', `"${args[1]}"`];
 
 // test scenarios for validations
-const VALIDATIONS_SCENARIOS : [
-  string,
-  string[],
-  ...string[]
-][] = [
+const VALIDATIONS_SCENARIOS: [string, string[], ...string[]][] = [
   [
     // Test out the message : "Error: test.csv has an extension : Remove it please"
     'Filename with extension should be rejected',
-    [
-      TEST_FILE_FILES,
-      TEST_FILE_EXPORT_COLUMNS,
-      '--filename',
-      `"test.csv"`,
-    ],
+    [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS, '--filename', `"test.csv"`],
     'test.csv',
     'extension',
   ],
@@ -350,7 +351,7 @@ const VALIDATIONS_SCENARIOS : [
     // Test out the message : "Option files is not a JSON Object"
     'Option files - unexpected file should be rejected',
     [TEST_FILE_EMPTY_ARRAY, TEST_FILE_EXPORT_COLUMNS],
-    'not a JSON Object'
+    'not a JSON Object',
   ],
   [
     // Test out the message : "Option files should have at least one entry"
@@ -363,6 +364,12 @@ const VALIDATIONS_SCENARIOS : [
     'Option files - Duplicated values should be rejected',
     [TEST_FILE_FILES_DUP, TEST_FILE_EXPORT_COLUMNS],
     'duplicated value',
+  ],
+  [
+    // Test out the message : `${i18nPath} cannot be read : check permissions`
+    'Option files - invalid path(s) should be rejected',
+    [TEST_FILE_FILES_INVALID, TEST_FILE_EXPORT_COLUMNS],
+    'cannot be read',
   ],
   [
     // Test out the message : "columns is not a JSON Array"
@@ -401,7 +408,7 @@ const VALIDATIONS_SCENARIOS : [
     'Options files & columns - incompatibles files should be rejected',
     [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS_MISS_KEY],
     'between files and columns',
-  ]
+  ],
 ];
 
 describe('[export_csv command]', () => {
@@ -431,24 +438,26 @@ describe('[export_csv command]', () => {
       }
     });
 
-    test.each(VALIDATIONS_SCENARIOS)('%s', async (_title: string, args: string[], ...messages: string[]) => {
-      let [files, columns, ...otherArgs] = args;
-      let test_cmd = concat_cmd([
-        // mandatory args
-        ...prepare_mandatory_args(
-          TEST_FILES[files as test_files_type],
-          TEST_FILES[columns as test_files_type]
-        ),
-        // optional args
-        ...otherArgs,
-      ]);
-      //console.warn(test_cmd);
-      // Test out if error message is thrown
-      await expectError(test_cmd, ...messages);
-    });
+    test.each(VALIDATIONS_SCENARIOS)(
+      '%s',
+      async (_title: string, args: string[], ...messages: string[]) => {
+        let [files, columns, ...otherArgs] = args;
+        let test_cmd = concat_cmd([
+          // mandatory args
+          ...prepare_mandatory_args(
+            TEST_FILES[files as test_files_type],
+            TEST_FILES[columns as test_files_type]
+          ),
+          // optional args
+          ...otherArgs,
+        ]);
+        //console.warn(test_cmd);
+        // Test out if error message is thrown
+        await expectError(test_cmd, ...messages);
+      }
+    );
   });
 
-  
   describe('E2E successful scenarios', () => {
     // mock console.log
     let consoleLog: any;
@@ -471,7 +480,7 @@ describe('[export_csv command]', () => {
 
     test.each([
       ['(Paths)', TEST_FILE_SETTINGS1],
-      ['(Object/Array instead of Paths)', TEST_FILE_SETTINGS2]
+      ['(Object/Array instead of Paths)', TEST_FILE_SETTINGS2],
     ])(
       'settings.json %s',
       async (_title: string, settingsFile: test_files_type) => {
@@ -495,5 +504,4 @@ describe('[export_csv command]', () => {
       }
     );
   });
-  
 });

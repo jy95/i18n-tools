@@ -218,6 +218,7 @@ This command generates a report (in JSON by default) that shows change(s) betwee
   values={[
     { label: 'With two files', value: 'settings1', },
     { label: 'With three files', value: 'settings2', },
+    { label: 'Settings.js', value: 'settings3', },
   ]
 }>
 
@@ -260,6 +261,25 @@ npx @jy95/i18n-tools diff --settings "/absolutePath/to/settings2.json"
 }
 ```
 
+</TabItem>
+
+<TabItem value="settings3">
+
+```bash
+npx @jy95/i18n-tools diff --settings "/absolutePath/to/settings3.js"
+```
+
+```js title="settings3.js"
+module.exports = {
+   "filename":"diff_settings3-JSON",
+   "outputDir":"D:\\TEMP\\TEMP",
+   "outputFormat":"JSON",
+   "files":[
+      "D:\\TEMP\\fr_v0.json",
+      "D:\\TEMP\\fr_v1.json"
+   ]
+}
+```
 </TabItem>
 
 </Tabs>
