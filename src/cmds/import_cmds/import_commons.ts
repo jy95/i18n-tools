@@ -12,28 +12,59 @@ import {
   extractedTranslation,
 } from '../../types/importTypes';
 
-// configure import commands with the common options in the builder step
-export function setUpCommonsOptions(y: Argv) {
-  return (
-    y
-      .options('input', {
-        type: 'string',
-        describe:
-          'Absolute path to a file that will be used as source to generate i18n file(s)',
-        demandOption: true,
-      })
+// Builder for yargs
+export class CommonImporttYargsBuilder {
+  y: Argv<{ [x: string]: any }>; // current yargs result
+
+  constructor(y: Argv<{ [x: string]: any }>) {
+    this.y = y;
+  }
+
+  addInputOption() {
+    this.y = this.y.options('input', {
+      type: 'string',
+      describe:
+        'Absolute path to a file that will be used as source to generate i18n file(s)',
+      demandOption: true,
+    });
+    return this;
+  }
+
+  addOutputDir() {
+    this.y = this.y
       .option('outputDir', {
         type: 'string',
         alias: 'od',
         describe: 'Output folder where to store the output file(s)',
         default: process.cwd(),
       })
-      .options('locales', {
-        type: 'array',
-        describe:
-          'Array of locales (such as ["FR", "NL"]) that will be used to generate i18n file(s)',
-        demandOption: true,
-      })
+      // coerce path provided by outputDir
+      .coerce(['outputDir'], path.resolve);
+    return this;
+  }
+
+  addSettingConfig() {
+    this.y = this.y.config('settings', function (configPath) {
+      let ext = path.extname(configPath);
+      return /\.js$/i.test(ext)
+        ? require(configPath)
+        : JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    });
+    return this;
+  }
+
+  addLocalesOption() {
+    this.y = this.y.options('locales', {
+      type: 'array',
+      describe:
+        'Array of locales (such as ["FR", "NL"]) that will be used to generate i18n file(s)',
+      demandOption: true,
+    });
+    return this;
+  }
+
+  addSuffixOption() {
+    this.y = this.y
       .option('suffix', {
         type: 'string',
         describe:
@@ -45,13 +76,13 @@ export function setUpCommonsOptions(y: Argv) {
           date.getMonth() + 1
         }-${date.getFullYear()} ${date.getHours()}h${date.getMinutes()}m${date.getSeconds()}`;
         return `_${timestamp}`;
-      })
-      .config('settings', function (configPath) {
-        return JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-      })
-      // coerce path provided by outputDir
-      .coerce(['outputDir'], path.resolve)
-  );
+      });
+    return this;
+  }
+
+  build() {
+    return this.y;
+  }
 }
 
 // generate filepaths for locales

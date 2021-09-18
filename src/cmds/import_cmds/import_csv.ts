@@ -2,7 +2,7 @@ import Excel from 'exceljs';
 
 // common fct
 import {
-  setUpCommonsOptions,
+  CommonImporttYargsBuilder,
   generate_i18n_filepaths,
   extractedTranslations_to_i18n_files,
 } from './import_commons';
@@ -26,37 +26,71 @@ const CHECKS = [...IMPORT_CHECKS.CHECKS, ...IMPORT_CHECKS.CSV.CHECKS];
 export const command = 'from_csv';
 export const description = 'Turn a csv file to i18n file(s)';
 
-export const builder = function (y: Argv) {
-  return (
-    setUpCommonsOptions(y) // set up common options for import
+export class CsvImportYargsBuilder extends CommonImporttYargsBuilder {
+  addColumnsOption() {
+    this.y = this.y
       .options('columns', {
         describe:
           'Absolute path to a JSON object that describe headers of the excel columns used to store translations',
         demandOption: true,
       })
-      .option('delimiter', {
-        description: 'Specify an field delimiter such as | or \\t',
-        choices: [',', ';', '\t', ' ', '|'],
-        default: ';',
-      })
-      .option('quote', {
-        description: 'String used to quote fields that contain a delimiter',
-        type: 'string',
-        default: '"',
-      })
-      .option('escape', {
-        description:
-          'The character used when escaping a value that is quoted and contains a quote character that is not the end of the field',
-        type: 'string',
-        default: '"',
-      })
-      .option('encoding', {
-        description: 'Input file encoding',
-        choices: ['utf8', 'utf16le', 'latin1'],
-        default: 'utf8',
-      })
       // coerce columns into Object
-      .middleware(parsePathToJSON('columns'), true)
+      .middleware(parsePathToJSON('columns'), true);
+    return this;
+  }
+
+  addDelimiterOption() {
+    this.y = this.y.option('delimiter', {
+      description: 'Specify an field delimiter such as | or \\t',
+      choices: [',', ';', '\t', ' ', '|'],
+      default: ';',
+    });
+    return this;
+  }
+
+  addQuoteOption() {
+    this.y = this.y.option('quote', {
+      description: 'String used to quote fields that contain a delimiter',
+      type: 'string',
+      default: '"',
+    });
+    return this;
+  }
+
+  addEscapeOption() {
+    this.y = this.y.option('escape', {
+      description:
+        'The character used when escaping a value that is quoted and contains a quote character that is not the end of the field',
+      type: 'string',
+      default: '"',
+    });
+    return this;
+  }
+
+  addEncodingOption() {
+    this.y = this.y.option('encoding', {
+      description: 'Input file encoding',
+      choices: ['utf8', 'utf16le', 'latin1'],
+      default: 'utf8',
+    });
+    return this;
+  }
+}
+
+export const builder = function (y: Argv) {
+  return (
+    new CsvImportYargsBuilder(y)
+      .addInputOption()
+      .addLocalesOption()
+      .addOutputDir()
+      .addSuffixOption()
+      .addColumnsOption()
+      .addDelimiterOption()
+      .addQuoteOption()
+      .addEscapeOption()
+      .addEncodingOption()
+      .addSettingConfig()
+      .build()
       // validations
       .check(resolveChecksInOrder(CHECKS))
   );

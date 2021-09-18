@@ -2,7 +2,7 @@ import Excel from 'exceljs';
 
 // common fct
 import {
-  setUpCommonsOptions,
+  CommonImporttYargsBuilder,
   generate_i18n_filepaths,
   extractedTranslations_to_i18n_files,
 } from './import_commons';
@@ -26,16 +26,30 @@ const CHECKS = [...IMPORT_CHECKS.CHECKS, ...IMPORT_CHECKS.XLSX.CHECKS];
 export const command = 'from_xlsx';
 export const description = 'Turn a xlsx file to i18n file(s)';
 
-export const builder = function (y: Argv) {
-  return (
-    setUpCommonsOptions(y) // set up common options for import
+export class XlsxImportYargsBuilder extends CommonImporttYargsBuilder {
+  addColumnsOption() {
+    this.y = this.y
       .options('columns', {
         describe:
           'Absolute path to a JSON object that describe headers of the excel columns used to store translations',
         demandOption: true,
       })
       // coerce columns into Object
-      .middleware(parsePathToJSON('columns'), true)
+      .middleware(parsePathToJSON('columns'), true);
+    return this;
+  }
+}
+
+export const builder = function (y: Argv) {
+  return (
+    new XlsxImportYargsBuilder(y)
+      .addInputOption()
+      .addLocalesOption()
+      .addOutputDir()
+      .addSuffixOption()
+      .addColumnsOption()
+      .addSettingConfig()
+      .build()
       // validations
       .check(resolveChecksInOrder(CHECKS))
   );
