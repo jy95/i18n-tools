@@ -126,7 +126,7 @@ This command helps you to turn them into a single xlsx file such as [this one](.
     { label: 'Paths', value: 'settings1', },
     { label: 'Objects/Arrays', value: 'settings2', },
     { label: 'Customize xlsx file', value: 'settings3', },
-    { label: 'settings.js', value: 'settings4', },
+    { label: 'Settings.js', value: 'settings4', },
   ]
 }>
 
@@ -328,7 +328,7 @@ module.exports = async function(worksheet /*: Worksheet*/) {
 npx @jy95/i18n-tools export to_xlsx --settings "/absolutePath/to/settings4.js"
 ```
 
-```json title="settings4.js"
+```js title="settings4.js"
 // I keep in comments the stuff needed for the typings
 // (So I can easily update this script in the future)
 //import { Worksheet } from "exceljs";
@@ -421,7 +421,7 @@ module.exports = {
   },
   worksheetName: "Settings 4 - Worksheet",
   filename: "settings4-output",
-  outputDir: "D:\\TEMP\\TEMP",
+  outputDir: "D:\\TEMP\\TEMP"
 };
 ```
 

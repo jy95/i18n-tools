@@ -136,7 +136,8 @@ simpleKey;[FR] not setted key;[NL] not setted key;[DE] not setted key
   defaultValue="settings1"
   values={[
     { label: 'Paths', value: 'settings1', },
-    { label: 'Objects/Arrays', value: 'settings2', }
+    { label: 'Objects/Arrays', value: 'settings2', },
+    { label: 'Settings.js', value: 'settings3',  }
   ]
 }>
 
@@ -211,6 +212,32 @@ npx @jy95/i18n-tools export to_csv --settings "/absolutePath/to/settings2.json"
    "filename":"settings2-output",
    "outputDir":"D:\\TEMP\\TEMP"
 }
+```
+</TabItem>
+
+<TabItem value="settings3">
+
+```bash
+npx @jy95/i18n-tools export to_csv --settings "/absolutePath/to/settings3.js"
+```
+
+```js title="settings3.js"
+module.exports = {
+  files: ["fr", "nl", "de"].reduce(
+    (prev, curr) =>
+      Object.assign(prev, {
+        [curr.toUpperCase()]: `D:\\TEMP\\TEMP\\tests-for-export\\correct\\${curr}.json`,
+      }),
+    {}
+  ),
+  columns: [
+    ["FR", "French translation"],
+    ["NL", "Dutch translation"],
+    ["DE", "German translation"],
+  ].map(([locale, label]) => ({ locale: locale, label: label })),
+  filename: "settings3-output",
+  outputDir: "D:\\TEMP\\TEMP"
+};
 ```
 </TabItem>
 
