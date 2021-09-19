@@ -3,6 +3,7 @@ import path from 'path';
 
 // lodash methodes
 import isPlainObject from 'lodash/isPlainObject';
+import isFunction from 'lodash/isFunction';
 import isEmpty from 'lodash/isEmpty';
 import uniq from 'lodash/uniq';
 
@@ -63,5 +64,21 @@ async function verify_files_entry([_, i18nPath]: [string, any]): Promise<
   }
 }
 
+// validations for resultsFilter option
+export const RESULTSFILTER_CHECK = async (argv: any) => {
+  if ('resultsFilter' in argv) {
+    let fct = argv.resultsFilter as any;
+    if (isFunction(fct) && fct.length === 1) {
+      return true;
+    } else {
+      return new Error(
+        "resultsFilter is not an function or doesn't take an single argument"
+      );
+    }
+  } else {
+    return true;
+  }
+};
+
 // export checks in expected order into a single array
-export const CHECKS = [FILENAME_CHECK, FILES_CHECK];
+export const CHECKS = [FILENAME_CHECK, FILES_CHECK, RESULTSFILTER_CHECK];
