@@ -14,7 +14,10 @@ import {
 } from '../../types/exportTypes';
 
 // middelware
-import { parsePathToJSON } from '../../middlewares/middlewares';
+import {
+  parsePathToJSON,
+  parsePathToFunction,
+} from '../../middlewares/middlewares';
 import getLeavesPathes from '../../commons/getLeavesPathes';
 type I18N_Object = { [x: string]: string | Array<any> | I18N_Object };
 type I18N_Result = {
@@ -72,6 +75,17 @@ export class CommonExportYargsBuilder {
       })
       // coerce path provided by outputDir
       .coerce(['outputDir'], path.resolve);
+    return this;
+  }
+
+  addResultsFilterOption() {
+    this.y = this.y
+      .option('resultsFilter', {
+        description:
+          'Absolute path to a JS module to filter rows that will be exported. This js file exports a default function with the following signature : (x: I18N_Merged_Data) => I18N_Merged_Data)',
+      })
+      // coerce resultsFilter into function
+      .middleware(parsePathToFunction('resultsFilter'), true);
     return this;
   }
 

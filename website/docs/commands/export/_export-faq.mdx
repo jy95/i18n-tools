@@ -1,0 +1,76 @@
+<details>
+<summary>I only want a subset of the data. How can I achieve that ?</summary>
+
+Simply add the `resultsFilter` option in your `settings.json` or `settings.js` :
+
+:::tip
+
+Reminder - the type of the function parameter :
+```ts
+type I18N_Merged_Data = {
+  technical_key: string;
+  labels: {
+    [locale: string]: string;
+  };
+}[];
+```
+
+:::
+
+```js title="settings.js"
+"resultsFilter": function(data /*: I18N_Merged_Data*/) {
+  return data.filter((row) => 
+    Object
+      .values(row.labels)
+      // Only takes rows that have at least one empty label or contains a given prefix
+      .some(
+        (label) =>
+          label.length === 0 ||
+          ["[FR]", "[NL]", "[DE]"].some((prefix) => label.startsWith(prefix))
+      )
+  );
+}
+```
+
+OR 
+
+```json title="settings.json"
+"resultsFilter": "D:\\TEMP\\TEMP\\resultsFilter.js"
+```
+
+```js title="resultsFilter.js"
+module.exports = function(data /*: I18N_Merged_Data*/) {
+  return data.filter((row) => 
+    Object
+      .values(row.labels)
+      // Only takes rows that have at least one empty label or contains a given prefix
+      .some(
+        (label) =>
+          label.length === 0 ||
+          ["[FR]", "[NL]", "[DE]"].some((prefix) => label.startsWith(prefix))
+      )
+  );
+}
+```
+
+</details> 
+
+<details>
+<summary>I want the locales in a given order in the result file. How can I achieve that ?</summary>
+
+Simply update the `columns` option with your given order in your `settings.json` or `settings.js`, such as :
+
+```js title="settings.js"
+"columns": [
+  {
+      "locale":"NL",
+      "label":"Dutch translation"
+  },
+  {
+      "locale":"FR",
+      "label":"French translation"
+  }
+]
+```
+
+</details>

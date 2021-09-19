@@ -84,6 +84,7 @@ const test_files_list = [
   // correct files
   'columns.json',
   'files.json',
+  'resultsFilter.js',
   'settings1.json',
   'settings2.json',
   'settings3.json',
@@ -100,10 +101,14 @@ const test_files_list = [
   // wrong worksheetCustomizer implementations
   'worksheetCustomizer-notAFunction.json',
   'worksheetCustomizer-wrongArity.js',
+  // wrong resultsFilter implementations
+  'resultsFilter-notAFunction.json',
+  'resultsFilter-wrongArity.js',
 ] as const;
 const [
   TEST_FILE_EXPORT_COLUMNS,
   TEST_FILE_FILES,
+  TEST_FILE_RESULTSFILTER,
   TEST_FILE_SETTINGS1,
   TEST_FILE_SETTINGS2,
   TEST_FILE_SETTINGS3,
@@ -118,6 +123,8 @@ const [
   TEST_FILE_EXPORT_COLUMNS_MISS_KEY,
   TEST_FILE_WORKSHEETCUSTOMIZER_NAF,
   TEST_FILE_WORKSHEETCUSTOMIZER_WA,
+  TEST_FILE_RESULTSFILTER_NAF,
+  TEST_FILE_RESULTSFILTER_WA,
 ] = test_files_list;
 type test_files_type = typeof test_files_list[number];
 
@@ -158,6 +165,12 @@ const structure: fsify_structure = [
                 )
               )
             ),
+          },
+          // resultsFilter.js
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_RESULTSFILTER,
+            contents: `module.exports = function(data) { return data }`,
           },
           // First format of settings.json (Path)
           {
@@ -200,7 +213,7 @@ const structure: fsify_structure = [
               outputDir: TEMP_FOLDER,
             }),
           },
-          // Third format of settings.json (Include the worksheetCustomizer)
+          // Third format of settings.json (Include the worksheetCustomizer / resultsFilter)
           {
             type: fsify.FILE,
             name: TEST_FILE_SETTINGS3,
@@ -222,6 +235,12 @@ const structure: fsify_structure = [
                 '..',
                 'fixtures/export-xlsx',
                 'worksheetCustomizer-dynamic.js'
+              ),
+              resultsFilter: path.resolve(
+                TEMP_FOLDER,
+                ROOT_TEST_FOLDER,
+                VALID_TEST_FOLDER,
+                TEST_FILE_RESULTSFILTER
               ),
               worksheetName: 'Settings 3 - Worksheet',
               filename: 'settings3-output',
@@ -251,6 +270,7 @@ const structure: fsify_structure = [
                   )
                   .replace(/\\/g, '\\\\')}",
                 "worksheetCustomizer" : async function(worksheet) { return worksheet },
+                "resultsFilter": function(data) { return data },
                 "worksheetName": "Settings 4 - Worksheet",
                 "filename": 'settings4-output',
                 "outputDir": "${TEMP_FOLDER.replace(/\\/g, '\\\\')}"
@@ -340,6 +360,18 @@ const structure: fsify_structure = [
             name: TEST_FILE_WORKSHEETCUSTOMIZER_WA,
             contents: 'module.exports = function() {}',
           },
+          // resultsFilter : not a function
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_RESULTSFILTER_NAF,
+            contents: JSON.stringify({ message: 'helloWorld' }),
+          },
+          // resultsFilter : wrong arity
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_RESULTSFILTER_WA,
+            contents: 'module.exports = function() {}',
+          },
         ],
       },
     ],
@@ -353,7 +385,7 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
     let arr = [
       TEMP_FOLDER,
       ROOT_TEST_FOLDER,
-      idx < 6 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
+      idx < 7 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
       curr,
     ];
     acc[curr] = path.resolve(...arr);
@@ -511,6 +543,28 @@ const VALIDATIONS_SCENARIOS: [string, string[], ...string[]][] = [
     ],
     "doesn't take an single argument",
   ],
+  [
+    // Test out thhe message : "resultsFilter is not an function or doesn't take an single argument"
+    'Option resultsFilter - Not a function',
+    [
+      TEST_FILE_FILES,
+      TEST_FILE_EXPORT_COLUMNS,
+      '--resultsFilter',
+      `"${TEST_FILES[TEST_FILE_RESULTSFILTER_NAF]}"`,
+    ],
+    'is not an function',
+  ],
+  [
+    // Test out thhe message : "resultsFilter is not an function or doesn't take an single argument"
+    'Option resultsFilter - Not the expected function arity',
+    [
+      TEST_FILE_FILES,
+      TEST_FILE_EXPORT_COLUMNS,
+      '--resultsFilter',
+      `"${TEST_FILES[TEST_FILE_RESULTSFILTER_WA]}"`,
+    ],
+    "doesn't take an single argument",
+  ],
 ];
 
 describe('[export_xlsx command]', () => {
@@ -584,10 +638,13 @@ describe('[export_xlsx command]', () => {
       ['settings.json (Paths)', TEST_FILE_SETTINGS1],
       ['settings.json (Object/Array instead of Paths)', TEST_FILE_SETTINGS2],
       [
-        'settings.json (Include worksheetCustomizer as string)',
+        'settings.json (Include worksheetCustomizer / resultsFilter as string)',
         TEST_FILE_SETTINGS3,
       ],
-      ['settings.js (Include worksheetCustomizer as fct)', TEST_FILE_SETTINGS4],
+      [
+        'settings.js (Include worksheetCustomizer / resultsFilter as fct)',
+        TEST_FILE_SETTINGS4,
+      ],
     ])('%s', async (_title: string, settingsFile: test_files_type) => {
       let test_cmd = concat_cmd([
         '--settings',

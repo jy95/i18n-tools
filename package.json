@@ -9,6 +9,7 @@
     "cli",
     "conversion",
     "xlsx",
+    "csv",
     "json",
     "diff",
     "export",

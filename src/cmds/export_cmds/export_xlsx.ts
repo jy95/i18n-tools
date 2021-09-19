@@ -72,6 +72,7 @@ export const builder = function (y: Argv) {
       .addColumnsOption()
       .addWorksheetCustomizerOption()
       .addWorksheetNameOption()
+      .addResultsFilterOption()
       .build()
       // validations
       .check(resolveChecksInOrder(CHECKS))
@@ -82,6 +83,11 @@ export const handler = async function (argv: XLSXExportArguments) {
   try {
     let data: I18N_Merged_Data = await merge_i18n_files(argv);
     const XLSX_FILE = path.resolve(argv.outputDir, argv.filename + '.xlsx');
+    if (argv.resultsFilter) {
+      data = (argv.resultsFilter as (x: I18N_Merged_Data) => I18N_Merged_Data)(
+        data
+      );
+    }
     await export_as_excel(XLSX_FILE, argv, data);
     console.log(`${XLSX_FILE} successfully written`);
     return Promise.resolve(undefined);

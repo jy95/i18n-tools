@@ -86,6 +86,7 @@ const test_files_list = [
   'files.json',
   'settings1.json',
   'settings2.json',
+  'settings3.js',
   // wrong files
   'emptyObject.json',
   'emptyArray.json',
@@ -101,6 +102,7 @@ const [
   TEST_FILE_FILES,
   TEST_FILE_SETTINGS1,
   TEST_FILE_SETTINGS2,
+  TEST_FILE_SETTINGS3,
   TEST_FILE_EMPTY_OBJECT,
   TEST_FILE_EMPTY_ARRAY,
   TEST_FILE_FILES_DUP,
@@ -189,6 +191,32 @@ const structure: fsify_structure = [
               outputDir: TEMP_FOLDER,
             }),
           },
+          // First format of settings.js (Mixins config)
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_SETTINGS3,
+            contents: `module.exports = {
+              "files": "${path
+                .resolve(
+                  TEMP_FOLDER,
+                  ROOT_TEST_FOLDER,
+                  VALID_TEST_FOLDER,
+                  TEST_FILE_FILES
+                )
+                .replace(/\\/g, '\\\\')}",
+              "columns": "${path
+                .resolve(
+                  TEMP_FOLDER,
+                  ROOT_TEST_FOLDER,
+                  VALID_TEST_FOLDER,
+                  TEST_FILE_EXPORT_COLUMNS
+                )
+                .replace(/\\/g, '\\\\')}",
+              "filename": 'settings3-output',
+              "resultsFilter": function(data) { return data },
+              "outputDir": "${TEMP_FOLDER.replace(/\\/g, '\\\\')}"
+            }`,
+          },
         ]),
       },
       // In this folder, files used for validations
@@ -273,7 +301,7 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
     let arr = [
       TEMP_FOLDER,
       ROOT_TEST_FOLDER,
-      idx < 4 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
+      idx < 5 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
       curr,
     ];
     acc[curr] = path.resolve(...arr);
@@ -479,29 +507,26 @@ describe('[export_csv command]', () => {
     });
 
     test.each([
-      ['(Paths)', TEST_FILE_SETTINGS1],
-      ['(Object/Array instead of Paths)', TEST_FILE_SETTINGS2],
-    ])(
-      'settings.json %s',
-      async (_title: string, settingsFile: test_files_type) => {
-        let test_cmd = concat_cmd([
-          '--settings',
-          `"${TEST_FILES[settingsFile]}"`,
-        ]);
-        // example : 'settings1-output'
-        let expectedFile = path.resolve(
-          TEMP_FOLDER,
-          `${settingsFile.substring(0, settingsFile.length - 5)}-output.csv`
-        );
-        // run command
-        //console.warn(test_cmd);
-        await parser.parseAsync(test_cmd);
+      ['settings.json (Paths)', TEST_FILE_SETTINGS1],
+      ['settings.json (Object/Array instead of Paths)', TEST_FILE_SETTINGS2],
+      ['settings.js (Include resultsFilter as fct)', TEST_FILE_SETTINGS3],
+    ])('%s', async (_title: string, settingsFile: test_files_type) => {
+      let test_cmd = concat_cmd([
+        '--settings',
+        `"${TEST_FILES[settingsFile]}"`,
+      ]);
+      // example : 'settings1-output'
+      let filename = settingsFile.substring(0, settingsFile.lastIndexOf('.'));
+      let expectedFile = path.resolve(TEMP_FOLDER, `${filename}-output.csv`);
 
-        expect(consoleLog).toHaveBeenCalledWith('Preparing CSV file ...');
-        expect(consoleLog).toHaveBeenCalledWith(
-          `${expectedFile} successfully written`
-        );
-      }
-    );
+      // run command
+      //console.warn(test_cmd);
+      await parser.parseAsync(test_cmd);
+
+      expect(consoleLog).toHaveBeenCalledWith('Preparing CSV file ...');
+      expect(consoleLog).toHaveBeenCalledWith(
+        `${expectedFile} successfully written`
+      );
+    });
   });
 });

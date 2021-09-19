@@ -7,6 +7,8 @@ sidebar_label: export to_csv
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import ExportFaq from './_export-faq.mdx';
+import I18NFilesTabs from '../_i18n-files-tabs.mdx';
 
 > Export i18n files into a csv file
 
@@ -21,98 +23,7 @@ npx @jy95/i18n-tools export to_csv --help
 
 Suppose you have several i18n locales such as :
 
-<Tabs
-  defaultValue="fr.json"
-  values={[
-    { label: 'fr.json', value: 'fr.json', },
-    { label: 'nl.json', value: 'nl.json', },
-    { label: 'de.json', value: 'de.json', },
-  ]
-}>
-<TabItem value="fr.json">
-
-```json title="fr.json"
-{
-  "commons":{
-    "myNestedKey":"Hello world FR",
-    "myNestedArray":[
-      "1 FR",
-      "2 FR",
-      "3 FR"
-    ]
-  },
-  "array":[
-    "1 FR",
-    "2 FR",
-    "3 FR"
-  ],
-  "simpleKey":"[FR] not setted key",
-  "Key with spaces":[
-    {
-      "test":"42 is the answer"
-    }
-  ],
-  "Missing key in DE":"present"
-}
-```
-</TabItem>
-
-<TabItem value="nl.json">
-
-```json title="nl.json"
-{
-  "commons":{
-    "myNestedKey":"Hello world NL",
-    "myNestedArray":[
-      "1 NL",
-      "2 NL",
-      "3 NL"
-    ]
-  },
-  "array":[
-    "1 NL",
-    "2 NL",
-    "3 NL"
-  ],
-  "simpleKey":"[NL] not setted key",
-  "Key with spaces":[
-    {
-      "test":"42 is the answer"
-    }
-  ],
-  "Missing key in DE":"present"
-}
-```
-</TabItem>
-
-<TabItem value="de.json">
-
-```json title="de.json"
-{
-  "commons":{
-    "myNestedKey":"Hello world DE",
-    "myNestedArray":[
-      "1 DE",
-      "2 DE",
-      "3 DE"
-    ]
-  },
-  "array":[
-    "1 DE",
-    "2 DE",
-    "3 DE"
-  ],
-  "simpleKey":"[DE] not setted key",
-  "Key with spaces":[
-    {
-      "test":"42 is the answer"
-    }
-  ]
-}
-```
-</TabItem>
-
-</Tabs>
+<I18NFilesTabs />
 
 This command helps you to turn them into a single csv file such as [this one](./assets/export-csv.csv).
 
@@ -242,3 +153,7 @@ module.exports = {
 </TabItem>
 
 </Tabs>
+
+## FAQ
+
+<ExportFaq />

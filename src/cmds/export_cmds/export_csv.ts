@@ -106,6 +106,7 @@ export const builder = function (y: Argv) {
       .addEscapeOption()
       .addWriteBOMOption()
       .addQuoteHeadersOption()
+      .addResultsFilterOption()
       .build()
       // validations
       .check(resolveChecksInOrder(CHECKS))
@@ -116,6 +117,11 @@ export const handler = async function (argv: CSVExportArguments) {
   try {
     let data: I18N_Merged_Data = await merge_i18n_files(argv);
     const CSV_FILE = path.resolve(argv.outputDir, argv.filename + '.csv');
+    if (argv.resultsFilter) {
+      data = (argv.resultsFilter as (x: I18N_Merged_Data) => I18N_Merged_Data)(
+        data
+      );
+    }
     await export_as_csv(CSV_FILE, argv, data);
     console.log(`${CSV_FILE} successfully written`);
     return Promise.resolve(undefined);
