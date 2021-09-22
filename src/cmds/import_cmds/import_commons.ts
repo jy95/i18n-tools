@@ -37,16 +37,6 @@ export class CommonImporttYargsBuilder extends CommandBuilder {
     return this;
   }
 
-  addSettingConfig() {
-    this.y = this.y.config('settings', function (configPath) {
-      let ext = path.extname(configPath);
-      return /\.js$/i.test(ext)
-        ? require(configPath)
-        : JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    });
-    return this;
-  }
-
   addLocalesOption() {
     this.y = this.y.options('locales', {
       type: 'array',
