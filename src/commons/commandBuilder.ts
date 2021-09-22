@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import { readFileSync } from 'fs';
+import { extname } from 'path';
 
 // For typing
 // eslint-disable-next-line
@@ -14,10 +14,10 @@ export default class CommandBuilder {
 
   addSettingConfig() {
     this.y = this.y.config('settings', function (configPath) {
-      let ext = path.extname(configPath);
+      let ext = extname(configPath);
       return /\.js$/i.test(ext)
         ? require(configPath)
-        : JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+        : JSON.parse(readFileSync(configPath, 'utf-8'));
     });
     return this;
   }
