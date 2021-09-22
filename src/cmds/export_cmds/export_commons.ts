@@ -1,5 +1,5 @@
 import fs, { PathLike } from 'fs';
-import path from 'path';
+import { resolve as pathResolve } from 'path';
 
 // lodash methodes
 import groupBy from 'lodash/groupBy';
@@ -68,7 +68,7 @@ export class CommonExportYargsBuilder extends CommandBuilder {
         default: process.cwd(),
       })
       // coerce path provided by outputDir
-      .coerce(['outputDir'], path.resolve);
+      .coerce(['outputDir'], pathResolve);
     return this;
   }
 

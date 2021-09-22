@@ -1,9 +1,9 @@
 import fs from 'fs';
-import path from 'path';
+import { resolve as pathResolve } from 'path';
 import { DiffExportParameters } from '../../../types/diffTypes';
 
 export default async function (params: DiffExportParameters) {
-  let filename = path.resolve(
+  let filename = pathResolve(
     params.yargs.outputDir,
     `${params.yargs.filename}.json`
   );

@@ -1,5 +1,5 @@
 // for fs ops
-import path from 'path';
+import { resolve as pathResolve } from 'path';
 import Excel from 'exceljs';
 // reuse exceljs Worksheet type
 import { Worksheet } from 'exceljs';
@@ -82,7 +82,7 @@ export const builder = function (y: Argv) {
 export const handler = async function (argv: XLSXExportArguments) {
   try {
     let data: I18N_Merged_Data = await merge_i18n_files(argv);
-    const XLSX_FILE = path.resolve(argv.outputDir, argv.filename + '.xlsx');
+    const XLSX_FILE = pathResolve(argv.outputDir, argv.filename + '.xlsx');
     if (argv.resultsFilter) {
       data = (argv.resultsFilter as (x: I18N_Merged_Data) => I18N_Merged_Data)(
         data
