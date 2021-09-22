@@ -1,4 +1,4 @@
-import fs from 'fs';
+import { writeFile } from 'fs/promises';
 import { resolve as pathResolve } from 'path';
 import { DiffExportParameters } from '../../../types/diffTypes';
 
@@ -8,7 +8,7 @@ export default async function (params: DiffExportParameters) {
     `${params.yargs.filename}.json`
   );
   // KISS : just return the changes array
-  return await fs.promises.writeFile(
+  return await writeFile(
     filename,
     JSON.stringify({
       files: params.yargs.paths,

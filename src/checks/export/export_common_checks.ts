@@ -1,4 +1,4 @@
-import fs from 'fs';
+import { access, readFile } from 'fs/promises';
 import { extname } from 'path';
 
 // lodash methodes
@@ -48,8 +48,8 @@ async function verify_files_entry([_, i18nPath]: [string, any]): Promise<
   let potentialJSON;
   // check if file is readable
   try {
-    await fs.promises.access(i18nPath);
-    potentialJSON = await fs.promises.readFile(i18nPath);
+    await access(i18nPath);
+    potentialJSON = await readFile(i18nPath);
   } catch (error) {
     return Promise.reject(
       new Error(`${i18nPath} cannot be read : check permissions`)

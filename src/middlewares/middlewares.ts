@@ -1,13 +1,13 @@
 import isString from 'lodash/isString';
 import isArray from 'lodash/isArray';
-import fs from 'fs';
+import { readFile } from 'fs/promises';
 
 // internal function for both parsePath(s)toJSON middlewares
 // could be improved later to handle URL too
 async function path2JSON(file: string | any) {
   if (isString(file)) {
     // arg is a Path, convert it into a JSON
-    let potentialJSON = await fs.promises.readFile(file, 'utf-8');
+    let potentialJSON = await readFile(file, 'utf-8');
     return JSON.parse(potentialJSON);
   } else {
     // don't touch it
