@@ -1,4 +1,4 @@
-import { writeFile } from 'fs/promises';
+import fs from 'fs';
 import { resolve as pathResolve } from 'path';
 
 // lodash methodes
@@ -101,7 +101,8 @@ function write_new_i18n_file(
 ) {
   console.log(`\t Trying to write ${locale} i18n file at ${filepath}`);
   return new Promise((resolve, reject) => {
-    writeFile(filepath, JSON.stringify(json, null, 4))
+    fs.promises
+      .writeFile(filepath, JSON.stringify(json, null, 4))
       .then((_) => {
         console.log(`\t Successfully wrote ${locale} i18n file`);
         resolve(undefined);
