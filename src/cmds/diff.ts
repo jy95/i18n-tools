@@ -9,6 +9,7 @@ import { resolveChecksInOrder, DIFF_CHECKS } from '../checks/index';
 import type { Argv } from "yargs";
 import { backupPaths, parsePathsToJSON } from '../middlewares/middlewares';
 import { CommonDiffArguments } from '../types/diffTypes';
+import CommandBuilder from '../commons/commandBuilder';
 
 // sub fonctions
 import detectChanges from './diff/detectChanges';
@@ -23,13 +24,7 @@ export const description =
   'Compare at least two i18n files & generate a report';
 
 // Builder for yargs
-export class CommonDiffYargsBuilder {
-  y: Argv<{ [x: string]: any }>; // current yargs result
-
-  constructor(y: Argv<{ [x: string]: any }>) {
-    this.y = y;
-  }
-
+export class CommonDiffYargsBuilder extends CommandBuilder {
   addFilenameOption() {
     this.y = this.y
       .option('filename', {
@@ -88,10 +83,6 @@ export class CommonDiffYargsBuilder {
         : JSON.parse(fs.readFileSync(configPath, 'utf-8'));
     });
     return this;
-  }
-
-  build() {
-    return this.y;
   }
 }
 
