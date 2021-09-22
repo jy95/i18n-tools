@@ -1,5 +1,5 @@
 import fs from 'fs';
-import path from 'path';
+import { extname } from 'path';
 
 // lodash methodes
 import isPlainObject from 'lodash/isPlainObject';
@@ -10,7 +10,7 @@ import uniq from 'lodash/uniq';
 // validation for filename option
 export const FILENAME_CHECK = async (argv: any) => {
   let filename: unknown = argv['filename'];
-  if (path.extname(filename as string).length !== 0) {
+  if (extname(filename as string).length !== 0) {
     return new Error(`${filename} has an extension : Remove it please`);
   } else {
     return true;

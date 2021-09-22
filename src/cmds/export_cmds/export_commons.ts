@@ -1,5 +1,5 @@
 import fs, { PathLike } from 'fs';
-import path from 'path';
+import { resolve as pathResolve } from 'path';
 
 // lodash methodes
 import groupBy from 'lodash/groupBy';
@@ -68,7 +68,7 @@ export class CommonExportYargsBuilder extends CommandBuilder {
         default: process.cwd(),
       })
       // coerce path provided by outputDir
-      .coerce(['outputDir'], path.resolve);
+      .coerce(['outputDir'], pathResolve);
     return this;
   }
 
@@ -80,16 +80,6 @@ export class CommonExportYargsBuilder extends CommandBuilder {
       })
       // coerce resultsFilter into function
       .middleware(parsePathToFunction('resultsFilter'), true);
-    return this;
-  }
-
-  addSettingConfig() {
-    this.y = this.y.config('settings', function (configPath) {
-      let ext = path.extname(configPath);
-      return /\.js$/i.test(ext)
-        ? require(configPath)
-        : JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    });
     return this;
   }
 }

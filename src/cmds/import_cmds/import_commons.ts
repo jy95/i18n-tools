@@ -1,5 +1,5 @@
 import fs from 'fs';
-import path from 'path';
+import { resolve as pathResolve } from 'path';
 
 // lodash methodes
 import set from 'lodash/set';
@@ -33,17 +33,7 @@ export class CommonImporttYargsBuilder extends CommandBuilder {
         default: process.cwd(),
       })
       // coerce path provided by outputDir
-      .coerce(['outputDir'], path.resolve);
-    return this;
-  }
-
-  addSettingConfig() {
-    this.y = this.y.config('settings', function (configPath) {
-      let ext = path.extname(configPath);
-      return /\.js$/i.test(ext)
-        ? require(configPath)
-        : JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    });
+      .coerce(['outputDir'], pathResolve);
     return this;
   }
 
@@ -78,7 +68,7 @@ export class CommonImporttYargsBuilder extends CommandBuilder {
 // generate filepaths for locales
 export function generate_i18n_filepaths(argv: CommonImportArguments) {
   return argv.locales.reduce((acc: { [x: string]: string }, locale: string) => {
-    acc[locale] = path.resolve(
+    acc[locale] = pathResolve(
       argv.outputDir,
       `${locale.toLowerCase()}${argv.suffix}.json`
     );

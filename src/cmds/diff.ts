@@ -1,5 +1,4 @@
-import fs from 'fs';
-import path from 'path';
+import { resolve as pathResolve } from 'path';
 
 // checks import
 import { resolveChecksInOrder, DIFF_CHECKS } from '../checks/index';
@@ -53,7 +52,7 @@ export class CommonDiffYargsBuilder extends CommandBuilder {
         default: process.cwd(),
       })
       // coerce path provided by outputDir
-      .coerce(['outputDir'], path.resolve);
+      .coerce(['outputDir'], pathResolve);
     return this;
   }
 
@@ -72,16 +71,6 @@ export class CommonDiffYargsBuilder extends CommandBuilder {
       .middleware(backupPaths('files', 'paths'), true)
       // coerce varidic path(s) into Object(s)
       .middleware(parsePathsToJSON('files'), true);
-    return this;
-  }
-
-  addSettingConfig() {
-    this.y = this.y.config('settings', function (configPath) {
-      let ext = path.extname(configPath);
-      return /\.js$/i.test(ext)
-        ? require(configPath)
-        : JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    });
     return this;
   }
 }

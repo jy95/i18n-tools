@@ -1,5 +1,5 @@
 // for fs ops
-import path from 'path';
+import { resolve as pathResolve } from 'path';
 import Excel from 'exceljs';
 
 // common fct
@@ -116,7 +116,7 @@ export const builder = function (y: Argv) {
 export const handler = async function (argv: CSVExportArguments) {
   try {
     let data: I18N_Merged_Data = await merge_i18n_files(argv);
-    const CSV_FILE = path.resolve(argv.outputDir, argv.filename + '.csv');
+    const CSV_FILE = pathResolve(argv.outputDir, argv.filename + '.csv');
     if (argv.resultsFilter) {
       data = (argv.resultsFilter as (x: I18N_Merged_Data) => I18N_Merged_Data)(
         data
