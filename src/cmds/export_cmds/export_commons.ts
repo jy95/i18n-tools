@@ -7,7 +7,6 @@ import flattenDeep from 'lodash/flattenDeep';
 import get from 'lodash/get';
 
 // For typings
-import type { Argv } from 'yargs';
 import {
   CommonExportArguments,
   I18N_Merged_Data,
@@ -19,6 +18,7 @@ import {
   parsePathToFunction,
 } from '../../middlewares/middlewares';
 import getLeavesPathes from '../../commons/getLeavesPathes';
+import CommandBuilder from '../../commons/commandBuilder';
 type I18N_Object = { [x: string]: string | Array<any> | I18N_Object };
 type I18N_Result = {
   technical_key: string;
@@ -27,13 +27,7 @@ type I18N_Result = {
 }[];
 
 // Builder for yargs
-export class CommonExportYargsBuilder {
-  y: Argv<{ [x: string]: any }>; // current yargs result
-
-  constructor(y: Argv<{ [x: string]: any }>) {
-    this.y = y;
-  }
-
+export class CommonExportYargsBuilder extends CommandBuilder {
   addFilesOption() {
     this.y = this.y
       .option('files', {
@@ -97,10 +91,6 @@ export class CommonExportYargsBuilder {
         : JSON.parse(fs.readFileSync(configPath, 'utf-8'));
     });
     return this;
-  }
-
-  build() {
-    return this.y;
   }
 }
 

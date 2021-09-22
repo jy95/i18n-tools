@@ -6,20 +6,14 @@ import set from 'lodash/set';
 import groupBy from 'lodash/groupBy';
 
 // For typings
-import type { Argv } from 'yargs';
 import {
   CommonImportArguments,
   extractedTranslation,
 } from '../../types/importTypes';
+import CommandBuilder from '../../commons/commandBuilder';
 
 // Builder for yargs
-export class CommonImporttYargsBuilder {
-  y: Argv<{ [x: string]: any }>; // current yargs result
-
-  constructor(y: Argv<{ [x: string]: any }>) {
-    this.y = y;
-  }
-
+export class CommonImporttYargsBuilder extends CommandBuilder {
   addInputOption() {
     this.y = this.y.options('input', {
       type: 'string',
@@ -78,10 +72,6 @@ export class CommonImporttYargsBuilder {
         return `_${timestamp}`;
       });
     return this;
-  }
-
-  build() {
-    return this.y;
   }
 }
 
