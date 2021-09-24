@@ -245,7 +245,7 @@ npx @jy95/i18n-tools export to_xlsx --settings "/absolutePath/to/settings4.js"
 //import { Worksheet } from "exceljs";
 
 module.exports = {
-  files2: ["fr", "nl", "de"].reduce(
+  files: ["fr", "nl", "de"].reduce(
     (prev, curr) =>
       Object.assign(prev, {
         [curr.toUpperCase()]: `D:\\TEMP\\TEMP\\tests-for-export\\correct\\${curr}.json`,
