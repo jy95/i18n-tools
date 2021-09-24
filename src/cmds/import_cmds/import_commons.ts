@@ -24,19 +24,6 @@ export class CommonImporttYargsBuilder extends CommandBuilder {
     return this;
   }
 
-  addOutputDir() {
-    this.y = this.y
-      .option('outputDir', {
-        type: 'string',
-        alias: 'od',
-        describe: 'Output folder where to store the output file(s)',
-        default: process.cwd(),
-      })
-      // coerce path provided by outputDir
-      .coerce(['outputDir'], pathResolve);
-    return this;
-  }
-
   addLocalesOption() {
     this.y = this.y.options('locales', {
       type: 'array',

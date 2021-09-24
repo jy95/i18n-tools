@@ -82,7 +82,7 @@ export const builder = function (y: Argv) {
     new CsvImportYargsBuilder(y)
       .addInputOption()
       .addLocalesOption()
-      .addOutputDir()
+      .addOutputDirOption(true)
       .addSuffixOption()
       .addColumnsOption()
       .addDelimiterOption()

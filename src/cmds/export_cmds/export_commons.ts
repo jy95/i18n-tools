@@ -1,5 +1,4 @@
 import fs, { PathLike } from 'fs';
-import { resolve as pathResolve } from 'path';
 
 // lodash methodes
 import groupBy from 'lodash/groupBy';
@@ -56,19 +55,6 @@ export class CommonExportYargsBuilder extends CommandBuilder {
         }-${date.getFullYear()} ${date.getHours()}h${date.getMinutes()}m${date.getSeconds()}`;
         return `translations_${timestamp}`;
       });
-    return this;
-  }
-
-  addOutputDirOption() {
-    this.y = this.y
-      .option('outputDir', {
-        type: 'string',
-        alias: 'od',
-        describe: 'Output folder where to store the output file',
-        default: process.cwd(),
-      })
-      // coerce path provided by outputDir
-      .coerce(['outputDir'], pathResolve);
     return this;
   }
 
