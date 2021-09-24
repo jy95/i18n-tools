@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-import { extname } from 'path';
+import { extname, resolve } from 'path';
 
 // For typing
 // eslint-disable-next-line
@@ -19,6 +19,21 @@ export default class CommandBuilder {
         ? require(configPath)
         : JSON.parse(readFileSync(configPath, 'utf-8'));
     });
+    return this;
+  }
+
+  addOutputDirOption(multiple = false) {
+    this.y = this.y
+      .option('outputDir', {
+        type: 'string',
+        alias: 'od',
+        describe: `Output folder where to store the output ${
+          multiple ? 'file(s)' : 'file'
+        }`,
+        default: process.cwd(),
+      })
+      // coerce path provided by outputDir
+      .coerce(['outputDir'], resolve);
     return this;
   }
 

@@ -1,5 +1,3 @@
-import { resolve as pathResolve } from 'path';
-
 // checks import
 import { resolveChecksInOrder, DIFF_CHECKS } from '../checks/index';
 
@@ -40,19 +38,6 @@ export class CommonDiffYargsBuilder extends CommandBuilder {
         }-${date.getFullYear()} ${date.getHours()}h${date.getMinutes()}m${date.getSeconds()}`;
         return `diff_report_${timestamp}`;
       });
-    return this;
-  }
-
-  addOutputDirOption() {
-    this.y = this.y
-      .option('outputDir', {
-        type: 'string',
-        alias: 'od',
-        describe: 'Output folder where to store the output file',
-        default: process.cwd(),
-      })
-      // coerce path provided by outputDir
-      .coerce(['outputDir'], pathResolve);
     return this;
   }
 

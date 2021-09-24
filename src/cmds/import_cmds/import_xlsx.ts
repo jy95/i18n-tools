@@ -45,7 +45,7 @@ export const builder = function (y: Argv) {
     new XlsxImportYargsBuilder(y)
       .addInputOption()
       .addLocalesOption()
-      .addOutputDir()
+      .addOutputDirOption(true)
       .addSuffixOption()
       .addColumnsOption()
       .addSettingConfig()
