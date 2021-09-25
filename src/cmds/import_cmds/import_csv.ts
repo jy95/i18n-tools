@@ -1,4 +1,4 @@
-import Excel from 'exceljs';
+import { Workbook } from 'exceljs';
 
 // common fct
 import {
@@ -119,7 +119,7 @@ async function csv_2_translation_objects(argv: CSVImportArguments) {
       encoding: argv.encoding,
     },
   };
-  const workbook = new Excel.Workbook();
+  const workbook = new Workbook();
   const worksheet = await workbook.csv.readFile(argv.input, options);
   let rowCount = worksheet.rowCount;
 
