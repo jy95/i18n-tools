@@ -1,4 +1,4 @@
-import Excel from 'exceljs';
+import { Workbook } from 'exceljs';
 
 // common fct
 import {
@@ -69,7 +69,7 @@ export const handler = async function (argv: XLSXImportArguments) {
 
 // Extract translations from xlsx file
 async function xlsx_2_translation_objects(argv: XLSXImportArguments) {
-  let workbook = await new Excel.Workbook().xlsx.readFile(argv.input);
+  let workbook = await new Workbook().xlsx.readFile(argv.input);
 
   // columns properties to  load
   let columns = argv.columns;

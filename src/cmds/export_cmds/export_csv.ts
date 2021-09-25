@@ -1,6 +1,6 @@
 // for fs ops
 import { resolve as pathResolve } from 'path';
-import Excel from 'exceljs';
+import { Workbook } from 'exceljs';
 
 // common fct
 import { merge_i18n_files, CommonExportYargsBuilder } from './export_commons';
@@ -139,7 +139,7 @@ async function export_as_csv(
   console.log('Preparing CSV file ...');
 
   // prepare data
-  const workbook = new Excel.Workbook();
+  const workbook = new Workbook();
   let worksheet = workbook.addWorksheet();
 
   // Set up columns

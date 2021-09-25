@@ -1,8 +1,6 @@
 // for fs ops
 import { resolve as pathResolve } from 'path';
-import Excel from 'exceljs';
-// reuse exceljs Worksheet type
-import { Worksheet } from 'exceljs';
+import { Workbook, Worksheet } from 'exceljs';
 
 // common fct
 import { merge_i18n_files, CommonExportYargsBuilder } from './export_commons';
@@ -105,7 +103,7 @@ async function export_as_excel(
   console.log('Preparing XLSX file ...');
 
   // prepare data
-  const workbook = new Excel.Workbook();
+  const workbook = new Workbook();
   let worksheet = workbook.addWorksheet(argv.worksheetName);
 
   // Set up columns
