@@ -65,10 +65,10 @@
   ],
   "devDependencies": {
     "@size-limit/preset-small-lib": "^5.0.3",
-    "@types/jest": "^27.0.1",
-    "@types/lodash": "^4.14.173",
-    "@types/node": "^16.9.2",
-    "@types/yargs": "^17.0.2",
+    "@types/jest": "^27.0.2",
+    "@types/lodash": "^4.14.174",
+    "@types/node": "^16.10.1",
+    "@types/yargs": "^17.0.3",
     "dts-cli": "^0.17.1",
     "fsify": "^4.0.2",
     "husky": "^7.0.2",
@@ -81,7 +81,7 @@
     "exceljs": "^4.2.1",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
-    "yargs": "^17.1.1"
+    "yargs": "^17.2.1"
   },
   "eslintConfig": {
     "overrides": [
