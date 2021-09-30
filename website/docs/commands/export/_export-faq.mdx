@@ -43,9 +43,11 @@ OR
 ```js title="resultsFilter.js"
 module.exports = function(data /*: I18N_Merged_Data*/) {
   return data.filter((row) => 
+    // Takes rows that have at least a missing label in one i18n file such as "Missing key in DE" case
+    // Object.keys(row.labels).length !== 3 ||
     Object
       .values(row.labels)
-      // Only takes rows that have at least one empty label or contains a given prefix
+      // Takes rows that have at least one empty label or contains a given prefix
       .some(
         (label) =>
           label.length === 0 ||
