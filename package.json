@@ -66,8 +66,8 @@
   "devDependencies": {
     "@size-limit/preset-small-lib": "^5.0.3",
     "@types/jest": "^27.0.2",
-    "@types/lodash": "^4.14.174",
-    "@types/node": "^16.10.1",
+    "@types/lodash": "^4.14.175",
+    "@types/node": "^16.10.2",
     "@types/yargs": "^17.0.3",
     "dts-cli": "^0.17.1",
     "fsify": "^4.0.2",
