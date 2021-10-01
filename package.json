@@ -21,10 +21,11 @@
   "bin": "bin/cli.js",
   "main": "dist/index.js",
   "module": "dist/i18n-tools.esm.js",
-  "typings": "dist/index.d.ts",
+  "typings": "index.d.ts",
   "files": [
     "dist",
-    "bin"
+    "bin",
+    "index.d.ts"
   ],
   "engines": {
     "node": ">=12"
