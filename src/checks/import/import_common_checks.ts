@@ -1,6 +1,9 @@
 // lodash methodes
 import uniq from 'lodash/uniq';
 
+// key separator check
+import KEYSEPARATOR_CHECK from '../commons/keySeparator_check';
+
 // validation for locales option
 export const LOCALES_CHECK = async (argv: any) => {
   const locales = argv.locales as any[];
@@ -14,4 +17,4 @@ export const LOCALES_CHECK = async (argv: any) => {
 };
 
 // export checks in expected order into a single array
-export const CHECKS = [LOCALES_CHECK];
+export const CHECKS = [KEYSEPARATOR_CHECK, LOCALES_CHECK];

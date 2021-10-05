@@ -1,5 +1,7 @@
 // reuse check function from export command
 import { FILENAME_CHECK } from './export/index';
+// key separator check
+import KEYSEPARATOR_CHECK from './commons/keySeparator_check';
 
 // check if at least two paths were provided
 // For that, we will use "backupKey" from backupPaths : "paths"
@@ -12,4 +14,8 @@ export const AT_LEAST_2_PATHS_CHECK = async (argv: any) => {
 };
 
 // export checks in expected order into a single array
-export const CHECKS = [FILENAME_CHECK, AT_LEAST_2_PATHS_CHECK];
+export const CHECKS = [
+  KEYSEPARATOR_CHECK,
+  FILENAME_CHECK,
+  AT_LEAST_2_PATHS_CHECK,
+];

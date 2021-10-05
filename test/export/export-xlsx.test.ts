@@ -460,6 +460,18 @@ const VALIDATIONS_SCENARIOS: [string, string[], ...string[]][] = [
     'extension',
   ],
   [
+    // Test out the message : "Option keySeparator should be a not-empty char"
+    'Option keySeparator - Invalid separator should be rejected',
+    [
+      TEST_FILE_FILES,
+      TEST_FILE_EXPORT_COLUMNS,
+      '--keySeparator',
+      `"HACKERMAN"`,
+    ],
+    'keySeparator',
+    'not-empty char',
+  ],
+  [
     // Test out the message : "Option files is not a JSON Object"
     'Option files - unexpected file should be rejected',
     [TEST_FILE_EMPTY_ARRAY, TEST_FILE_EXPORT_COLUMNS],

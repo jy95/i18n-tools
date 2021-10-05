@@ -154,6 +154,19 @@ const VALIDATIONS_SCENARIOS: [
     //"doesn't contain uniq values"
   ],
   [
+    // Test out the message : "Option keySeparator should be a not-empty char"
+    'Option keySeparator - Invalid separator should be rejected',
+    [
+      TEST_FILE_INPUT,
+      TEST_FILE_COLUMNS,
+      ['FR', 'NL'],
+      '--keySeparator',
+      `"HACKERMAN"`,
+    ],
+    'keySeparator',
+    'not-empty char',
+  ],
+  [
     // Test out the message : 'columns is not a JSON Object'
     'Option columns - unexpected file should be rejected',
     [TEST_FILE_INPUT, TEST_FILE_EMPTY_ARRAY, ['FR', 'NL']],

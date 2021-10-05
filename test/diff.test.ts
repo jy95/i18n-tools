@@ -220,6 +220,13 @@ const VALIDATIONS_SCENARIOS: [
     [[TEST_FILE_FILE1]],
     'At least two paths must be provided',
   ],
+  [
+    // Test out the message : "Option keySeparator should be a not-empty char"
+    'Option keySeparator - Invalid separator should be rejected',
+    [[TEST_FILE_FILE1, TEST_FILE_FILE2], '--keySeparator', `"HACKERMAN"`],
+    'keySeparator',
+    'not-empty char',
+  ],
 ];
 
 // E2E scenarios for JSON reporter
