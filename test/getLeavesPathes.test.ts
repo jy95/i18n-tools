@@ -63,11 +63,47 @@ const PATH_SCENARIOS: [string, any, string[]][] = [
   ],
 ];
 
-describe('[commons - getLeavesPathes]', () => {
+// scenarios for custom separator
+// Might be lazy but better to support same tests that the dot separator XD
+let CUST_SEPARATOR = '_';
+let expectedResult: string[][] = [
+  ['key', 'someArray[0]', 'someArray[1]', 'someArray[2]'],
+  [
+    `commons${CUST_SEPARATOR}firstNestedKey`,
+    `commons${CUST_SEPARATOR}units${CUST_SEPARATOR}secondNestedKey`,
+  ],
+  [`commons${CUST_SEPARATOR}units${CUST_SEPARATOR}5ml`],
+  ['Key with spaces'],
+  [
+    `someArray${CUST_SEPARATOR}0${CUST_SEPARATOR}type`,
+    `someArray${CUST_SEPARATOR}0${CUST_SEPARATOR}message`,
+    `someArray${CUST_SEPARATOR}1${CUST_SEPARATOR}type`,
+    `someArray${CUST_SEPARATOR}1${CUST_SEPARATOR}message`,
+  ],
+];
+const PATH_SCENARIOS_2: [string, any, string[]][] = PATH_SCENARIOS.map(
+  (entry, index) => {
+    return [entry[0], entry[1], expectedResult[index]];
+  }
+);
+
+describe('[commons - getLeavesPathes] dot separator', () => {
   test.each(PATH_SCENARIOS)(
     '%s',
     async (_title: string, obj: any, expectedArray: string[]) => {
       const paths = getLeavesPathes(obj);
+      expect(paths.sort()).toEqual(expectedArray.sort());
+    }
+  );
+});
+
+// Might be lazy but better to support same tests that the dot separator XD
+// Later WET instead of DRY ?
+describe('[commons - getLeavesPathes] custom separator', () => {
+  test.each(PATH_SCENARIOS_2)(
+    '%s',
+    async (_title: string, obj: any, expectedArray: string[]) => {
+      const paths = getLeavesPathes(obj, CUST_SEPARATOR);
       expect(paths.sort()).toEqual(expectedArray.sort());
     }
   );

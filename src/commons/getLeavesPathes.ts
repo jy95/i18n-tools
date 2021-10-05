@@ -19,7 +19,7 @@ export default function getLeavesPathes(
   };
   // Need to double escape stuff when using this constructor
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
-  const arrayIndexRegEx = new RegExp(`\\${keySeparator}(\d+)(?!\w+)`, 'gi');
+  const arrayIndexRegEx = new RegExp(`\\${keySeparator}(\\d+)(?!\\w+)`, 'gi');
   let paths = reduce(dataObj, reducer, []);
   paths = paths.map((path) => path.replace(arrayIndexRegEx, '[$1]'));
 
