@@ -2,8 +2,10 @@ import fs from 'fs';
 import { resolve as pathResolve } from 'path';
 
 // lodash methodes
-import set from 'lodash/set';
 import groupBy from 'lodash/groupBy';
+
+// Own method
+import set from '../../commons/enhancedSet';
 
 // For typings
 import {
@@ -66,7 +68,8 @@ export function generate_i18n_filepaths(argv: CommonImportArguments) {
 // extractedTranslation[] to i18n file(s)
 export function extractedTranslations_to_i18n_files(
   files: { [x: string]: string },
-  translations: extractedTranslation[]
+  translations: extractedTranslation[],
+  keySeparator: string
 ) {
   let groupBy_locales = groupBy(translations, 'locale');
   return Promise.all(
@@ -74,7 +77,7 @@ export function extractedTranslations_to_i18n_files(
       write_new_i18n_file(
         locale,
         files[locale],
-        translations_2_i18n_object(translations)
+        translations_2_i18n_object(translations, keySeparator)
       )
     )
   );
@@ -99,10 +102,13 @@ function write_new_i18n_file(
 }
 
 // Turns  array for a given lang into a i18n js object
-function translations_2_i18n_object(translations: extractedTranslation[]) {
+function translations_2_i18n_object(
+  translations: extractedTranslation[],
+  keySeparator: string
+) {
   let result = {};
   translations.forEach((item) => {
-    set(result, item['technical_key'], item['label']);
+    set(result, item['technical_key'], item['label'], keySeparator);
   });
   return result;
 }

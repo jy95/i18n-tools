@@ -83,6 +83,7 @@ export const builder = function (y: Argv) {
       .addInputOption()
       .addLocalesOption()
       .addOutputDirOption(true)
+      .addKeySeparatorOption()
       .addSuffixOption()
       .addColumnsOption()
       .addDelimiterOption()
@@ -100,7 +101,11 @@ export const handler = async function (argv: CSVImportArguments) {
   try {
     const translations = await csv_2_translation_objects(argv);
     const files = generate_i18n_filepaths(argv);
-    await extractedTranslations_to_i18n_files(files, translations);
+    await extractedTranslations_to_i18n_files(
+      files,
+      translations,
+      argv.keySeparator
+    );
     console.log('Successfully exported found locale(s) to i18n json file(s)');
     return Promise.resolve(undefined);
   } catch (error) {

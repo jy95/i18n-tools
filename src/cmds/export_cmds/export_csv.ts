@@ -99,6 +99,7 @@ export const builder = function (y: Argv) {
       .addFilenameOption()
       .addOutputDirOption()
       .addSettingConfig()
+      .addKeySeparatorOption()
       .addColumnsOption()
       .addDelimiterOption()
       .addRowDelimiterOption()

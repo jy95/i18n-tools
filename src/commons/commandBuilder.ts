@@ -37,6 +37,16 @@ export default class CommandBuilder {
     return this;
   }
 
+  addKeySeparatorOption() {
+    this.y = this.y.option('keySeparator', {
+      type: 'string',
+      alias: 'ks',
+      describe: 'Char to separate i18n keys',
+      default: '.',
+    });
+    return this;
+  }
+
   build() {
     return this.y;
   }

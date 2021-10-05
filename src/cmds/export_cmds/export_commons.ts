@@ -3,7 +3,9 @@ import fs, { PathLike } from 'fs';
 // lodash methodes
 import groupBy from 'lodash/groupBy';
 import flattenDeep from 'lodash/flattenDeep';
-import get from 'lodash/get';
+
+// "Enhanced get"
+import get from '../../commons/enhancedGet';
 
 // For typings
 import {
@@ -77,7 +79,11 @@ export function merge_i18n_files(
   return new Promise((resolve, reject) => {
     Promise
       // Read files and convert them to useful obj
-      .all(Object.entries(argv.files).map((entry) => readFile(entry)))
+      .all(
+        Object.entries(argv.files).map((entry) =>
+          readFile(entry, argv.keySeparator)
+        )
+      )
       // merge results
       .then((results) => mergeResults(results))
       .then((data) => resolve(data))
@@ -88,27 +94,31 @@ export function merge_i18n_files(
 // merge_i18n_files sub functions
 
 // read file and turning into a useful array of objects
-function readFile([locale, file_path]: [
-  string,
-  PathLike
-]): Promise<I18N_Result> {
+function readFile(
+  [locale, file_path]: [string, PathLike],
+  keySeparator: string
+): Promise<I18N_Result> {
   return new Promise((resolve, reject) => {
     fs.promises
       .readFile(file_path, 'utf8')
       .then((jsonData) => Promise.resolve(JSON.parse(jsonData)))
-      .then((json) => i18n_to_result_format(json, locale))
+      .then((json) => i18n_to_result_format(json, locale, keySeparator))
       .then((result) => resolve(result))
       .catch(/* istanbul ignore next */ (err) => reject(err));
   });
 }
 
 // turns i18n object to usable format
-function i18n_to_result_format(obj: I18N_Object, locale: string): I18N_Result {
-  let leafPaths = getLeavesPathes(obj);
+function i18n_to_result_format(
+  obj: I18N_Object,
+  locale: string,
+  keySeparator: string
+): I18N_Result {
+  let leafPaths = getLeavesPathes(obj, keySeparator);
   return leafPaths.map((leafPath) => ({
     locale: locale,
     technical_key: leafPath,
-    label: get(obj, leafPath) as string,
+    label: get(obj, leafPath, keySeparator) as string,
   }));
 }
 
