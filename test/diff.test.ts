@@ -413,7 +413,7 @@ const E2E_JSON_REPORTER: [
       `"diff_flat_inline-JSON"`,
       '--outputDir',
       `"${TEMP_FOLDER}"`,
-      "--keySeparator",
+      '--keySeparator',
       `"false"`,
     ],
     path.resolve(TEMP_FOLDER, 'diff_flat_inline-JSON.json'),
