@@ -102,8 +102,9 @@ const PATH_SCENARIOS_3: [string, any, string[]][] = [
     {
       'Hello.world !': 42,
       '$x.y_42-z~5!': 'jy95',
+      '[Hello].[World]|42': 'Hello',
     },
-    ['Hello.world !', '$x.y_42-z~5!'],
+    ['Hello.world !', '$x.y_42-z~5!', '[Hello].[World]|42'],
   ],
   [
     'Nested JSON with separator set to false - backup strategy',

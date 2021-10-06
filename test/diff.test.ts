@@ -96,6 +96,9 @@ const test_files_list = [
   'file1.json',
   'file2.json',
   'file3.json',
+  // flat json, to test
+  'flat_file1.json',
+  'flat_file2.json',
   // to test out the json reporter
   'settings1-JSON.json',
   'settings2-JSON.json',
@@ -106,6 +109,8 @@ const [
   TEST_FILE_FILE1,
   TEST_FILE_FILE2,
   TEST_FILE_FILE3,
+  TEST_FILE_FLAT_FILE1,
+  TEST_FILE_FLAT_FILE2,
   TEST_FILE_JSON_SETTINGS1,
   TEST_FILE_JSON_SETTINGS2,
   TEST_FILE_JSON_SETTINGS3,
@@ -118,7 +123,7 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
     acc[curr] = path.resolve(
       TEMP_FOLDER,
       ROOT_TEST_FOLDER,
-      idx < 7 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
+      idx < 9 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
       curr
     );
     return acc;
@@ -187,6 +192,23 @@ const structure: fsify_structure = [
               files: [TEST_FILE_FILE1, TEST_FILE_FILE2, TEST_FILE_FILE3].map(
                 (file) => TEST_FILES[file]
               ),
+            }),
+          },
+          // flat files
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_FLAT_FILE1,
+            contents: JSON.stringify({
+              'unchanged.key_with-special-char!': 'unchanged',
+              'changed.key_test$': 'Hello',
+            }),
+          },
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_FLAT_FILE2,
+            contents: JSON.stringify({
+              'unchanged.key_with-special-char!': 'unchanged',
+              'changed.key_test$': 'Bonjour',
             }),
           },
           // js file
@@ -379,6 +401,35 @@ const E2E_JSON_REPORTER: [
           newValue: 'Paul',
           to: 'file2',
           type: 'ADD',
+        },
+      ],
+    },
+  ],
+  [
+    'should work with flat json',
+    [
+      [TEST_FILE_FLAT_FILE1, TEST_FILE_FLAT_FILE2],
+      '--filename',
+      `"diff_flat_inline-JSON"`,
+      '--outputDir',
+      `"${TEMP_FOLDER}"`,
+      "--keySeparator",
+      `"false"`,
+    ],
+    path.resolve(TEMP_FOLDER, 'diff_flat_inline-JSON.json'),
+    {
+      files: {
+        file1: TEST_FILES[TEST_FILE_FLAT_FILE1],
+        file2: TEST_FILES[TEST_FILE_FLAT_FILE2],
+      },
+      changes: [
+        {
+          from: 'file1',
+          key: 'changed.key_test$',
+          newValue: 'Bonjour',
+          oldValue: 'Hello',
+          to: 'file2',
+          type: 'REPLACED',
         },
       ],
     },
