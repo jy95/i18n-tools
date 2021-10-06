@@ -20,7 +20,7 @@ export interface CommonExportArguments extends Argv {
   outputDir: string;
   resultsFilter?: string | ((x: I18N_Merged_Data) => I18N_Merged_Data);
   // https://github.com/jy95/i18n-tools/issues/25
-  keySeparator: '.' | string;
+  keySeparator: '.' | string | false;
 }
 // Yargs export arguments for TO_XLSX command
 export interface XLSXExportArguments extends CommonExportArguments {

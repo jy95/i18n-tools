@@ -69,7 +69,7 @@ export function generate_i18n_filepaths(argv: CommonImportArguments) {
 export function extractedTranslations_to_i18n_files(
   files: { [x: string]: string },
   translations: extractedTranslation[],
-  keySeparator: string
+  keySeparator: string | false
 ) {
   let groupBy_locales = groupBy(translations, 'locale');
   return Promise.all(
@@ -104,7 +104,7 @@ function write_new_i18n_file(
 // Turns  array for a given lang into a i18n js object
 function translations_2_i18n_object(
   translations: extractedTranslation[],
-  keySeparator: string
+  keySeparator: string | false
 ) {
   let result = {};
   translations.forEach((item) => {

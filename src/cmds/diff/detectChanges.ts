@@ -27,7 +27,7 @@ function createChangeOperation(
   op: ChangesOps,
   file1: fileParam,
   file2: fileParam,
-  keySeparator: string
+  keySeparator: string | false
 ): ChangeOperations {
   // common part
   let obj: CommonChangeOperation = {
@@ -60,7 +60,7 @@ export default function detectChanges(
   argv: CommonDiffArguments
 ): ChangeOperations[] {
   let result: ChangeOperations[] = [];
-  let keySeparator: string = argv.keySeparator;
+  let keySeparator: string | false = argv.keySeparator;
 
   // Fetch keys
   let files: fileParam[] = argv.files.map((file, idx) => ({

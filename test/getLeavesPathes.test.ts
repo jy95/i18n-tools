@@ -87,6 +87,37 @@ const PATH_SCENARIOS_2: [string, any, string[]][] = PATH_SCENARIOS.map(
   }
 );
 
+// Scenarios for keySeparator is set to false
+const PATH_SCENARIOS_3: [string, any, string[]][] = [
+  [
+    'Simple keys',
+    {
+      key: 42,
+      verylooooogKey: 'Hello world',
+    },
+    ['key', 'verylooooogKey'],
+  ],
+  [
+    'Keys with special characters',
+    {
+      'Hello.world !': 42,
+      '$x.y_42-z~5!': 'jy95',
+    },
+    ['Hello.world !', '$x.y_42-z~5!'],
+  ],
+  [
+    'Nested JSON with separator set to false - backup strategy',
+    {
+      lol: {
+        test: {
+          world: 42,
+        },
+      },
+    },
+    ['lol.test.world'],
+  ],
+];
+
 describe('[commons - getLeavesPathes] dot separator', () => {
   test.each(PATH_SCENARIOS)(
     '%s',
@@ -97,13 +128,21 @@ describe('[commons - getLeavesPathes] dot separator', () => {
   );
 });
 
-// Might be lazy but better to support same tests that the dot separator XD
-// Later WET instead of DRY ?
 describe('[commons - getLeavesPathes] custom separator', () => {
   test.each(PATH_SCENARIOS_2)(
     '%s',
     async (_title: string, obj: any, expectedArray: string[]) => {
       const paths = getLeavesPathes(obj, CUST_SEPARATOR);
+      expect(paths.sort()).toEqual(expectedArray.sort());
+    }
+  );
+});
+
+describe('[commons - getLeavesPathes] separator set to false', () => {
+  test.each(PATH_SCENARIOS_3)(
+    '%s',
+    async (_title: string, obj: any, expectedArray: string[]) => {
+      const paths = getLeavesPathes(obj, false);
       expect(paths.sort()).toEqual(expectedArray.sort());
     }
   );

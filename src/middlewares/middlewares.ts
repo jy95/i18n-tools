@@ -72,3 +72,15 @@ export function parsePathToFunction(prop: string) {
     return argv;
   };
 }
+
+// Turn unknown into false, if possible
+export function parseUnknownToFalse(prop: string) {
+  return async (argv: any) => {
+    let param = argv[prop] as unknown;
+    let check = ['false', false].some((pred) => pred === param);
+    if (check) {
+      argv[prop] = false;
+    }
+    return argv;
+  };
+}

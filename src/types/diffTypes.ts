@@ -13,7 +13,7 @@ export interface CommonDiffArguments extends Argv {
   // output format
   outputFormat: 'JSON';
   // https://github.com/jy95/i18n-tools/issues/25
-  keySeparator: '.' | string;
+  keySeparator: '.' | string | false;
 }
 
 // for exporter(s)

@@ -96,7 +96,7 @@ export function merge_i18n_files(
 // read file and turning into a useful array of objects
 function readFile(
   [locale, file_path]: [string, PathLike],
-  keySeparator: string
+  keySeparator: string | false
 ): Promise<I18N_Result> {
   return new Promise((resolve, reject) => {
     fs.promises
@@ -112,7 +112,7 @@ function readFile(
 function i18n_to_result_format(
   obj: I18N_Object,
   locale: string,
-  keySeparator: string
+  keySeparator: string | false
 ): I18N_Result {
   let leafPaths = getLeavesPathes(obj, keySeparator);
   return leafPaths.map((leafPath) => ({

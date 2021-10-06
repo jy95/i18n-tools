@@ -8,7 +8,7 @@ export interface CommonImportArguments extends Argv {
   suffix: string;
   locales: string[];
   // https://github.com/jy95/i18n-tools/issues/25
-  keySeparator: '.' | string;
+  keySeparator: '.' | string | false;
 }
 
 // Yargs import arguments for FROM_XLSX command

@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs';
 import { extname, resolve } from 'path';
+import { parseUnknownToFalse } from '../middlewares/middlewares';
 
 // For typing
 // eslint-disable-next-line
@@ -38,12 +39,15 @@ export default class CommandBuilder {
   }
 
   addKeySeparatorOption() {
-    this.y = this.y.option('keySeparator', {
-      type: 'string',
-      alias: 'ks',
-      describe: 'Char to separate i18n keys',
-      default: '.',
-    });
+    this.y = this.y
+      .option('keySeparator', {
+        type: 'string',
+        alias: 'ks',
+        describe: 'Char to separate i18n keys',
+        default: '.',
+      })
+      // parse false values
+      .middleware(parseUnknownToFalse('keySeparator'), true);
     return this;
   }
 
