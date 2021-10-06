@@ -12,6 +12,8 @@ export interface CommonDiffArguments extends Argv {
   files: [any, any, ...any[]];
   // output format
   outputFormat: 'JSON';
+  // https://github.com/jy95/i18n-tools/issues/25
+  keySeparator: '.' | string | false;
 }
 
 // for exporter(s)

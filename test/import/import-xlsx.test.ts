@@ -95,11 +95,13 @@ async function expectError(cmd: string, ...messages: string[]) {
 const test_files_list = [
   // inpput file
   'export-xlsx.xlsx',
+  'export-flat-xlsx.xlsx',
   // correct files
   'columns.json',
   'settings1.json',
   'settings2.json',
   'settings3.js',
+  'settings4.js',
   // wrong files
   'emptyObject.json',
   'emptyArray.json',
@@ -110,10 +112,12 @@ const test_files_list = [
 ] as const;
 const [
   TEST_FILE_INPUT,
+  TEST_FILE_FLAT_INPUT,
   TEST_FILE_COLUMNS,
   TEST_FILE_SETTINGS1,
   TEST_FILE_SETTINGS2,
   TEST_FILE_SETTINGS3,
+  TEST_FILE_SETTINGS4,
   TEST_FILE_EMPTY_OBJECT,
   TEST_FILE_EMPTY_ARRAY,
   TEST_FILE_COLUMNS_TKNS,
@@ -126,12 +130,12 @@ type test_files_type = typeof test_files_list[number];
 const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
   (acc: any, curr: test_files_type, idx: number) => {
     let arr =
-      idx === 0
+      idx === 0 || idx === 1
         ? [__dirname, '..', 'fixtures', 'import-xlsx', curr]
         : [
             TEMP_FOLDER,
             ROOT_TEST_FOLDER,
-            idx > 0 && idx < 5 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
+            idx > 0 && idx < 7 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
             curr,
           ];
     acc[curr] = path.resolve(...arr);
@@ -152,6 +156,19 @@ const VALIDATIONS_SCENARIOS: [
     [TEST_FILE_INPUT, TEST_FILE_COLUMNS, ['FR', 'FR']],
     // I have to disable the error message check as yargs is buggy atm
     //"doesn't contain uniq values"
+  ],
+  [
+    // Test out the message : "Option keySeparator should be a not-empty char"
+    'Option keySeparator - Invalid separator should be rejected',
+    [
+      TEST_FILE_INPUT,
+      TEST_FILE_COLUMNS,
+      ['FR', 'NL'],
+      '--keySeparator',
+      `"HACKERMAN"`,
+    ],
+    'keySeparator',
+    'not-empty char',
   ],
   [
     // Test out the message : 'columns is not a JSON Object'
@@ -265,6 +282,30 @@ const structure: fsify_structure = [
               "locales": ['FR', 'NL', 'DE'],
               "outputDir": "${TEMP_FOLDER.replace(/\\/g, '\\\\')}",
               "suffix": '_settings3',
+            }`,
+          },
+          // Second format of settings.js (keySeparator)
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_SETTINGS4,
+            // As fsify uses fs.writeFile, we need to double backslash stuff again
+            contents: `module.exports = {
+              "input": "${TEST_FILES[TEST_FILE_FLAT_INPUT].replace(
+                /\\/g,
+                '\\\\'
+              )}",
+              "columns": {
+                "technical_key": 'Technical Key',
+                "locales": {
+                  "FR": 'French translation',
+                  "NL": 'Dutch translation',
+                  "DE": 'German translation'
+                }
+              },
+              "locales": ['FR', 'NL', 'DE'],
+              "outputDir": "${TEMP_FOLDER.replace(/\\/g, '\\\\')}",
+              "suffix": '_settings4',
+              "keySeparator": false
             }`,
           },
         ],
@@ -403,6 +444,7 @@ describe('[import_xlsx command]', () => {
       ['(Paths)', TEST_FILE_SETTINGS1],
       ['(Object/Array instead of Paths)', TEST_FILE_SETTINGS2],
       ['should work with js config file', TEST_FILE_SETTINGS3],
+      ['(keySeparator set to false)', TEST_FILE_SETTINGS4],
     ])('settings %s', async (_title: string, settingsFile: test_files_type) => {
       let test_cmd = concat_cmd([
         '--settings',

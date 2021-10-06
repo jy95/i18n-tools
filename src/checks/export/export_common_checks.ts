@@ -7,6 +7,9 @@ import isFunction from 'lodash/isFunction';
 import isEmpty from 'lodash/isEmpty';
 import uniq from 'lodash/uniq';
 
+// key separator check
+import KEYSEPARATOR_CHECK from '../commons/keySeparator_check';
+
 // validation for filename option
 export const FILENAME_CHECK = async (argv: any) => {
   let filename: unknown = argv['filename'];
@@ -81,4 +84,9 @@ export const RESULTSFILTER_CHECK = async (argv: any) => {
 };
 
 // export checks in expected order into a single array
-export const CHECKS = [FILENAME_CHECK, FILES_CHECK, RESULTSFILTER_CHECK];
+export const CHECKS = [
+  KEYSEPARATOR_CHECK,
+  FILENAME_CHECK,
+  FILES_CHECK,
+  RESULTSFILTER_CHECK,
+];

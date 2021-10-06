@@ -84,9 +84,11 @@ const test_files_list = [
   // correct files
   'columns.json',
   'files.json',
+  'files-flat.json',
   'settings1.json',
   'settings2.json',
   'settings3.js',
+  'settings4.js',
   // wrong files
   'emptyObject.json',
   'emptyArray.json',
@@ -100,9 +102,11 @@ const test_files_list = [
 const [
   TEST_FILE_EXPORT_COLUMNS,
   TEST_FILE_FILES,
+  TEST_FILE_FLAT_FILES,
   TEST_FILE_SETTINGS1,
   TEST_FILE_SETTINGS2,
   TEST_FILE_SETTINGS3,
+  TEST_FILE_SETTINGS4,
   TEST_FILE_EMPTY_OBJECT,
   TEST_FILE_EMPTY_ARRAY,
   TEST_FILE_FILES_DUP,
@@ -125,11 +129,20 @@ const structure: fsify_structure = [
         type: fsify.DIRECTORY,
         name: VALID_TEST_FOLDER,
         contents: flat([
-          // 3 i18n files
+          // 3 i18n files (deep)
           TRANSLATIONS_KEYS.map((locale) => ({
             type: fsify.FILE,
             name: `${locale.toLowerCase()}.json`,
             contents: JSON.stringify(generate_i18n(locale)),
+          })),
+          // 3 i18n files (flat)
+          TRANSLATIONS_KEYS.map((locale) => ({
+            type: fsify.FILE,
+            name: `${locale.toLowerCase()}-flat.json`,
+            contents: JSON.stringify({
+              'unchanged.key_with-special-char!': locale,
+              'changed.key_test$': locale,
+            }),
           })),
           // the columns.json
           {
@@ -148,6 +161,21 @@ const structure: fsify_structure = [
                   ROOT_TEST_FOLDER,
                   VALID_TEST_FOLDER,
                   `${locale.toLowerCase()}.json`
+                )
+              )
+            ),
+          },
+          // the files-flat.json
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_FLAT_FILES,
+            contents: JSON.stringify(
+              generate_files(TRANSLATIONS_KEYS, (locale) =>
+                path.resolve(
+                  TEMP_FOLDER,
+                  ROOT_TEST_FOLDER,
+                  VALID_TEST_FOLDER,
+                  `${locale.toLowerCase()}-flat.json`
                 )
               )
             ),
@@ -215,6 +243,32 @@ const structure: fsify_structure = [
               "filename": 'settings3-output',
               "resultsFilter": function(data) { return data },
               "outputDir": "${TEMP_FOLDER.replace(/\\/g, '\\\\')}"
+            }`,
+          },
+          // Second format of settings.js (keySeparator)
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_SETTINGS4,
+            contents: `module.exports = {
+              "files": "${path
+                .resolve(
+                  TEMP_FOLDER,
+                  ROOT_TEST_FOLDER,
+                  VALID_TEST_FOLDER,
+                  TEST_FILE_FLAT_FILES
+                )
+                .replace(/\\/g, '\\\\')}",
+              "columns": "${path
+                .resolve(
+                  TEMP_FOLDER,
+                  ROOT_TEST_FOLDER,
+                  VALID_TEST_FOLDER,
+                  TEST_FILE_EXPORT_COLUMNS
+                )
+                .replace(/\\/g, '\\\\')}",
+              "filename": 'settings4-output',
+              "outputDir": "${TEMP_FOLDER.replace(/\\/g, '\\\\')}",
+              "keySeparator": false
             }`,
           },
         ]),
@@ -301,7 +355,7 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
     let arr = [
       TEMP_FOLDER,
       ROOT_TEST_FOLDER,
-      idx < 5 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
+      idx < 7 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
       curr,
     ];
     acc[curr] = path.resolve(...arr);
@@ -374,6 +428,18 @@ const VALIDATIONS_SCENARIOS: [string, string[], ...string[]][] = [
     [TEST_FILE_FILES, TEST_FILE_EXPORT_COLUMNS, '--filename', `"test.csv"`],
     'test.csv',
     'extension',
+  ],
+  [
+    // Test out the message : "Option keySeparator should be a not-empty char"
+    'Option keySeparator - Invalid separator should be rejected',
+    [
+      TEST_FILE_FILES,
+      TEST_FILE_EXPORT_COLUMNS,
+      '--keySeparator',
+      `"HACKERMAN"`,
+    ],
+    'keySeparator',
+    'not-empty char',
   ],
   [
     // Test out the message : "Option files is not a JSON Object"
@@ -510,6 +576,7 @@ describe('[export_csv command]', () => {
       ['settings.json (Paths)', TEST_FILE_SETTINGS1],
       ['settings.json (Object/Array instead of Paths)', TEST_FILE_SETTINGS2],
       ['settings.js (Include resultsFilter as fct)', TEST_FILE_SETTINGS3],
+      ['settings.js (keySeparator set to false)', TEST_FILE_SETTINGS4],
     ])('%s', async (_title: string, settingsFile: test_files_type) => {
       let test_cmd = concat_cmd([
         '--settings',

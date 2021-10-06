@@ -6,10 +6,12 @@ import type {
   DelOperation,
   PutOperation,
 } from '../../types/diffTypes';
+
+// Own methods
 import getLeavesPathes from '../../commons/getLeavesPathes';
+import get from '../../commons/enhancedGet';
 
 // lodash method
-import get from 'lodash/get';
 import intersection from 'lodash/intersection';
 import isEqual from 'lodash/isEqual';
 import difference from 'lodash/difference';
@@ -24,7 +26,8 @@ function createChangeOperation(
   technicalKey: string,
   op: ChangesOps,
   file1: fileParam,
-  file2: fileParam
+  file2: fileParam,
+  keySeparator: string | false
 ): ChangeOperations {
   // common part
   let obj: CommonChangeOperation = {
@@ -37,13 +40,15 @@ function createChangeOperation(
   if ([ChangesOps.DEL, ChangesOps.PUT].some((o) => o === op)) {
     (obj as DelOperation | PutOperation).oldValue = get(
       file1.obj,
-      technicalKey
+      technicalKey,
+      keySeparator
     );
   }
   if ([ChangesOps.ADD, ChangesOps.PUT].some((o) => o === op)) {
     (obj as AddOperation | PutOperation).newValue = get(
       file2.obj,
-      technicalKey
+      technicalKey,
+      keySeparator
     );
   }
   // return result
@@ -55,6 +60,7 @@ export default function detectChanges(
   argv: CommonDiffArguments
 ): ChangeOperations[] {
   let result: ChangeOperations[] = [];
+  let keySeparator: string | false = argv.keySeparator;
 
   // Fetch keys
   let files: fileParam[] = argv.files.map((file, idx) => ({
@@ -78,26 +84,30 @@ export default function detectChanges(
     // Computes changes of values
     let sameKeys = intersection(file1.keys, file2.keys);
     let modifiedKeys = sameKeys.filter(
-      (key) => !isEqual(get(file1.obj, key), get(file2.obj, key))
+      (key) =>
+        !isEqual(
+          get(file1.obj, key, keySeparator),
+          get(file2.obj, key, keySeparator)
+        )
     );
 
     result.push(
       ...modifiedKeys.map((key) =>
-        createChangeOperation(key, ChangesOps.PUT, file1, file2)
+        createChangeOperation(key, ChangesOps.PUT, file1, file2, keySeparator)
       )
     );
 
     // Computes deleted keys
     result.push(
       ...difference(file1.keys, file2.keys).map((key) =>
-        createChangeOperation(key, ChangesOps.DEL, file1, file2)
+        createChangeOperation(key, ChangesOps.DEL, file1, file2, keySeparator)
       )
     );
 
     // Computes new keys
     result.push(
       ...difference(file2.keys, file1.keys).map((key) =>
-        createChangeOperation(key, ChangesOps.ADD, file1, file2)
+        createChangeOperation(key, ChangesOps.ADD, file1, file2, keySeparator)
       )
     );
   }

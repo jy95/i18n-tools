@@ -65,6 +65,7 @@ export const builder = function (y: Argv) {
     new CommonDiffYargsBuilder(y)
       .addFilenameOption()
       .addOutputDirOption()
+      .addKeySeparatorOption()
       .addOutputFormatOption()
       .addFilesOption()
       .addSettingConfig()

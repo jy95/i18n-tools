@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs';
 import { extname, resolve } from 'path';
+import { parseUnknownToFalse } from '../middlewares/middlewares';
 
 // For typing
 // eslint-disable-next-line
@@ -34,6 +35,20 @@ export default class CommandBuilder {
       })
       // coerce path provided by outputDir
       .coerce(['outputDir'], resolve);
+    return this;
+  }
+
+  addKeySeparatorOption() {
+    this.y = this.y
+      .option('keySeparator', {
+        type: 'string',
+        alias: 'ks',
+        describe:
+          'Char to separate i18n keys. If working with flat JSON, set this to false',
+        default: '.',
+      })
+      // parse false values
+      .middleware(parseUnknownToFalse('keySeparator'), true);
     return this;
   }
 
