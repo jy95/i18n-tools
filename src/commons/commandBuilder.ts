@@ -43,7 +43,8 @@ export default class CommandBuilder {
       .option('keySeparator', {
         type: 'string',
         alias: 'ks',
-        describe: 'Char to separate i18n keys',
+        describe:
+          'Char to separate i18n keys. If working with flat JSON, set this to false',
         default: '.',
       })
       // parse false values
