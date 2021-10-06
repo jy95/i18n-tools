@@ -1,7 +1,10 @@
+// lodash methodes
+import isString from 'lodash/isString';
+
 const KEYSEPARATOR_CHECK = async (argv: any) => {
   let keySeparator = argv.keySeparator as any;
   let check = [
-    () => keySeparator.length !== 1,
+    () => isString(keySeparator) && keySeparator.length !== 1,
     () => keySeparator === true,
   ].some((pred) => pred());
   if (check) {
