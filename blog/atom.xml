@@ -2,11 +2,22 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jy95.github.io/i18n-tools/blog</id>
     <title>@jy95/i18n-tools Blog</title>
-    <updated>2021-09-05T00:00:00.000Z</updated>
+    <updated>2021-10-07T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jy95.github.io/i18n-tools/blog"/>
     <subtitle>@jy95/i18n-tools Blog</subtitle>
     <icon>https://jy95.github.io/i18n-tools/img/favicon.ico</icon>
+    <entry>
+        <title type="html"><![CDATA[Flat JSON now supported]]></title>
+        <id>flat-json-now-supported</id>
+        <link href="https://jy95.github.io/i18n-tools/blog/flat-json-now-supported"/>
+        <updated>2021-10-07T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Flat JSON such as this one are now supported :]]></summary>
+        <author>
+            <name>Jacques Yakoub</name>
+            <uri>https://github.com/jy95</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Welcome]]></title>
         <id>welcome</id>

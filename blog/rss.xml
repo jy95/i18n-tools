@@ -4,9 +4,16 @@
         <title>@jy95/i18n-tools Blog</title>
         <link>https://jy95.github.io/i18n-tools/blog</link>
         <description>@jy95/i18n-tools Blog</description>
-        <lastBuildDate>Sun, 05 Sep 2021 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Thu, 07 Oct 2021 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
+        <item>
+            <title><![CDATA[Flat JSON now supported]]></title>
+            <link>https://jy95.github.io/i18n-tools/blog/flat-json-now-supported</link>
+            <guid>flat-json-now-supported</guid>
+            <pubDate>Thu, 07 Oct 2021 00:00:00 GMT</pubDate>
+            <description><![CDATA[Flat JSON such as this one are now supported :]]></description>
+        </item>
         <item>
             <title><![CDATA[Welcome]]></title>
             <link>https://jy95.github.io/i18n-tools/blog/welcome</link>
