@@ -1,4 +1,3 @@
-import os from 'os';
 import path from 'path';
 import yargs from 'yargs';
 // import command
@@ -10,26 +9,19 @@ import {
 // XLSX description
 import { description as xlsx_description } from '../../src/cmds/import_cmds/import_xlsx';
 
-// temp folder
-const TEMP_FOLDER = os.tmpdir();
+// test helpers
+import {
+  TEMP_FOLDER,
+  VALID_TEST_FOLDER,
+  USELESS_TEST_FOLDER,
+  expectError,
+  fetchOutput,
+  fsify_structure,
+  fsify,
+} from '../test-helpers';
+
 // test folders constants
 const ROOT_TEST_FOLDER = 'tests-for-import-xlsx';
-const [VALID_TEST_FOLDER, USELESS_TEST_FOLDER] = [
-  'correct', // folder where every file are correct
-  'useless', // folder where file has an useless content
-];
-
-// initialise fsify
-const fsify: {
-  [x: string]: any;
-  DIRECTORY: any;
-  FILE: any;
-  (_: { [x: string]: any }): Promise<any>;
-} = require('fsify')({
-  cwd: TEMP_FOLDER,
-  persistent: false,
-  force: true,
-});
 
 // Build the parser used for that command
 const parser = yargs.command(command, describeText, builder).help();
@@ -51,45 +43,6 @@ const prepare_mandatory_args: prepare_mandatory_args_type = (
   '--locales',
   locales.join(' '),
 ];
-
-// return the output of a given command to the parser
-function fetchOutput(cmd: string): Promise<string> {
-  return new Promise((resolve) => {
-    parser.parse(cmd, (_err: Error | undefined, _argv: any, output: string) => {
-      resolve(output);
-    });
-  });
-}
-
-// makes assertions on errors
-async function expectError(cmd: string, ...messages: string[]) {
-  // error to be retrieve
-  let error: any = undefined;
-  // In tests, I had to make sure yargs doesn't override error for the following reason :
-  // Even when validation failed, it somehow can go to handler()
-  let isFirstError = true;
-
-  // add fail() handler
-  // Because of problem explained above, I had to ignore if an error occurs afterwards
-  try {
-    await parser
-      .fail((_, e) => {
-        if (isFirstError) {
-          isFirstError = false;
-          error = e;
-        }
-      })
-      .parseAsync(cmd);
-  } catch (_) {}
-  // check if error was set
-  expect(error).not.toEqual(undefined);
-  // check if it is an error Object
-  expect(error).toHaveProperty('message');
-  // check if error message contains expected element
-  for (let expectedStr of messages) {
-    expect((error as Error).message).toMatch(expectedStr);
-  }
-}
 
 // to access easier the paths of test file paths
 const test_files_list = [
@@ -200,14 +153,6 @@ const VALIDATIONS_SCENARIOS: [
     [TEST_FILE_INPUT, TEST_FILE_COLUMNS_LVNS, ['FR', 'NL']],
   ],
 ];
-
-// file structure for fsify, in order to run the tests
-// type for fsify structure
-type fsify_structure = {
-  type: any;
-  name: string;
-  contents: string | fsify_structure;
-}[];
 
 // file structure for fsify, in order to run the tests
 const structure: fsify_structure = [
@@ -371,12 +316,12 @@ beforeAll(() => {
 describe('[import_xlsx command]', () => {
   describe('Check command availability', () => {
     it('Should list from_xlsx in import command', async () => {
-      const output = await fetchOutput('import --help');
+      const output = await fetchOutput(parser)('import --help');
       expect(output).toMatch('from_xlsx');
     });
 
     it('Should display from_xlsx help output', async () => {
-      const output = await fetchOutput('import from_xlsx --help');
+      const output = await fetchOutput(parser)('import from_xlsx --help');
       expect(output).toMatch(xlsx_description);
     });
   });
@@ -415,7 +360,7 @@ describe('[import_xlsx command]', () => {
         ]);
         //console.warn(test_cmd);
         // Test out if error message is thrown
-        await expectError(test_cmd, ...messages);
+        await expectError(parser)(test_cmd, ...messages);
       }
     );
   });
