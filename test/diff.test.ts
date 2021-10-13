@@ -1,4 +1,3 @@
-import os from 'os';
 import path from 'path';
 import fs from 'fs';
 import yargs from 'yargs';
@@ -12,26 +11,19 @@ import {
   handler,
 } from '../src/cmds/diff';
 
-// temp folder
-const TEMP_FOLDER = os.tmpdir();
+// test helpers
+import {
+  TEMP_FOLDER,
+  VALID_TEST_FOLDER,
+  USELESS_TEST_FOLDER,
+  expectError,
+  fetchOutput,
+  fsify_structure,
+  fsify,
+} from './test-helpers';
+
 // test folders constants
 const ROOT_TEST_FOLDER = 'tests-for-diff';
-const [VALID_TEST_FOLDER, USELESS_TEST_FOLDER] = [
-  'correct', // folder where every file are correct
-  'useless', // folder where file has an useless content ([])
-];
-
-// initialise fsify
-const fsify: {
-  [x: string]: any;
-  DIRECTORY: any;
-  FILE: any;
-  (_: { [x: string]: any }): Promise<any>;
-} = require('fsify')({
-  cwd: TEMP_FOLDER,
-  persistent: false,
-  force: true,
-});
 
 // Build the parser used for that command
 const parser = yargs.command(command, describeText, builder, handler).help();
@@ -44,52 +36,6 @@ const concat_cmd: concat_cmd_type = (args: string[]) =>
 const prepare_mandatory_args: prepare_mandatory_args_type = (...files) => [
   ...files.map((file) => `"${file}"`),
 ];
-
-// return the output of a given command to the parser
-function fetchOutput(cmd: string): Promise<string> {
-  return new Promise((resolve) => {
-    parser.parse(cmd, (_err: Error | undefined, _argv: any, output: string) => {
-      resolve(output);
-    });
-  });
-}
-
-// makes assertions on errors
-async function expectError(cmd: string, ...messages: string[]) {
-  // error to be retrieve
-  let error: any = undefined;
-  // In tests, I had to make sure yargs doesn't override error for the following reason :
-  // Even when validation failed, it somehow can go to handler()
-  let isFirstError = true;
-
-  // add fail() handler
-  // Because of problem explained above, I had to ignore if an error occurs afterwards
-  try {
-    await parser
-      .fail((_, e) => {
-        if (isFirstError) {
-          isFirstError = false;
-          error = e;
-        }
-      })
-      .parseAsync(cmd);
-  } catch (_) {}
-  // check if error was set
-  expect(error).not.toEqual(undefined);
-  // check if it is an error Object
-  expect(error).toHaveProperty('message');
-  // check if error message contains expected element
-  for (let expectedStr of messages) {
-    expect((error as Error).message).toMatch(expectedStr);
-  }
-}
-
-// type for fsify structure
-type fsify_structure = {
-  type: any;
-  name: string;
-  contents: string | fsify_structure;
-}[];
 
 // to access easier the paths of test file paths
 const test_files_list = [
@@ -444,7 +390,7 @@ beforeAll(() => {
 describe('[diff command]', () => {
   describe('Check command availability', () => {
     it('Should display diff help output', async () => {
-      const output = await fetchOutput('diff --help');
+      const output = await fetchOutput(parser)('diff --help');
       expect(output).toMatch(describeText);
     });
   });
@@ -479,7 +425,7 @@ describe('[diff command]', () => {
         ]);
         //console.warn(test_cmd);
         // Test out if error message is thrown
-        await expectError(test_cmd, ...messages);
+        await expectError(parser)(test_cmd, ...messages);
       }
     );
   });
