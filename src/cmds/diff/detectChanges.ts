@@ -61,6 +61,7 @@ export default function detectChanges(
 ): ChangeOperations[] {
   let result: ChangeOperations[] = [];
   let keySeparator: string | false = argv.keySeparator;
+  let operations: string[] = argv.operations;
 
   // Fetch keys
   let files: fileParam[] = argv.files.map((file, idx) => ({
@@ -82,34 +83,43 @@ export default function detectChanges(
   // Made comparisons
   for (let [file1, file2] of comparaison_pairs) {
     // Computes changes of values
-    let sameKeys = intersection(file1.keys, file2.keys);
-    let modifiedKeys = sameKeys.filter(
-      (key) =>
-        !isEqual(
-          get(file1.obj, key, keySeparator),
-          get(file2.obj, key, keySeparator)
-        )
-    );
+    /* istanbul ignore else - No need to check all combinaisons to see that user choice is respected */
+    if (operations.includes('PUT')) {
+      let sameKeys = intersection(file1.keys, file2.keys);
+      let modifiedKeys = sameKeys.filter(
+        (key) =>
+          !isEqual(
+            get(file1.obj, key, keySeparator),
+            get(file2.obj, key, keySeparator)
+          )
+      );
 
-    result.push(
-      ...modifiedKeys.map((key) =>
-        createChangeOperation(key, ChangesOps.PUT, file1, file2, keySeparator)
-      )
-    );
+      result.push(
+        ...modifiedKeys.map((key) =>
+          createChangeOperation(key, ChangesOps.PUT, file1, file2, keySeparator)
+        )
+      );
+    }
 
     // Computes deleted keys
-    result.push(
-      ...difference(file1.keys, file2.keys).map((key) =>
-        createChangeOperation(key, ChangesOps.DEL, file1, file2, keySeparator)
-      )
-    );
+    /* istanbul ignore else - No need to check all combinaisons to see that user choice is respected */
+    if (operations.includes('DEL')) {
+      result.push(
+        ...difference(file1.keys, file2.keys).map((key) =>
+          createChangeOperation(key, ChangesOps.DEL, file1, file2, keySeparator)
+        )
+      );
+    }
 
     // Computes new keys
-    result.push(
-      ...difference(file2.keys, file1.keys).map((key) =>
-        createChangeOperation(key, ChangesOps.ADD, file1, file2, keySeparator)
-      )
-    );
+    /* istanbul ignore else - No need to check all combinaisons to see that user choice is respected */
+    if (operations.includes('ADD')) {
+      result.push(
+        ...difference(file2.keys, file1.keys).map((key) =>
+          createChangeOperation(key, ChangesOps.ADD, file1, file2, keySeparator)
+        )
+      );
+    }
   }
 
   return result;

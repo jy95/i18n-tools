@@ -5,7 +5,7 @@ import { resolveChecksInOrder, DIFF_CHECKS } from '../checks/index';
 // eslint-disable-next-line
 import type { Argv } from "yargs";
 import { backupPaths, parsePathsToJSON } from '../middlewares/middlewares';
-import { CommonDiffArguments } from '../types/diffTypes';
+import { CommonDiffArguments, ChangesOps } from '../types/diffTypes';
 import CommandBuilder from '../commons/commandBuilder';
 
 // sub fonctions
@@ -58,6 +58,16 @@ export class CommonDiffYargsBuilder extends CommandBuilder {
       .middleware(parsePathsToJSON('files'), true);
     return this;
   }
+
+  addOperationsOption() {
+    this.y = this.y.option('operations', {
+      type: 'array',
+      describe:
+        'Array of operations (such as ["ADD", "PUT"]) that should be checked when comparing files',
+      default: Object.keys(ChangesOps),
+    });
+    return this;
+  }
 }
 
 export const builder = function (y: Argv) {
@@ -67,6 +77,7 @@ export const builder = function (y: Argv) {
       .addOutputDirOption()
       .addKeySeparatorOption()
       .addOutputFormatOption()
+      .addOperationsOption()
       .addFilesOption()
       .addSettingConfig()
       .build()
