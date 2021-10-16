@@ -14,6 +14,8 @@ export interface CommonDiffArguments extends Argv {
   outputFormat: 'JSON';
   // https://github.com/jy95/i18n-tools/issues/25
   keySeparator: '.' | string | false;
+  // cherry pick operations for comparaison
+  operations: string[];
 }
 
 // for exporter(s)

@@ -49,6 +49,7 @@ const test_files_list = [
   'settings1-JSON.json',
   'settings2-JSON.json',
   'settings3-JSON.js',
+  'settings4-JSON.json',
   // TODO test out future reporters
 ] as const;
 const [
@@ -60,6 +61,7 @@ const [
   TEST_FILE_JSON_SETTINGS1,
   TEST_FILE_JSON_SETTINGS2,
   TEST_FILE_JSON_SETTINGS3,
+  TEST_FILE_JSON_SETTINGS4,
 ] = test_files_list;
 type test_files_type = typeof test_files_list[number];
 
@@ -69,7 +71,7 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
     acc[curr] = path.resolve(
       TEMP_FOLDER,
       ROOT_TEST_FOLDER,
-      idx < 9 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
+      idx < 10 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
       curr
     );
     return acc;
@@ -136,6 +138,20 @@ const structure: fsify_structure = [
               outputDir: TEMP_FOLDER,
               outputFormat: 'JSON',
               files: [TEST_FILE_FILE1, TEST_FILE_FILE2, TEST_FILE_FILE3].map(
+                (file) => TEST_FILES[file]
+              ),
+            }),
+          },
+          // For cherry pick operations
+          {
+            type: fsify.FILE,
+            name: TEST_FILE_JSON_SETTINGS4,
+            contents: JSON.stringify({
+              filename: 'diff_settings4-JSON',
+              outputDir: TEMP_FOLDER,
+              outputFormat: 'JSON',
+              operations: ['PUT'], // only interessted by update operations
+              files: [TEST_FILE_FILE1, TEST_FILE_FILE2].map(
                 (file) => TEST_FILES[file]
               ),
             }),
@@ -374,6 +390,27 @@ const E2E_JSON_REPORTER: [
           key: 'changed.key_test$',
           newValue: 'Bonjour',
           oldValue: 'Hello',
+          to: 'file2',
+          type: 'REPLACED',
+        },
+      ],
+    },
+  ],
+  [
+    'should respect user wanted operations for output',
+    [[TEST_FILE_JSON_SETTINGS4]],
+    path.resolve(TEMP_FOLDER, 'diff_settings4-JSON.json'),
+    {
+      files: {
+        file1: TEST_FILES[TEST_FILE_FILE1],
+        file2: TEST_FILES[TEST_FILE_FILE2],
+      },
+      changes: [
+        {
+          from: 'file1',
+          key: 'commons.nestedKey.changedValue',
+          newValue: 'Changed value 1',
+          oldValue: 'Changed value 0',
           to: 'file2',
           type: 'REPLACED',
         },
