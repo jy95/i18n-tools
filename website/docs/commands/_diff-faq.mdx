@@ -9,3 +9,28 @@ Simply set option `keySeparator` to `false` in your `settings.json` or `settings
 ```
 
 </details>
+
+<details>
+<summary>I only want some types of changes reported in the result file. How can I achieve that ?</summary>
+
+Simply set the `operations` option in your `settings.json` or `settings.js` to your liking :
+
+:::tip
+
+Current operations are :
+
+| Operation | Description                                                   |
+|-----------|---------------------------------------------------------------|
+| PUT       | When key exists in both file1 & files2 but value was replaced |
+| ADD       | When key exists in file2 but not in file1                     |
+| DEL       | When key exists in file1 but not in file2                     |
+
+:::
+
+```json title="settings.json"
+{
+  "operations": ["PUT"]
+}
+```
+
+</details>
