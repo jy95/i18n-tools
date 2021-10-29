@@ -1,4 +1,5 @@
 import fs, { PathLike } from 'fs';
+import parseJson from 'parse-json';
 
 // lodash methodes
 import groupBy from 'lodash/groupBy';
@@ -101,7 +102,7 @@ function readFile(
   return new Promise((resolve, reject) => {
     fs.promises
       .readFile(file_path, 'utf8')
-      .then((jsonData) => Promise.resolve(JSON.parse(jsonData)))
+      .then((jsonData) => Promise.resolve(parseJson(jsonData)))
       .then((json) => i18n_to_result_format(json, locale, keySeparator))
       .then((result) => resolve(result))
       .catch(/* istanbul ignore next */ (err) => reject(err));

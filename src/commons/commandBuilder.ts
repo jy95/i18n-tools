@@ -1,5 +1,7 @@
 import { readFileSync } from 'fs';
 import { extname, resolve } from 'path';
+import parseJson from 'parse-json';
+
 import { parseUnknownToFalse } from '../middlewares/middlewares';
 
 // For typing
@@ -18,7 +20,7 @@ export default class CommandBuilder {
       let ext = extname(configPath);
       return /\.js$/i.test(ext)
         ? require(configPath)
-        : JSON.parse(readFileSync(configPath, 'utf-8'));
+        : parseJson(readFileSync(configPath, 'utf-8'));
     });
     return this;
   }

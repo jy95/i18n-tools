@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import yargs from 'yargs';
+import parseJson from 'parse-json';
 import set from 'lodash/set';
 import unset from 'lodash/unset';
 // diff command
@@ -530,7 +531,7 @@ describe('[diff command]', () => {
 
         // check out the file
         let potentialJSON = await fs.promises.readFile(filepath, 'utf-8');
-        let result = JSON.parse(potentialJSON);
+        let result = parseJson(potentialJSON);
         // checking the result
         expect(result).toEqual(expectedObj);
       }
