@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { extname } from 'path';
+import parseJson from "parse-json";
 
 // lodash methodes
 import isPlainObject from 'lodash/isPlainObject';
@@ -60,7 +61,7 @@ async function verify_files_entry([_, i18nPath]: [string, any]): Promise<
   }
   // check if the file is a JSON
   try {
-    JSON.parse(potentialJSON.toString());
+    parseJson(potentialJSON.toString());
     return Promise.resolve(true);
   } catch (error) {
     return Promise.reject(new Error(`${i18nPath} isn't a valid JSON`));
