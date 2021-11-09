@@ -1,6 +1,6 @@
 name: CI
-# Triggers the workflow on push or pull request events
-on: [push, pull_request]
+# Triggers the workflow on push / pull request events / manual trigger
+on: [push, pull_request, workflow_dispatch]
 jobs:
   build:
     name: Build and test on Node ${{ matrix.node }} - ${{ matrix.os }}
