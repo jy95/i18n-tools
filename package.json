@@ -65,16 +65,16 @@
     }
   ],
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^6.0.3",
+    "@size-limit/preset-small-lib": "^6.0.4",
     "@types/jest": "^27.0.2",
     "@types/lodash": "^4.14.176",
-    "@types/node": "^16.11.6",
-    "@types/yargs": "^17.0.4",
-    "dts-cli": "^0.19.4",
+    "@types/node": "^16.11.7",
+    "@types/yargs": "^17.0.5",
+    "dts-cli": "^0.19.5",
     "fsify": "^4.0.2",
     "husky": "^7.0.4",
     "semantic-release": "^17.4.7",
-    "size-limit": "^6.0.3",
+    "size-limit": "^6.0.4",
     "tslib": "^2.3.1",
     "typescript": "^4.4.4"
   },
