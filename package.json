@@ -66,17 +66,17 @@
   ],
   "devDependencies": {
     "@size-limit/preset-small-lib": "^6.0.4",
-    "@types/jest": "^27.0.2",
-    "@types/lodash": "^4.14.176",
-    "@types/node": "^16.11.7",
-    "@types/yargs": "^17.0.5",
-    "dts-cli": "^0.19.5",
+    "@types/jest": "^27.0.3",
+    "@types/lodash": "^4.14.177",
+    "@types/node": "^16.11.10",
+    "@types/yargs": "^17.0.7",
+    "dts-cli": "^0.19.7",
     "fsify": "^4.0.2",
     "husky": "^7.0.4",
     "semantic-release": "^17.4.7",
     "size-limit": "^6.0.4",
     "tslib": "^2.3.1",
-    "typescript": "^4.4.4"
+    "typescript": "^4.5.2"
   },
   "dependencies": {
     "exceljs": "^4.2.1",
