@@ -155,7 +155,7 @@ const structure: fsify_structure = [
             name: TEST_FILE_FILES,
             contents: JSON.stringify(
               generate_files(TRANSLATIONS_KEYS, (locale) =>
-                path.resolve(
+                path.join(
                   TEMP_FOLDER,
                   ROOT_TEST_FOLDER,
                   VALID_TEST_FOLDER,
@@ -170,7 +170,7 @@ const structure: fsify_structure = [
             name: TEST_FILE_FLAT_FILES,
             contents: JSON.stringify(
               generate_files(TRANSLATIONS_KEYS, (locale) =>
-                path.resolve(
+                path.join(
                   TEMP_FOLDER,
                   ROOT_TEST_FOLDER,
                   VALID_TEST_FOLDER,
@@ -190,13 +190,13 @@ const structure: fsify_structure = [
             type: fsify.FILE,
             name: TEST_FILE_SETTINGS1,
             contents: JSON.stringify({
-              files: path.resolve(
+              files: path.join(
                 TEMP_FOLDER,
                 ROOT_TEST_FOLDER,
                 VALID_TEST_FOLDER,
                 TEST_FILE_FILES
               ),
-              columns: path.resolve(
+              columns: path.join(
                 TEMP_FOLDER,
                 ROOT_TEST_FOLDER,
                 VALID_TEST_FOLDER,
@@ -213,7 +213,7 @@ const structure: fsify_structure = [
             name: TEST_FILE_SETTINGS2,
             contents: JSON.stringify({
               files: generate_files(TRANSLATIONS_KEYS, (locale) =>
-                path.resolve(
+                path.join(
                   TEMP_FOLDER,
                   ROOT_TEST_FOLDER,
                   VALID_TEST_FOLDER,
@@ -231,13 +231,13 @@ const structure: fsify_structure = [
             type: fsify.FILE,
             name: TEST_FILE_SETTINGS3,
             contents: JSON.stringify({
-              files: path.resolve(
+              files: path.join(
                 TEMP_FOLDER,
                 ROOT_TEST_FOLDER,
                 VALID_TEST_FOLDER,
                 TEST_FILE_FILES
               ),
-              columns: path.resolve(
+              columns: path.join(
                 TEMP_FOLDER,
                 ROOT_TEST_FOLDER,
                 VALID_TEST_FOLDER,
@@ -249,7 +249,7 @@ const structure: fsify_structure = [
                 'fixtures/export-xlsx',
                 'worksheetCustomizer-dynamic.js'
               ),
-              resultsFilter: path.resolve(
+              resultsFilter: path.join(
                 TEMP_FOLDER,
                 ROOT_TEST_FOLDER,
                 VALID_TEST_FOLDER,
@@ -344,7 +344,7 @@ const structure: fsify_structure = [
             name: TEST_FILE_FILES_DUP,
             contents: JSON.stringify(
               generate_files(TRANSLATIONS_KEYS, (_) =>
-                path.resolve(
+                path.join(
                   TEMP_FOLDER,
                   ROOT_TEST_FOLDER,
                   VALID_TEST_FOLDER,
@@ -430,7 +430,7 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
       idx < 9 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
       curr,
     ];
-    acc[curr] = path.resolve(...arr);
+    acc[curr] = path.join(...arr);
     return acc;
   },
   {}
@@ -668,7 +668,7 @@ describe('[export_xlsx command]', () => {
       ]);
       // example : 'settings1-output'
       let filename = settingsFile.substring(0, settingsFile.lastIndexOf('.'));
-      let expectedFile = path.resolve(TEMP_FOLDER, `${filename}-output.xlsx`);
+      let expectedFile = path.join(TEMP_FOLDER, `${filename}-output.xlsx`);
       // run command
       //console.warn(test_cmd);
       await parser.parseAsync(test_cmd);

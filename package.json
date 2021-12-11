@@ -82,7 +82,7 @@
     "exceljs": "^4.2.1",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
-    "yargs": "^17.2.1"
+    "yargs": "^17.3.0"
   },
   "eslintConfig": {
     "overrides": [

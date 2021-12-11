@@ -68,7 +68,7 @@ type test_files_type = typeof test_files_list[number];
 // files path
 const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
   (acc: any, curr: test_files_type, idx: number) => {
-    acc[curr] = path.resolve(
+    acc[curr] = path.join(
       TEMP_FOLDER,
       ROOT_TEST_FOLDER,
       idx < 10 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
@@ -230,7 +230,7 @@ const E2E_JSON_REPORTER: [
       '--outputDir',
       `"${TEMP_FOLDER}"`,
     ],
-    path.resolve(TEMP_FOLDER, 'diff_inline-JSON.json'),
+    path.join(TEMP_FOLDER, 'diff_inline-JSON.json'),
     {
       files: {
         file1: TEST_FILES[TEST_FILE_FILE1],
@@ -242,7 +242,7 @@ const E2E_JSON_REPORTER: [
   [
     'should work with two files',
     [[TEST_FILE_JSON_SETTINGS1]],
-    path.resolve(TEMP_FOLDER, 'diff_settings1-JSON.json'),
+    path.join(TEMP_FOLDER, 'diff_settings1-JSON.json'),
     {
       files: {
         file1: TEST_FILES[TEST_FILE_FILE1],
@@ -277,7 +277,7 @@ const E2E_JSON_REPORTER: [
   [
     'should work with three files',
     [[TEST_FILE_JSON_SETTINGS2]],
-    path.resolve(TEMP_FOLDER, 'diff_settings2-JSON.json'),
+    path.join(TEMP_FOLDER, 'diff_settings2-JSON.json'),
     {
       files: {
         file1: TEST_FILES[TEST_FILE_FILE1],
@@ -335,7 +335,7 @@ const E2E_JSON_REPORTER: [
   [
     'should work with js config file',
     [[TEST_FILE_JSON_SETTINGS3]],
-    path.resolve(TEMP_FOLDER, 'diff_settings3-JSON.json'),
+    path.join(TEMP_FOLDER, 'diff_settings3-JSON.json'),
     {
       files: {
         file1: TEST_FILES[TEST_FILE_FILE1],
@@ -378,7 +378,7 @@ const E2E_JSON_REPORTER: [
       '--keySeparator',
       `"false"`,
     ],
-    path.resolve(TEMP_FOLDER, 'diff_flat_inline-JSON.json'),
+    path.join(TEMP_FOLDER, 'diff_flat_inline-JSON.json'),
     {
       files: {
         file1: TEST_FILES[TEST_FILE_FLAT_FILE1],
@@ -399,7 +399,7 @@ const E2E_JSON_REPORTER: [
   [
     'should respect user wanted operations for output',
     [[TEST_FILE_JSON_SETTINGS4]],
-    path.resolve(TEMP_FOLDER, 'diff_settings4-JSON.json'),
+    path.join(TEMP_FOLDER, 'diff_settings4-JSON.json'),
     {
       files: {
         file1: TEST_FILES[TEST_FILE_FILE1],

@@ -89,7 +89,7 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
             idx > 0 && idx < 6 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
             curr,
           ];
-    acc[curr] = path.resolve(...arr);
+    acc[curr] = path.join(...arr);
     return acc;
   },
   {}
@@ -184,7 +184,7 @@ const structure: fsify_structure = [
               input: TEST_FILES[TEST_FILE_INPUT],
               columns: TEST_FILES[TEST_FILE_COLUMNS],
               locales: ['FR', 'NL', 'DE'],
-              outputDir: path.resolve(TEMP_FOLDER, ROOT_TEST_FOLDER),
+              outputDir: path.join(TEMP_FOLDER, ROOT_TEST_FOLDER),
               suffix: '_settings1',
             }),
           },
@@ -203,7 +203,7 @@ const structure: fsify_structure = [
                 },
               },
               locales: ['FR', 'NL', 'DE'],
-              outputDir: path.resolve(TEMP_FOLDER, ROOT_TEST_FOLDER),
+              outputDir: path.join(TEMP_FOLDER, ROOT_TEST_FOLDER),
               suffix: '_settings2',
             }),
           },
@@ -222,7 +222,7 @@ const structure: fsify_structure = [
                 },
               },
               locales: ['FR', 'NL', 'DE'],
-              outputDir: path.resolve(TEMP_FOLDER, ROOT_TEST_FOLDER),
+              outputDir: path.join(TEMP_FOLDER, ROOT_TEST_FOLDER),
               suffix: '_settings3',
               keySeparator: false,
             }),
