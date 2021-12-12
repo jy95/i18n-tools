@@ -28,15 +28,6 @@ const ROOT_TEST_FOLDER = 'tests-for-diff';
 // Build the parser used for that command
 const parser = yargs.command(command, describeText, builder, handler).help();
 
-// to concat faster command
-type concat_cmd_type = (args: string[]) => string;
-type prepare_mandatory_args_type = (...args: string[]) => string[];
-const concat_cmd: concat_cmd_type = (args: string[]) =>
-  `diff ${args.join(' ')}`;
-const prepare_mandatory_args: prepare_mandatory_args_type = (...files) => [
-  ...files.map((file) => `"${file}"`),
-];
-
 // to access easier the paths of test file paths
 const test_files_list = [
   'file1.json',
@@ -73,11 +64,20 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
       ROOT_TEST_FOLDER,
       idx < 10 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
       curr
-    );
+    ).replace(/\\/g, '\\\\');
     return acc;
   },
   {}
 );
+
+// to concat faster command
+type concat_cmd_type = (args: string[]) => string;
+type prepare_mandatory_args_type = (...args: test_files_type[]) => string[];
+const concat_cmd: concat_cmd_type = (args: string[]) =>
+  `diff ${args.join(' ')}`;
+const prepare_mandatory_args: prepare_mandatory_args_type = (...files) => [
+  ...files.map((file) => `"${TEST_FILES[file].replace(/\\/g, '\\\\')}"`),
+];
 
 // generate contents for comparison
 const generate_i18_contents = (idx: number) => {
@@ -122,7 +122,7 @@ const structure: fsify_structure = [
             name: TEST_FILE_JSON_SETTINGS1,
             contents: JSON.stringify({
               filename: 'diff_settings1-JSON',
-              outputDir: TEMP_FOLDER,
+              outputDir: TEMP_FOLDER.replace(/\\/g, '\\\\'),
               outputFormat: 'JSON',
               files: [TEST_FILE_FILE1, TEST_FILE_FILE2].map(
                 (file) => TEST_FILES[file]
@@ -135,7 +135,7 @@ const structure: fsify_structure = [
             name: TEST_FILE_JSON_SETTINGS2,
             contents: JSON.stringify({
               filename: 'diff_settings2-JSON',
-              outputDir: TEMP_FOLDER,
+              outputDir: TEMP_FOLDER.replace(/\\/g, '\\\\'),
               outputFormat: 'JSON',
               files: [TEST_FILE_FILE1, TEST_FILE_FILE2, TEST_FILE_FILE3].map(
                 (file) => TEST_FILES[file]
@@ -148,7 +148,7 @@ const structure: fsify_structure = [
             name: TEST_FILE_JSON_SETTINGS4,
             contents: JSON.stringify({
               filename: 'diff_settings4-JSON',
-              outputDir: TEMP_FOLDER,
+              outputDir: TEMP_FOLDER.replace(/\\/g, '\\\\'),
               outputFormat: 'JSON',
               operations: ['PUT'], // only interessted by update operations
               files: [TEST_FILE_FILE1, TEST_FILE_FILE2].map(
@@ -213,6 +213,7 @@ const VALIDATIONS_SCENARIOS: [
   ],
 ];
 
+
 // E2E scenarios for JSON reporter
 const E2E_JSON_REPORTER: [
   string,
@@ -228,7 +229,7 @@ const E2E_JSON_REPORTER: [
       '--filename',
       `"diff_inline-JSON"`,
       '--outputDir',
-      `"${TEMP_FOLDER}"`,
+      `"${TEMP_FOLDER.replace(/\\/g, '\\\\')}"`,
     ],
     path.join(TEMP_FOLDER, 'diff_inline-JSON.json'),
     {
@@ -374,7 +375,7 @@ const E2E_JSON_REPORTER: [
       '--filename',
       `"diff_flat_inline-JSON"`,
       '--outputDir',
-      `"${TEMP_FOLDER}"`,
+      `"${TEMP_FOLDER.replace(/\\/g, '\\\\')}"`,
       '--keySeparator',
       `"false"`,
     ],
@@ -431,7 +432,7 @@ describe('[diff command]', () => {
       expect(output).toMatch(describeText);
     });
   });
-
+  
   describe('Validations', () => {
     // mock console.log
     let consoleLog: any;
@@ -458,7 +459,7 @@ describe('[diff command]', () => {
           // optional args
           ...otherArgs,
           // mandatory args
-          ...prepare_mandatory_args(...files.map((file) => TEST_FILES[file])),
+          ...prepare_mandatory_args(...files),
         ]);
         //console.warn(test_cmd);
         // Test out if error message is thrown
@@ -466,6 +467,7 @@ describe('[diff command]', () => {
       }
     );
   });
+  
 
   describe('E2E successful scenarios', () => {
     // mock console.log
@@ -503,7 +505,7 @@ describe('[diff command]', () => {
             ? [
                 '--settings',
                 ...prepare_mandatory_args(
-                  ...files.map((file) => TEST_FILES[file])
+                  ...files
                 ),
               ]
             : []),
@@ -513,7 +515,7 @@ describe('[diff command]', () => {
           ...(files.length >= 2
             ? [
                 ...prepare_mandatory_args(
-                  ...files.map((file) => TEST_FILES[file])
+                  ...files
                 ),
               ]
             : []),
