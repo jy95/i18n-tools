@@ -28,15 +28,6 @@ const ROOT_TEST_FOLDER = 'tests-for-diff';
 // Build the parser used for that command
 const parser = yargs.command(command, describeText, builder, handler).help();
 
-// to concat faster command
-type concat_cmd_type = (args: string[]) => string;
-type prepare_mandatory_args_type = (...args: string[]) => string[];
-const concat_cmd: concat_cmd_type = (args: string[]) =>
-  `diff ${args.join(' ')}`;
-const prepare_mandatory_args: prepare_mandatory_args_type = (...files) => [
-  ...files.map((file) => `"${file}"`),
-];
-
 // to access easier the paths of test file paths
 const test_files_list = [
   'file1.json',
@@ -68,7 +59,7 @@ type test_files_type = typeof test_files_list[number];
 // files path
 const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
   (acc: any, curr: test_files_type, idx: number) => {
-    acc[curr] = path.resolve(
+    acc[curr] = path.join(
       TEMP_FOLDER,
       ROOT_TEST_FOLDER,
       idx < 10 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
@@ -78,6 +69,15 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
   },
   {}
 );
+
+// to concat faster command
+type concat_cmd_type = (args: string[]) => string;
+type prepare_mandatory_args_type = (...args: test_files_type[]) => string[];
+const concat_cmd: concat_cmd_type = (args: string[]) =>
+  `diff ${args.join(' ')}`;
+const prepare_mandatory_args: prepare_mandatory_args_type = (...files) => [
+  ...files.map((file) => `${TEST_FILES[file]}`),
+];
 
 // generate contents for comparison
 const generate_i18_contents = (idx: number) => {
@@ -228,9 +228,9 @@ const E2E_JSON_REPORTER: [
       '--filename',
       `"diff_inline-JSON"`,
       '--outputDir',
-      `"${TEMP_FOLDER}"`,
+      `${TEMP_FOLDER}`,
     ],
-    path.resolve(TEMP_FOLDER, 'diff_inline-JSON.json'),
+    path.join(TEMP_FOLDER, 'diff_inline-JSON.json'),
     {
       files: {
         file1: TEST_FILES[TEST_FILE_FILE1],
@@ -242,7 +242,7 @@ const E2E_JSON_REPORTER: [
   [
     'should work with two files',
     [[TEST_FILE_JSON_SETTINGS1]],
-    path.resolve(TEMP_FOLDER, 'diff_settings1-JSON.json'),
+    path.join(TEMP_FOLDER, 'diff_settings1-JSON.json'),
     {
       files: {
         file1: TEST_FILES[TEST_FILE_FILE1],
@@ -277,7 +277,7 @@ const E2E_JSON_REPORTER: [
   [
     'should work with three files',
     [[TEST_FILE_JSON_SETTINGS2]],
-    path.resolve(TEMP_FOLDER, 'diff_settings2-JSON.json'),
+    path.join(TEMP_FOLDER, 'diff_settings2-JSON.json'),
     {
       files: {
         file1: TEST_FILES[TEST_FILE_FILE1],
@@ -335,7 +335,7 @@ const E2E_JSON_REPORTER: [
   [
     'should work with js config file',
     [[TEST_FILE_JSON_SETTINGS3]],
-    path.resolve(TEMP_FOLDER, 'diff_settings3-JSON.json'),
+    path.join(TEMP_FOLDER, 'diff_settings3-JSON.json'),
     {
       files: {
         file1: TEST_FILES[TEST_FILE_FILE1],
@@ -374,11 +374,11 @@ const E2E_JSON_REPORTER: [
       '--filename',
       `"diff_flat_inline-JSON"`,
       '--outputDir',
-      `"${TEMP_FOLDER}"`,
+      `${TEMP_FOLDER}`,
       '--keySeparator',
       `"false"`,
     ],
-    path.resolve(TEMP_FOLDER, 'diff_flat_inline-JSON.json'),
+    path.join(TEMP_FOLDER, 'diff_flat_inline-JSON.json'),
     {
       files: {
         file1: TEST_FILES[TEST_FILE_FLAT_FILE1],
@@ -399,7 +399,7 @@ const E2E_JSON_REPORTER: [
   [
     'should respect user wanted operations for output',
     [[TEST_FILE_JSON_SETTINGS4]],
-    path.resolve(TEMP_FOLDER, 'diff_settings4-JSON.json'),
+    path.join(TEMP_FOLDER, 'diff_settings4-JSON.json'),
     {
       files: {
         file1: TEST_FILES[TEST_FILE_FILE1],
@@ -458,7 +458,7 @@ describe('[diff command]', () => {
           // optional args
           ...otherArgs,
           // mandatory args
-          ...prepare_mandatory_args(...files.map((file) => TEST_FILES[file])),
+          ...prepare_mandatory_args(...files),
         ]);
         //console.warn(test_cmd);
         // Test out if error message is thrown
@@ -500,23 +500,12 @@ describe('[diff command]', () => {
 
         let test_cmd = concat_cmd([
           ...(files.length === 1
-            ? [
-                '--settings',
-                ...prepare_mandatory_args(
-                  ...files.map((file) => TEST_FILES[file])
-                ),
-              ]
+            ? ['--settings', ...prepare_mandatory_args(...files)]
             : []),
           // optional args
           ...otherArgs,
           // mandatory args (if needed)
-          ...(files.length >= 2
-            ? [
-                ...prepare_mandatory_args(
-                  ...files.map((file) => TEST_FILES[file])
-                ),
-              ]
-            : []),
+          ...(files.length >= 2 ? [...prepare_mandatory_args(...files)] : []),
         ]);
 
         await parser.parseAsync(test_cmd);
