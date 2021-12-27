@@ -179,7 +179,7 @@ const structure: fsify_structure = [
             name: TEST_FILE_JSON_SETTINGS3,
             contents: `module.exports = {
               filename: 'diff_settings3-JSON',
-              outputDir: "${TEMP_FOLDER}",
+              outputDir: "${TEMP_FOLDER.replace(/\\/g, '\\\\')}",
               outputFormat: 'JSON',
               files: [${[TEST_FILE_FILE1, TEST_FILE_FILE2]
                 .map((file) => `"${TEST_FILES[file].replace(/\\/g, '\\\\')}"`)
