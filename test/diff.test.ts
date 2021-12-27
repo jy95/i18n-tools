@@ -59,12 +59,14 @@ type test_files_type = typeof test_files_list[number];
 // files path
 const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
   (acc: any, curr: test_files_type, idx: number) => {
-    acc[curr] = path.join(
-      TEMP_FOLDER,
-      ROOT_TEST_FOLDER,
-      idx < 10 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
-      curr
-    ).replace(/\\/g, '\\\\');
+    acc[curr] = path
+      .join(
+        TEMP_FOLDER,
+        ROOT_TEST_FOLDER,
+        idx < 10 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
+        curr
+      )
+      .replace(/\\/g, '\\\\');
     return acc;
   },
   {}
@@ -212,7 +214,6 @@ const VALIDATIONS_SCENARIOS: [
     'not-empty char',
   ],
 ];
-
 
 // E2E scenarios for JSON reporter
 const E2E_JSON_REPORTER: [
@@ -432,7 +433,7 @@ describe('[diff command]', () => {
       expect(output).toMatch(describeText);
     });
   });
-  
+
   describe('Validations', () => {
     // mock console.log
     let consoleLog: any;
@@ -467,7 +468,6 @@ describe('[diff command]', () => {
       }
     );
   });
-  
 
   describe('E2E successful scenarios', () => {
     // mock console.log
@@ -502,23 +502,12 @@ describe('[diff command]', () => {
 
         let test_cmd = concat_cmd([
           ...(files.length === 1
-            ? [
-                '--settings',
-                ...prepare_mandatory_args(
-                  ...files
-                ),
-              ]
+            ? ['--settings', ...prepare_mandatory_args(...files)]
             : []),
           // optional args
           ...otherArgs,
           // mandatory args (if needed)
-          ...(files.length >= 2
-            ? [
-                ...prepare_mandatory_args(
-                  ...files
-                ),
-              ]
-            : []),
+          ...(files.length >= 2 ? [...prepare_mandatory_args(...files)] : []),
         ]);
 
         await parser.parseAsync(test_cmd);
