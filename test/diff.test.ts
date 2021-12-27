@@ -59,14 +59,12 @@ type test_files_type = typeof test_files_list[number];
 // files path
 const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
   (acc: any, curr: test_files_type, idx: number) => {
-    acc[curr] = path
-      .join(
-        TEMP_FOLDER,
-        ROOT_TEST_FOLDER,
-        idx < 10 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
-        curr
-      )
-      .replace(/\\/g, '\\\\');
+    acc[curr] = path.join(
+      TEMP_FOLDER,
+      ROOT_TEST_FOLDER,
+      idx < 10 ? VALID_TEST_FOLDER : USELESS_TEST_FOLDER,
+      curr
+    );
     return acc;
   },
   {}
@@ -78,7 +76,7 @@ type prepare_mandatory_args_type = (...args: test_files_type[]) => string[];
 const concat_cmd: concat_cmd_type = (args: string[]) =>
   `diff ${args.join(' ')}`;
 const prepare_mandatory_args: prepare_mandatory_args_type = (...files) => [
-  ...files.map((file) => `"${TEST_FILES[file].replace(/\\/g, '\\\\')}"`),
+  ...files.map((file) => `${TEST_FILES[file]}`),
 ];
 
 // generate contents for comparison
@@ -124,7 +122,7 @@ const structure: fsify_structure = [
             name: TEST_FILE_JSON_SETTINGS1,
             contents: JSON.stringify({
               filename: 'diff_settings1-JSON',
-              outputDir: TEMP_FOLDER.replace(/\\/g, '\\\\'),
+              outputDir: TEMP_FOLDER,
               outputFormat: 'JSON',
               files: [TEST_FILE_FILE1, TEST_FILE_FILE2].map(
                 (file) => TEST_FILES[file]
@@ -137,7 +135,7 @@ const structure: fsify_structure = [
             name: TEST_FILE_JSON_SETTINGS2,
             contents: JSON.stringify({
               filename: 'diff_settings2-JSON',
-              outputDir: TEMP_FOLDER.replace(/\\/g, '\\\\'),
+              outputDir: TEMP_FOLDER,
               outputFormat: 'JSON',
               files: [TEST_FILE_FILE1, TEST_FILE_FILE2, TEST_FILE_FILE3].map(
                 (file) => TEST_FILES[file]
@@ -150,7 +148,7 @@ const structure: fsify_structure = [
             name: TEST_FILE_JSON_SETTINGS4,
             contents: JSON.stringify({
               filename: 'diff_settings4-JSON',
-              outputDir: TEMP_FOLDER.replace(/\\/g, '\\\\'),
+              outputDir: TEMP_FOLDER,
               outputFormat: 'JSON',
               operations: ['PUT'], // only interessted by update operations
               files: [TEST_FILE_FILE1, TEST_FILE_FILE2].map(
@@ -181,10 +179,10 @@ const structure: fsify_structure = [
             name: TEST_FILE_JSON_SETTINGS3,
             contents: `module.exports = {
               filename: 'diff_settings3-JSON',
-              outputDir: "${TEMP_FOLDER.replace(/\\/g, '\\\\')}",
+              outputDir: "${TEMP_FOLDER}",
               outputFormat: 'JSON',
               files: [${[TEST_FILE_FILE1, TEST_FILE_FILE2]
-                .map((file) => `"${TEST_FILES[file].replace(/\\/g, '\\\\')}"`)
+                .map((file) => `${TEST_FILES[file]}`)
                 .join(',')}]
             }`,
           },
@@ -230,7 +228,7 @@ const E2E_JSON_REPORTER: [
       '--filename',
       `"diff_inline-JSON"`,
       '--outputDir',
-      `"${TEMP_FOLDER.replace(/\\/g, '\\\\')}"`,
+      `${TEMP_FOLDER}`,
     ],
     path.join(TEMP_FOLDER, 'diff_inline-JSON.json'),
     {
@@ -376,7 +374,7 @@ const E2E_JSON_REPORTER: [
       '--filename',
       `"diff_flat_inline-JSON"`,
       '--outputDir',
-      `"${TEMP_FOLDER.replace(/\\/g, '\\\\')}"`,
+      `${TEMP_FOLDER}`,
       '--keySeparator',
       `"false"`,
     ],
