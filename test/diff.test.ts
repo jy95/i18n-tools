@@ -182,7 +182,7 @@ const structure: fsify_structure = [
               outputDir: "${TEMP_FOLDER}",
               outputFormat: 'JSON',
               files: [${[TEST_FILE_FILE1, TEST_FILE_FILE2]
-                .map((file) => `${TEST_FILES[file]}`)
+                .map((file) => `"${TEST_FILES[file].replace(/\\/g, '\\\\')}"`)
                 .join(',')}]
             }`,
           },
