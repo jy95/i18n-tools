@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://jy95.github.io/i18n-tools/blog</id>
+    <title>@jy95/i18n-tools Blog</title>
+    <updated>2021-10-07T00:00:00.000Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://jy95.github.io/i18n-tools/blog"/>
+    <subtitle>@jy95/i18n-tools Blog</subtitle>
+    <icon>https://jy95.github.io/i18n-tools/img/favicon.ico</icon>
+    <entry>
+        <title type="html"><![CDATA[Flat JSON now supported]]></title>
+        <id>flat-json-now-supported</id>
+        <link href="https://jy95.github.io/i18n-tools/blog/flat-json-now-supported"/>
+        <updated>2021-10-07T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Flat JSON such as this one are now supported :]]></summary>
+        <content type="html"><![CDATA[<p>Flat JSON such as this one are now supported :</p><pre><code class="language-json">{
+  &quot;unchanged.key_with-special-char!&quot;:&quot;Hello&quot;,
+  &quot;changed.key_test$&quot;:&quot;world !&quot;
+}
+</code></pre><p>Don&#x27;t forget to set option <code>keySeparator</code> to <code>false</code> in your <code>settings.json</code> or <code>settings.js</code> files.</p>]]></content>
+        <author>
+            <name>Jacques Yakoub</name>
+            <uri>https://github.com/jy95</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Welcome]]></title>
+        <id>welcome</id>
+        <link href="https://jy95.github.io/i18n-tools/blog/welcome"/>
+        <updated>2021-09-05T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to @jy95/i18n-tools.]]></summary>
+        <content type="html"><![CDATA[<p>Welcome to @jy95/i18n-tools.
+This cli enables you to :</p><ul><li>Export i18n files into something else</li><li>Turn a file to i18n file(s)</li><li>Compare at least two i18n files &amp; generate a report</li><li>...</li></ul>]]></content>
+        <author>
+            <name>Jacques Yakoub</name>
+            <uri>https://github.com/jy95</uri>
+        </author>
+    </entry>
+</feed>

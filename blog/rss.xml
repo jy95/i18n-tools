@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+    <channel>
+        <title>@jy95/i18n-tools Blog</title>
+        <link>https://jy95.github.io/i18n-tools/blog</link>
+        <description>@jy95/i18n-tools Blog</description>
+        <lastBuildDate>Thu, 07 Oct 2021 00:00:00 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
+        <item>
+            <title><![CDATA[Flat JSON now supported]]></title>
+            <link>https://jy95.github.io/i18n-tools/blog/flat-json-now-supported</link>
+            <guid>flat-json-now-supported</guid>
+            <pubDate>Thu, 07 Oct 2021 00:00:00 GMT</pubDate>
+            <description><![CDATA[Flat JSON such as this one are now supported :]]></description>
+            <content:encoded><![CDATA[<p>Flat JSON such as this one are now supported :</p><pre><code class="language-json">{
+  &quot;unchanged.key_with-special-char!&quot;:&quot;Hello&quot;,
+  &quot;changed.key_test$&quot;:&quot;world !&quot;
+}
+</code></pre><p>Don&#x27;t forget to set option <code>keySeparator</code> to <code>false</code> in your <code>settings.json</code> or <code>settings.js</code> files.</p>]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Welcome]]></title>
+            <link>https://jy95.github.io/i18n-tools/blog/welcome</link>
+            <guid>welcome</guid>
+            <pubDate>Sun, 05 Sep 2021 00:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to @jy95/i18n-tools.]]></description>
+            <content:encoded><![CDATA[<p>Welcome to @jy95/i18n-tools.
+This cli enables you to :</p><ul><li>Export i18n files into something else</li><li>Turn a file to i18n file(s)</li><li>Compare at least two i18n files &amp; generate a report</li><li>...</li></ul>]]></content:encoded>
+        </item>
+    </channel>
+</rss>
