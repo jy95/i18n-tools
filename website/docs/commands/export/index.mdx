@@ -1,0 +1,16 @@
+---
+sidebar_label: Export commands
+title: Export commands
+id: export
+description: Export i18n files into something else
+---
+
+import DocCardList from '@theme/DocCardList';
+import {useCurrentSidebarCategory} from '@docusaurus/theme-common';
+
+```bash
+# Display all available export commands
+npx @jy95/i18n-tools export --help
+```
+
+<DocCardList items={useCurrentSidebarCategory().items}/>
