@@ -13,15 +13,12 @@
         <link href="https://jy95.github.io/i18n-tools/blog/flat-json-now-supported"/>
         <updated>2021-10-07T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[Flat JSON such as this one are now supported :]]></summary>
-        <content type="html"><![CDATA[<p>Flat JSON such as this one are now supported :</p><pre><code class="language-json">{
-  &quot;unchanged.key_with-special-char!&quot;:&quot;Hello&quot;,
-  &quot;changed.key_test$&quot;:&quot;world !&quot;
-}
-</code></pre><p>Don&#x27;t forget to set option <code>keySeparator</code> to <code>false</code> in your <code>settings.json</code> or <code>settings.js</code> files.</p>]]></content>
+        <content type="html"><![CDATA[<p>Flat JSON such as this one are now supported :</p><div class="codeBlockContainer_I0IT language-json theme-code-block"><div class="codeBlockContent_wNvx json"><pre tabindex="0" class="prism-code language-json codeBlock_jd64 thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_mRuA"><span class="token-line" style="color:#393A34"><span class="token punctuation" style="color:#393A34">{</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token property" style="color:#36acaa">"unchanged.key_with-special-char!"</span><span class="token operator" style="color:#393A34">:</span><span class="token string" style="color:#e3116c">"Hello"</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token property" style="color:#36acaa">"changed.key_test$"</span><span class="token operator" style="color:#393A34">:</span><span class="token string" style="color:#e3116c">"world !"</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token punctuation" style="color:#393A34">}</span><br></span></code></pre><button type="button" aria-label="Copy code to clipboard" class="copyButton_wuS7 clean-btn">Copy</button></div></div><p>Don't forget to set option <code>keySeparator</code> to <code>false</code> in your <code>settings.json</code> or <code>settings.js</code> files.</p>]]></content>
         <author>
             <name>Jacques Yakoub</name>
             <uri>https://github.com/jy95</uri>
         </author>
+        <category label="feature" term="feature"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[Welcome]]></title>
@@ -35,5 +32,6 @@ This cli enables you to :</p><ul><li>Export i18n files into something else</li><
             <name>Jacques Yakoub</name>
             <uri>https://github.com/jy95</uri>
         </author>
+        <category label="welcome" term="welcome"/>
     </entry>
 </feed>
