@@ -1,0 +1,16 @@
+---
+sidebar_label: Import commands
+title: Import commands
+id: import
+description: Turn something to i18n file(s)
+---
+
+import DocCardList from '@theme/DocCardList';
+import {useCurrentSidebarCategory} from '@docusaurus/theme-common';
+
+```bash
+# Display all available import commands
+npx @jy95/i18n-tools import --help
+```
+
+<DocCardList items={useCurrentSidebarCategory().items}/>

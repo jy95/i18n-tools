@@ -9,13 +9,6 @@ sidebar_label: Installation
 
 - [Node.js](https://nodejs.org/en/download/) version >= 12 or above (which can be checked by running `node -v`). You can use [nvm](https://github.com/nvm-sh/nvm) for managing multiple Node versions on a single machine installed
 
-## Command
-
-```bash
-# Display all available commands
-npx @jy95/i18n-tools --help
-```
-
 :::tip Single installation
 
 If not globally installed, Npx reinstalls the cli each time you run this command.  
