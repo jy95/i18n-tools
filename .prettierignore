@@ -1,0 +1,16 @@
+# Ignore artifacts:
+dist
+coverage
+
+# Ignore documentation
+website
+
+# Ignore scripts
+.github
+
+# Rest
+README.md
+tsconfig.json
+package.json
+package-lock.json
+jest.config.js

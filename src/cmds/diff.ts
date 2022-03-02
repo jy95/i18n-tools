@@ -3,7 +3,7 @@ import { resolveChecksInOrder, DIFF_CHECKS } from '../checks/index';
 
 // For typing
 // eslint-disable-next-line
-import type { Argv } from "yargs";
+import type { Argv } from 'yargs';
 import { backupPaths, parsePathsToJSON } from '../middlewares/middlewares';
 import { CommonDiffArguments, ChangesOps } from '../types/diffTypes';
 import CommandBuilder from '../commons/commandBuilder';

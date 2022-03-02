@@ -14,7 +14,7 @@ import { resolveChecksInOrder, EXPORT_CHECKS } from '../../checks/index';
 
 // For typing
 // eslint-disable-next-line
-import type { Argv } from "yargs";
+import type { Argv } from 'yargs';
 import { XLSXExportArguments, I18N_Merged_Data } from '../../types/exportTypes';
 
 // checks for this command

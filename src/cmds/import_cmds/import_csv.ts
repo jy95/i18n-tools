@@ -16,7 +16,7 @@ import { resolveChecksInOrder, IMPORT_CHECKS } from '../../checks/index';
 
 // For typing
 // eslint-disable-next-line
-import type { Argv } from "yargs";
+import type { Argv } from 'yargs';
 import { CSVImportArguments } from '../../types/importTypes';
 
 // checks for this command
