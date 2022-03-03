@@ -1,0 +1,6 @@
+{
+    "compilerOptions": {
+      // interop between ESM and CJS modules. Recommended by TS
+      "esModuleInterop": true
+    }
+}
