@@ -19,25 +19,20 @@
     "localization"
   ],
   "bin": "bin/cli.js",
-  "main": "dist/index.js",
-  "module": "dist/i18n-tools.esm.js",
-  "typings": "index.d.ts",
-  "files": [
-    "dist",
-    "bin",
-    "index.d.ts"
-  ],
+  "source": "src/index.ts",
+  "main": "dist/main.js",
+  "module": "dist/module.js",
   "engines": {
     "node": ">=12"
   },
   "scripts": {
-    "start": "dts watch",
-    "build": "dts build",
+    "watch": "npx parcel watch",
+    "build": "npx parcel build",
     "test": "npx jest",
     "test:coverage": "npx jest --coverage",
     "lint": "npx prettier --check .",
     "lint-fix": "npx prettier --write .",
-    "prepare": "dts build",
+    "prepare": "npm run build",
     "semantic-release": "semantic-release"
   },
   "prettier": {
@@ -47,6 +42,7 @@
     "trailingComma": "es5"
   },
   "devDependencies": {
+    "@parcel/transformer-typescript-types": "^2.3.2",
     "@types/jest": "^27.4.1",
     "@types/lodash": "^4.14.178",
     "@types/node": "^17.0.21",
@@ -54,6 +50,7 @@
     "eslint-config-prettier": "^8.5.0",
     "fsify": "^5.0.0",
     "jest": "^27.5.1",
+    "parcel": "^2.3.2",
     "prettier": "2.5.1",
     "semantic-release": "^17.4.7",
     "ts-jest": "^27.1.3",

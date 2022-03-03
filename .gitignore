@@ -15,3 +15,6 @@ test.xlsx.xlsx
 /website/backers.json
 /website/node_modules
 /website/yarn.lock
+
+# Files by parcel js
+.parcel-cache
