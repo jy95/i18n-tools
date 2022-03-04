@@ -1,18 +1,28 @@
-#!/usr/bin/env node
 /* istanbul ignore file */
-// Simple way to test this file : node dist/index.js
-import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
-import exportCmd from './cmds/export';
-import importCmd from './cmds/import';
-import diffCmd from './cmds/diff';
+import export_xlsx from './cmds/export_cmds/export_xlsx';
+import export_csv from './cmds/export_cmds/export_csv';
+import import_xlsx from './cmds/import_cmds/import_xlsx';
+import import_csv from './cmds/import_cmds/import_csv';
+import diff from './cmds/diff';
 
-/* eslint-disable  @typescript-eslint/no-unused-expressions */
-yargs(hideBin(process.argv))
-  .scriptName('@jy95/i18n-tools')
-  // commandDir doesn't work very well in Typescript
-  .command(exportCmd)
-  .command(importCmd)
-  .command(diffCmd)
-  .demandCommand()
-  .help().argv;
+// export commands so that users can cherry pick what they want
+export {
+    export_xlsx,
+    export_csv,
+    import_xlsx,
+    import_csv,
+    diff
+}
+
+// for CJS output
+export default {
+    "export": {
+        "to_xlsx": export_xlsx,
+        "to_csv": export_csv
+    },
+    "import": {
+        "from_xlsx": import_xlsx,
+        "from_csv": import_csv
+    },
+    "diff": diff
+}

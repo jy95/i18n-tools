@@ -18,10 +18,34 @@
     "translation",
     "localization"
   ],
-  "bin": "bin/cli.js",
-  "source": "src/index.ts",
+  "bin": "dist/cli.js",
   "main": "dist/main.js",
   "module": "dist/module.js",
+  "browser": "dist/browser.js",
+  "targets": {
+    "cli": {
+      "context": "node",
+      "source": "src/cli.ts",
+      "outputFormat": "commonjs"
+    },
+    "main": {
+      "context": "node",
+      "source": "src/index.ts",
+      "outputFormat": "commonjs"
+    },
+    "module": {
+      "context": "node",
+      "source": "src/index.ts",
+      "outputFormat": "esmodule"
+    },
+    "browser": {
+      "context": "browser",
+      "source": "src/index.ts",
+      "optimize": true,
+      "sourceMap": false,
+      "includeNodeModules": true
+    }
+  },
   "engines": {
     "node": ">=12"
   },
