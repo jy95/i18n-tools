@@ -4,7 +4,7 @@ import { parseUnknownToFalse } from '../middlewares/middlewares';
 
 // For typing
 // eslint-disable-next-line
-import type { Argv } from "yargs";
+import type { Argv } from 'yargs';
 
 export default class CommandBuilder {
   y: Argv<{ [x: string]: any }>; // current yargs result
