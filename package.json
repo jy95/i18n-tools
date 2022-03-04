@@ -31,11 +31,13 @@
     "main": {
       "context": "node",
       "source": "src/index.ts",
+      "optimize": true,
       "outputFormat": "commonjs"
     },
     "module": {
       "context": "node",
       "source": "src/index.ts",
+      "optimize": true,
       "outputFormat": "esmodule"
     },
     "browser": {

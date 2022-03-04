@@ -6,23 +6,17 @@ import import_csv from './cmds/import_cmds/import_csv';
 import diff from './cmds/diff';
 
 // export commands so that users can cherry pick what they want
-export {
-    export_xlsx,
-    export_csv,
-    import_xlsx,
-    import_csv,
-    diff
-}
+export { export_xlsx, export_csv, import_xlsx, import_csv, diff };
 
 // for CJS output
 export default {
-    "export": {
-        "to_xlsx": export_xlsx,
-        "to_csv": export_csv
-    },
-    "import": {
-        "from_xlsx": import_xlsx,
-        "from_csv": import_csv
-    },
-    "diff": diff
-}
+  export: {
+    to_xlsx: export_xlsx,
+    to_csv: export_csv,
+  },
+  import: {
+    from_xlsx: import_xlsx,
+    from_csv: import_csv,
+  },
+  diff: diff,
+};
