@@ -24,7 +24,6 @@
   "bin": "dist/cli.js",
   "main": "dist/main.js",
   "module": "dist/module.js",
-  "browser": "dist/browser.js",
   "targets": {
     "cli": {
       "context": "node",
