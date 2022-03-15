@@ -24,6 +24,12 @@
   "bin": "dist/cli.js",
   "main": "dist/main.js",
   "module": "dist/module.js",
+  "exports": {
+    ".": {
+      "require": "./dist/main.js",
+      "import": "./dist/module.js"
+    }
+  },
   "targets": {
     "cli": {
       "context": "node",
