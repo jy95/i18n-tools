@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[677],{3139:function(e){e.exports=JSON.parse('{"feature":{"allTagsPath":"/i18n-tools/blog/tags","name":"feature","count":1,"permalink":"/i18n-tools/blog/tags/feature"},"welcome":{"allTagsPath":"/i18n-tools/blog/tags","name":"welcome","count":1,"permalink":"/i18n-tools/blog/tags/welcome"}}')}}]);
