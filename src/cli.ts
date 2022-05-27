@@ -10,6 +10,10 @@ import diffCmd from './cmds/diff';
 /* eslint-disable  @typescript-eslint/no-unused-expressions */
 yargs(hideBin(process.argv))
   .scriptName('@jy95/i18n-tools')
+  .parserConfiguration({
+    // https://github.com/jy95/i18n-tools/issues/61
+    'camel-case-expansion': false,
+  })
   // commandDir doesn't work very well in Typescript
   .command(exportCmd)
   .command(importCmd)
