@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[311],{4416:function(e){e.exports=JSON.parse('{"label":"welcome","permalink":"/i18n-tools/blog/tags/welcome","allTagsPath":"/i18n-tools/blog/tags","count":1}')}}]);

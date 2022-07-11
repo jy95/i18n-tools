@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[535],{5641:function(e){e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Flat JSON now supported","permalink":"/i18n-tools/blog/flat-json-now-supported"},{"title":"Welcome","permalink":"/i18n-tools/blog/welcome"}]}')}}]);
