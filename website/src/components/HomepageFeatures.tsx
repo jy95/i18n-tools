@@ -61,6 +61,8 @@ function Feature({title, image, description}: FeatureItem) {
 
 export default function HomepageFeatures(): JSX.Element {
   return (
+    <>
+    <a href={useBaseUrl('/img/docusaurus.png')}>test</a>
     <section className={styles.features}>
       <div className="container">
         <div className="row">
@@ -70,5 +72,6 @@ export default function HomepageFeatures(): JSX.Element {
         </div>
       </div>
     </section>
+    </>
   );
 }
