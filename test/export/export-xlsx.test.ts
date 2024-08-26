@@ -115,7 +115,7 @@ const [
   TEST_FILE_RESULTSFILTER_NAF,
   TEST_FILE_RESULTSFILTER_WA,
 ] = test_files_list;
-type test_files_type = typeof test_files_list[number];
+type test_files_type = (typeof test_files_list)[number];
 
 // file structure for fsify, in order to run the tests
 const structure: fsify_structure = [

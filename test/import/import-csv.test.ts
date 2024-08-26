@@ -75,7 +75,7 @@ const [
   TEST_FILE_COLUMNS_LNAO,
   TEST_FILE_COLUMNS_LVNS,
 ] = test_files_list;
-type test_files_type = typeof test_files_list[number];
+type test_files_type = (typeof test_files_list)[number];
 
 // files path
 const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
@@ -99,7 +99,7 @@ const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
 const VALIDATIONS_SCENARIOS: [
   string,
   [test_files_type, test_files_type, string[], ...string[]],
-  ...string[]
+  ...string[],
 ][] = [
   [
     // Test out the message : "locales options doesn't contain uniq values"

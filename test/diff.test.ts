@@ -54,7 +54,7 @@ const [
   TEST_FILE_JSON_SETTINGS3,
   TEST_FILE_JSON_SETTINGS4,
 ] = test_files_list;
-type test_files_type = typeof test_files_list[number];
+type test_files_type = (typeof test_files_list)[number];
 
 // files path
 const TEST_FILES: { [x in test_files_type]: string } = test_files_list.reduce(
@@ -196,7 +196,7 @@ const structure: fsify_structure = [
 const VALIDATIONS_SCENARIOS: [
   string,
   [test_files_type[], ...string[]],
-  ...string[]
+  ...string[],
 ][] = [
   [
     // Test out the message : "At least two paths must be provided"
@@ -219,7 +219,7 @@ const E2E_JSON_REPORTER: [
   // if a single test_files_type, it is a settings file, multiple inline files otherwise
   [test_files_type[], ...string[]],
   string,
-  any
+  any,
 ][] = [
   [
     'Inline paths should be accepted',

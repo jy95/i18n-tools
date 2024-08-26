@@ -101,7 +101,7 @@ const [
   TEST_FILE_EXPORT_COLUMNS_DUP_VALS,
   TEST_FILE_EXPORT_COLUMNS_MISS_KEY,
 ] = test_files_list;
-type test_files_type = typeof test_files_list[number];
+type test_files_type = (typeof test_files_list)[number];
 
 // file structure for fsify, in order to run the tests
 const structure: fsify_structure = [
