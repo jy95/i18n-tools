@@ -20,6 +20,8 @@ jobs:
           find . -name "package-lock.json" -delete
       - name: 💻 Install npm packages
         run: npm install
+      - name: 🛂 Fix linting
+        run: npm run lint-fix
       - name: Build lib 🤖
         run: |
           npm run build
