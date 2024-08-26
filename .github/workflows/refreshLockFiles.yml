@@ -31,7 +31,7 @@ jobs:
       - name: Install website 💻
         run: |
           cd website   
-          npm link docusaurus-json-schema-plugin --save     
+          npm link @jy95/i18n-tools --save     
           npm install --prefer-dedupe  
           npm dedupe  
       - name: Create Pull Request 🤖
