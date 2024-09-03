@@ -73,7 +73,7 @@
     "@parcel/transformer-typescript-types": "^2.10.0",
     "@types/jest": "^29.5.2",
     "@types/lodash": "^4.14.195",
-    "@types/node": "^20.5.7",
+    "@types/node": "^22.5.2",
     "@types/yargs": "^17.0.25",
     "eslint-config-prettier": "^9.0.0",
     "fsify": "^5.0.0",
