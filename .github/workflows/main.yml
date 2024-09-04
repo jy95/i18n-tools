@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         node: ['18.x', '20.x']
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [ubuntu-latest, windows-latest]
 
     steps:
       - name: Checkout repo
