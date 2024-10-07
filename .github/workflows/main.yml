@@ -21,7 +21,7 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: Install deps and build (with cache)
-        uses: bahmutov/npm-install@v1.10.2
+        uses: bahmutov/npm-install@v1.10.3
 
       - name: Test
         run: yarn test --ci --coverage --maxWorkers=50%
