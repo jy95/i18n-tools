@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@docusaurus/core": "^3.4.1",
-    "@docusaurus/preset-classic": "^3.4.1",
+    "@docusaurus/preset-classic": "^3.6.0",
     "@jy95/i18n-tools": "file:..",
     "@mdx-js/react": "^3.0.1",
     "@svgr/webpack": "^8.0.1",
