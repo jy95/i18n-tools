@@ -27,7 +27,7 @@ jobs:
         run: yarn test --ci --coverage --maxWorkers=50%
 
       - name: Send coverage to Codecov
-        uses: codecov/codecov-action@v5.1.2
+        uses: codecov/codecov-action@v5.2.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
           directory: ./coverage
