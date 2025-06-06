@@ -51,7 +51,7 @@
     }
   },
   "engines": {
-    "node": ">=12"
+    "node": ">=20"
   },
   "scripts": {
     "watch": "npx parcel watch",
@@ -89,7 +89,7 @@
     "exceljs": "^4.3.0",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
-    "yargs": "^17.7.2"
+    "yargs": "^18.0.0"
   },
   "eslintConfig": {
     "extends": [
