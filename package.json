@@ -50,8 +50,9 @@
       "outputFormat": "esmodule"
     }
   },
+  "type": "module",
   "engines": {
-    "node": ">=12"
+    "node": ">=20"
   },
   "scripts": {
     "watch": "npx parcel watch",
