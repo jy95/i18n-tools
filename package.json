@@ -50,7 +50,6 @@
       "outputFormat": "esmodule"
     }
   },
-  "type": "module",
   "engines": {
     "node": ">=20"
   },
