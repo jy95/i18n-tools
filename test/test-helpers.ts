@@ -7,6 +7,9 @@ import type { Argv } from 'yargs';
 // temp folder
 export const TEMP_FOLDER = os.tmpdir();
 
+// Structure
+import fsifyModule from 'fsify'
+
 // for correct / wrong stuff
 export const [VALID_TEST_FOLDER, USELESS_TEST_FOLDER] = [
   'correct', // folder where every file are correct
@@ -19,7 +22,7 @@ export const fsify: {
   DIRECTORY: any;
   FILE: any;
   (_: { [x: string]: any }): Promise<any>;
-} = require('fsify')({
+} = fsifyModule({
   cwd: TEMP_FOLDER,
   persistent: false,
   force: true,
