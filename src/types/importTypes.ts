@@ -19,7 +19,7 @@ export interface XLSXImportArguments extends CommonImportArguments {
       [locale: string]: string;
     };
   };
-  worksheetNr: number;
+  worksheetIndex: number;
 }
 
 // Yargs import arguments for FROM_CSV command
