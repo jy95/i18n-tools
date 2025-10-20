@@ -9,9 +9,17 @@ on:
 # Trigger semantic-release on demand
   repository_dispatch:
     types: [semantic-release]
+
 jobs:
   release:
     name: Release
+    environment: publisher
+    permissions:
+      actions: write
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write # to enable use of OIDC for npm provenance
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'repository_dispatch' }}
     steps:
