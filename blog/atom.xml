@@ -31,10 +31,10 @@
         <content type="html"><![CDATA[<p>Welcome to @jy95/i18n-tools.
 This cli enables you to :</p>
 <ul>
-<li>Export i18n files into something else</li>
-<li>Turn a file to i18n file(s)</li>
-<li>Compare at least two i18n files &amp; generate a report</li>
-<li>...</li>
+<li class="">Export i18n files into something else</li>
+<li class="">Turn a file to i18n file(s)</li>
+<li class="">Compare at least two i18n files &amp; generate a report</li>
+<li class="">...</li>
 </ul>]]></content>
         <author>
             <name>Jacques Yakoub</name>
