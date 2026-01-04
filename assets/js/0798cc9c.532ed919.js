@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkwebsite=globalThis.webpackChunkwebsite||[]).push([[193],{1287(e){e.exports=JSON.parse('{"tags":[{"label":"feature","permalink":"/i18n-tools/blog/tags/feature","count":1},{"label":"welcome","permalink":"/i18n-tools/blog/tags/welcome","count":1}]}')}}]);
