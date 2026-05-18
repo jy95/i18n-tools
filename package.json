@@ -83,7 +83,7 @@
     "semantic-release": "^25.0.1",
     "ts-jest": "^29.1.1",
     "tslib": "^2.6.2",
-    "typescript": "^5.2.2"
+    "typescript": "^6.0.3"
   },
   "dependencies": {
     "exceljs": "^4.3.0",
